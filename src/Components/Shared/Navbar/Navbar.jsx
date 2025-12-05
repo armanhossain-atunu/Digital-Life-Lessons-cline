@@ -3,11 +3,12 @@ import MyLink from "./MyLink";
 import { Link, } from "react-router";
 
 import Container from "../Container";
+import useAuth from "../../../Hooks/useAuth";
 
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-     const {user,logOut}=
+     const {user,logOut}= useAuth();
 
     //   const navigate = useNavigate();
     useEffect(() => {
@@ -21,7 +22,7 @@ const Navbar = () => {
       const handleLogOut = () => {
         logOut()
           .then(() => {
-            navigate("/");
+          
           })
           .catch((error) => {
             console.log(error);
@@ -165,7 +166,7 @@ const Navbar = () => {
                                             Dashboard
                                         </Link>
                                         <div
-                                            onClick={logOut}
+                                            onClick={handleLogOut}
                                             className='px-4 py-3 hover:bg-neutral-100 transition font-semibold cursor-pointer'
                                         >
                                             Logout
@@ -187,15 +188,6 @@ const Navbar = () => {
                                         </Link>
                                     </>
                                 )}
-
-                                {/* <li>
-                                    <a className="justify-between">
-                                        Profile
-                                        <span className="badge">New</span>
-                                    </a>
-                                </li>
-                                <li><a>Dashboard</a></li>
-                                <li><a>Logout</a></li> */}
                             </ul>
                         </div>
                     </div>
