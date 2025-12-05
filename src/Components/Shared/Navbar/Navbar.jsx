@@ -3,11 +3,11 @@ import MyLink from "./MyLink";
 import { Link, } from "react-router";
 
 import Container from "../Container";
-import { AuthContext } from "../../../Providers/AuthContext";
+
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-    //   const { user} = useContext(AuthContext);
+     const {user,logOut}=
 
     //   const navigate = useNavigate();
     useEffect(() => {
@@ -18,15 +18,15 @@ const Navbar = () => {
     const handelTheme = (checked) => {
         setTheme(checked ? "dark" : "light");
     };
-    //   const handleLogOut = () => {
-    //     logOut()
-    //       .then(() => {
-    //         navigate("/");
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-    //   };
+      const handleLogOut = () => {
+        logOut()
+          .then(() => {
+            navigate("/");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      };
 
     const navItems = (
         <>
@@ -155,14 +155,47 @@ const Navbar = () => {
                             <ul
                                 tabIndex="-1"
                                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                                <li>
+
+                                {user ? (
+                                    <>
+                                        <Link
+                                            to='/dashboard'
+                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
+                                        >
+                                            Dashboard
+                                        </Link>
+                                        <div
+                                            onClick={logOut}
+                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold cursor-pointer'
+                                        >
+                                            Logout
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link
+                                            to='/login'
+                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
+                                        >
+                                            Login
+                                        </Link>
+                                        <Link
+                                            to='/signup'
+                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
+                                        >
+                                            Sign Up
+                                        </Link>
+                                    </>
+                                )}
+
+                                {/* <li>
                                     <a className="justify-between">
                                         Profile
                                         <span className="badge">New</span>
                                     </a>
                                 </li>
                                 <li><a>Dashboard</a></li>
-                                <li><a>Logout</a></li>
+                                <li><a>Logout</a></li> */}
                             </ul>
                         </div>
                     </div>
