@@ -55,7 +55,7 @@ const Footer = () => {
                     <p>
                         Copyright © {new Date().getFullYear()} - All right reserved by
                         <Link to="/">
-                            Fin<span className="text-[#875DF8]">Ease</span>
+                            Digital <span className="text-[#875DF8]">Life Lessons</span>
                         </Link>
                     </p>
                 </aside>
@@ -64,4 +64,4 @@ const Footer = () => {
     );
 };
 
-export default Footer;
+export default Footer; 

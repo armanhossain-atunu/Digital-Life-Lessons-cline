@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import MyLink from "./MyLink";
 import { Link, } from "react-router";
-
 import Container from "../Container";
 import useAuth from "../../../Hooks/useAuth";
-
+import avatarImg from '../../../assets/placeholder.jpg'
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-     const {user,logOut}= useAuth();
+    const { user, logOut } = useAuth();
 
     //   const navigate = useNavigate();
     useEffect(() => {
@@ -19,15 +18,15 @@ const Navbar = () => {
     const handelTheme = (checked) => {
         setTheme(checked ? "dark" : "light");
     };
-      const handleLogOut = () => {
+    const handleLogOut = () => {
         logOut()
-          .then(() => {
-          
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      };
+            .then(() => {
+
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     const navItems = (
         <>
@@ -39,7 +38,7 @@ const Navbar = () => {
             </li>
             <div className="text-base font-medium flex flex-col lg:flex-row">
                 <li>
-                    <MyLink to="/AddTransaction">Add Lesson</MyLink>
+                    <MyLink to="/my-lessons">Add Lesson</MyLink>
                 </li>
                 <li>
                     <MyLink to="/MyTransactions">My Lessons</MyLink>
@@ -149,8 +148,13 @@ const Navbar = () => {
                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                 <div className="w-10 rounded-full">
                                     <img
-                                        alt="Tailwind CSS Navbar component"
-                                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                        className='rounded-full'
+                                        referrerPolicy='no-referrer'
+                                        src={user && user.photoURL ? user.photoURL : avatarImg}
+                                        alt='profile'
+                                        height='30'
+                                        width='30'
+                                    />
                                 </div>
                             </div>
                             <ul
@@ -159,6 +163,12 @@ const Navbar = () => {
 
                                 {user ? (
                                     <>
+                                    <h1>{user.displayName}</h1>
+                                        <Link to={'/UserProfile'}
+                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
+                                        >
+                                            Profile
+                                        </Link>
                                         <Link
                                             to='/dashboard'
                                             className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
@@ -175,13 +185,13 @@ const Navbar = () => {
                                 ) : (
                                     <>
                                         <Link
-                                            to='/login'
+                                            to='/auth/login'
                                             className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
                                         >
                                             Login
                                         </Link>
                                         <Link
-                                            to='/signup'
+                                            to='/auth/signup'
                                             className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
                                         >
                                             Sign Up

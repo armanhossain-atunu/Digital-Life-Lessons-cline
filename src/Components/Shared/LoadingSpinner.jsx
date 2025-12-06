@@ -9,7 +9,8 @@ const LoadingSpinner = ({ smallHeight }) => {
       justify-center 
       items-center `}
         >
-            <TbFidgetSpinner size={100} color='lime' />
+            {/* <TbFidgetSpinner size={100} color='lime' /> */}
+            <TbFidgetSpinner className='text-6xl text-lime-500 animate-spin' />
         </div>
     )
 }
