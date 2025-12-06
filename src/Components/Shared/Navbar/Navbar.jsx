@@ -38,13 +38,13 @@ const Navbar = () => {
             </li>
             <div className="text-base font-medium flex flex-col lg:flex-row">
                 <li>
-                    <MyLink to="/my-lessons">Add Lesson</MyLink>
+                    <MyLink to="/add-lessons">Add Lesson</MyLink>
                 </li>
                 <li>
-                    <MyLink to="/MyTransactions">My Lessons</MyLink>
+                    <MyLink to="/my-lessons">My Lessons</MyLink>
                 </li>
                 <li>
-                    <MyLink to="/MyTransactions">Favorites</MyLink>
+                    <MyLink to="/Favorites">Favorites</MyLink>
                 </li>
                 <li>
                     <MyLink to="/Reports">Reports</MyLink>

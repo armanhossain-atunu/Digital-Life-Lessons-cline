@@ -178,7 +178,7 @@ const SignUp = () => {
                                 onClick={() => {
                                     setShow(!show);
                                 }}
-                                className="absolute right-5 `top-[40px]` z-50 cursor-pointer"
+                                className="absolute right-5 top-[41px] z-50 cursor-pointer"
                             >
                                 {show ? <FaEye></FaEye> : <FiEyeOff></FiEyeOff>}
                             </span>

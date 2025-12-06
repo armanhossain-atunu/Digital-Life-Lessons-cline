@@ -9,6 +9,7 @@ import MyLessons from "../Pages/My_Lessons/MyLessons";
 import PrivateRoute from "./PrivateRoute";
 import ErrorPage from "../Pages/Error/ErrorPage";
 import UserProfile from "../Components/Dashboard/User/Profile";
+import AddLesson from "../Pages/Add_Lesson/AddLesson";
 
 const router = createBrowserRouter([
     {
@@ -34,9 +35,14 @@ const router = createBrowserRouter([
                 Component: Signup,
             },
             {
-                path:'/UserProfile'
-                ,element:<PrivateRoute><UserProfile></UserProfile></PrivateRoute>
+                path: '/UserProfile'
+                , element: <PrivateRoute><UserProfile></UserProfile></PrivateRoute>
             },
+            {
+                path: '/add-lessons',
+                element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>,
+            }
+            ,
             {
                 path: '/my-lessons',
                 element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute>,
