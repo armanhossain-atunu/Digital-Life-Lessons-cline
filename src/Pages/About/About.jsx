@@ -1,8 +1,9 @@
 import React from 'react';
+import Container from '../../Components/Shared/Container';
 
 const About = () => {
     return (
-        <div className="min-h-screen   px-6 md:px-20 py-16">
+        <Container>
             <h1 className="text-4xl md:text-5xl font-bold text-center my-20">
                 About Us
             </h1>
@@ -53,16 +54,15 @@ const About = () => {
                 </section>
                 {/* CTA */}
                 <section>
-                    <div className="p-6 shadow-2xl rounded-xl">
+                    <div className="p-6 mb-10 bg-base-100 shadow-2xl rounded-xl">
                         <h3 className="text-xl font-semibold mb-2">❤️ Join the Journey</h3>
                         <p className="text-lg leading-relaxed">
                             Start collecting your wisdom, explore insights from others, and grow with us.
                         </p>
                     </div>
                 </section>
-
             </div>
-        </div>
+        </Container>
     );
 };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import useAuth from '../../Hooks/useAuth';
 import Banner from '../../Components/Home/Banner/Banner';
 import WhyLearningMatters from '../../Components/Home/WhyLearningMatters/WhyLearningMatters';
+import Card from '../../Components/Home/Card';
 
 const Home = () => {
     const { loading } = useAuth()
@@ -12,6 +13,7 @@ const Home = () => {
         <div>
             <Banner></Banner>
             <WhyLearningMatters></WhyLearningMatters>
+            <Card></Card>
         </div>
     );
 };

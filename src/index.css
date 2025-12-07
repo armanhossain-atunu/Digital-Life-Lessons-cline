@@ -3,3 +3,12 @@
   themes: light --default, dark --prefersdark;
 }
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+.dash-menu li a.active {
+  background-color: #875DF8;
+  color: white;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.dash-menu li a.active svg {
+  stroke: white;
+}

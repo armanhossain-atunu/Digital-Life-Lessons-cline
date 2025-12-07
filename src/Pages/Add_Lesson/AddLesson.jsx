@@ -123,7 +123,7 @@ const AddLesson = () => {
                 {/* Image Upload */}
                 <div className=' p-4  w-full  m-auto rounded-lg grow'>
                     <div className='file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg'>
-                        <div className='flex flex-col w-max mx-auto text-center'>
+                        <div className='w-[40%] bg-lime-500 cursor-pointer hover:bg-lime-600 flex flex-col items-center mx-auto text-center'>
                             <label>
                                 <input
                                     className='text-sm cursor-pointer w-36 hidden'
@@ -136,16 +136,17 @@ const AddLesson = () => {
                                         required: 'Image is required',
                                     })}
                                 />
-                                {errors.image && (
-                                    <p className='text-xs text-red-500 mt-1'>
-                                        {errors.image.message}
-                                    </p>
-                                )}
-                                <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
+
+                                <div className=' text-white  border-gray-300 rounded cursor-pointer font-semibold  p-1 px-3 '>
                                     Upload
                                 </div>
                             </label>
                         </div>
+                        {errors.image && (
+                            <p className='text-xs text-red-500 mt-1 text-center'>
+                                {errors.image.message}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -187,7 +188,7 @@ const AddLesson = () => {
 
                     <button
                         type="submit"
-                        className=" w-full px-6 py-2 text-2xl bg-lime-500  text-white rounded hover:bg-lime-600 transition"
+                        className=" w-full px-6 py-2 text-2xl bg-lime-500 cursor-pointer  text-white rounded hover:bg-lime-600 transition"
                     >
                         Create Lesson
                     </button>
