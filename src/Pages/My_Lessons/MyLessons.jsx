@@ -28,7 +28,7 @@ console.log(lessons);
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">
         {lessons.map((lesson) => (
           <div
-            key={lesson.id}
+            key={lesson._id}
             className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
           >
             <img src={lesson.image} alt={lesson.title} className="w-full h-60 object-cover rounded-2xl mb-2 " />
@@ -42,7 +42,7 @@ console.log(lessons);
               <FaHeart className="mr-2" />
               <span className="text-gray-600">{lesson.dislikes}</span>
             </div>
-            <Comments></Comments>
+            <Comments postId={lesson._id}></Comments>
           </div>
         ))}
       </div>

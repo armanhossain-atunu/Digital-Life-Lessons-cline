@@ -1,7 +1,8 @@
 import React from "react";
 
-const Card = ({ userType = "Premium", title, text, count }) => {
-  const isPremium = userType === "free";
+const Card = ({lesson , title,text,count}) => {
+  
+  const isPremium = lesson?.isPremium || false;
 
   return (
     <div className="w-[200px] h-[300px] relative border border-solid border-white/40 rounded-2xl overflow-hidden">
