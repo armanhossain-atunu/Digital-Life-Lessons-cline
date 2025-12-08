@@ -5,15 +5,22 @@ import { imageUpload } from "../../Utils";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import LottieAnimation from "../../Components/Shared/LottieAnimation";
+
+
 
 const AddLesson = () => {
     const { user } = useAuth();
+    const [showAnimation, setShowAnimation] = useState(false);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     // useMutation hook useCase (POST || PUT || PATCH || DELETE)
     const { mutateAsync, isPending, isError, reset: mutationReset } = useMutation({
         mutationFn: async (lessonData) => {
             const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/add_lessons`, lessonData);
             toast.success("Lesson added successfully!");
+            setShowAnimation(true);
+            setTimeout(() => setShowAnimation(false), 2500);
             reset();
             mutationReset();
             return data;
@@ -60,9 +67,7 @@ const AddLesson = () => {
             <p className="text-base-600 text-center mb-6">
                 Share your insights, experiences, and lessons learned to inspire others.
             </p>
-
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
                 {/* Lesson Title */}
                 <div>
                     <label className="block font-semibold mb-1">Lesson Title</label>
@@ -74,7 +79,6 @@ const AddLesson = () => {
                     />
                     {errors.title && <p className="text-red-500 text-sm mt-1">Title is required</p>}
                 </div>
-
                 {/* Full Description */}
                 <div>
                     <label className="block font-semibold mb-1">Full Description / Story / Insight</label>
@@ -86,7 +90,6 @@ const AddLesson = () => {
                     ></textarea>
                     {errors.description && <p className="text-red-500 text-sm mt-1">Description is required</p>}
                 </div>
-
                 {/* Category Dropdown */}
                 <div>
                     <label className="block font-semibold mb-1">Category</label>
@@ -103,7 +106,6 @@ const AddLesson = () => {
                     </select>
                     {errors.category && <p className="text-red-500 text-sm mt-1">Category is required</p>}
                 </div>
-
                 {/* Emotional Tone Dropdown */}
                 <div>
                     <label className="block font-semibold mb-1">Emotional Tone</label>
@@ -136,7 +138,6 @@ const AddLesson = () => {
                                         required: 'Image is required',
                                     })}
                                 />
-
                                 <div className=' text-white  border-gray-300 rounded cursor-pointer font-semibold  p-1 px-3 '>
                                     Upload
                                 </div>
@@ -149,13 +150,6 @@ const AddLesson = () => {
                         )}
                     </div>
                 </div>
-
-
-                {/* <div>
-                    <input type="file" onChange={handleImageChange} />
-                    {imagePreview && <img src={imagePreview} alt="Preview" className="w-48 mt-2 rounded" />}
-                </div> */}
-
                 {/* Privacy Dropdown */}
                 <div>
                     <label className="block font-semibold mb-1">Privacy</label>
@@ -173,28 +167,22 @@ const AddLesson = () => {
                     <label className="block font-semibold mb-1">Access Level</label>
                     <select
                         {...register("accessLevel")}
-                    // disabled={!user.isPremium}
-                    // title={!user.isPremium ? "Upgrade to Premium to create paid lessons" : ""}
-                    // className={`w-full border p-2 rounded ${!user.isPremium ? "bg-gray-100 cursor-not-allowed" : ""}`}
+
                     >
                         <option value="Free">Free</option>
                         <option value="Premium">Premium</option>
                     </select>
-                    {/* {!user.isPremium && <p className="text-gray-500 text-sm mt-1">Upgrade to Premium to create paid lessons</p>} */}
                 </div>
-
                 {/* Submit Button */}
                 <div >
-
                     <button
                         type="submit"
                         className=" w-full px-6 py-2 text-2xl bg-lime-500 cursor-pointer  text-white rounded hover:bg-lime-600 transition"
                     >
                         Create Lesson
                     </button>
-
+                    <LottieAnimation show={showAnimation} />
                 </div>
-
             </form>
         </div>
     );

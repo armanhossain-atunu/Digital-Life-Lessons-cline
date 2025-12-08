@@ -15,6 +15,7 @@ const LoveReact = ({ lessonId }) => {
 
   // Fetch like status + total likes
   const { data = { liked: false, totalLikes: 0 }, isLoading } = useQuery({
+
     queryKey,
     queryFn: async () => {
       const url = `${import.meta.env.VITE_API_URL}/loveReact/${lessonId}` + (userEmail ? `?userEmail=${userEmail}` : '');
@@ -28,6 +29,7 @@ const LoveReact = ({ lessonId }) => {
 
   // Mutation: toggle like
   const mutation = useMutation({
+    mutationKey: ['toggleLoveReact', lessonId, userEmail || 'guest'],
     mutationFn: async () => {
       const url = `${import.meta.env.VITE_API_URL}/loveReact/${lessonId}`;
       const body = { userEmail };

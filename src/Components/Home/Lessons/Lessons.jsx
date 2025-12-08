@@ -2,18 +2,20 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Container from "../../Shared/Container";
 import { MdDeleteForever } from "react-icons/md";
-import { FcLike } from "react-icons/fc";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Card from "../Card";
-import { FaRegHeart } from "react-icons/fa";
 import Comments from "../../Shared/Comments/Comments";
 import LikeButton from "../../Shared/LikeReact/LoveReact";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
+import useAuth from "../../../Hooks/useAuth";
+import { Link } from "react-router";
 
 
 const Lessons = () => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
+
     const { data: lessons = [], isLoading, error } = useQuery({
         queryKey: ["lessons"],
         queryFn: async () => {
@@ -21,6 +23,7 @@ const Lessons = () => {
             return res.data;
         },
     });
+    const isOwner = lessons.authorEmail === user?.email;
     // Mutation for deleting a lesson
     const deleteLessonMutation = useMutation({
         mutationFn: async (id) => {
@@ -75,13 +78,25 @@ const Lessons = () => {
             <h1 className="text-2xl text-center font-bold mb-6"> All Lessons {lessons.length}</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {lessons.map((lesson) => (
-                    <div key={lesson._id} className="border p-4 rounded-lg max-h-fit shadow" lesson={lesson}>
+                    <div key={lesson._id}
+                        className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
+                        lesson={lesson}>
                         <img src={lesson.image} className="w-full h-48 object-cover rounded-lg mb-3" />
                         <h3 className="text-lg font-semibold">{lesson.title}</h3>
-                        <p className="text-base-600">{lesson.description}</p>
+                        <p className="text-base-600">`${lesson.description.slice(0, 60).concat("...")}<Link to={`/lessons/${lesson._id}`}>Read More</Link> `</p>
                         <div className="flex justify-end mt-3 gap-4 items-center">
 
                             <LoveReact lessonId={lesson._id}></LoveReact>
+                            {/* 
+
+                            {isOwner && (
+                                <button
+                                    onClick={() => handleDelete(lesson._id)}
+                                    className="text-red-600 text-2xl hover:text-red-800"
+                                >
+                                    <MdDeleteForever />
+                                </button>
+                            )} */}
                             <button
                                 className="text-red-600 cursor-pointer hover:text-red-800 transition-colors"
                                 onClick={() => handleDelete(lesson._id)}
