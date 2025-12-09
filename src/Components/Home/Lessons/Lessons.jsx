@@ -8,11 +8,22 @@ import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { Link } from "react-router";
+import { useState } from "react";
 
 
 const Lessons = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
+    // Show More system
+    const [visibleCount, setVisibleCount] = useState(6);
+    const [expanded, setExpanded] = useState({});
+    
+    const toggleExpand = (id) => {
+        setExpanded((prev) => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
 
     const { data: lessons = [], isLoading, error } = useQuery({
         queryKey: ["lessons"],
@@ -21,7 +32,8 @@ const Lessons = () => {
             return res.data;
         },
     });
-    const isOwner = lessons.authorEmail === user?.email;
+    const visibleLessons = lessons.slice(0, visibleCount);
+    // const isOwner = lessons.authorEmail === user?.email;
     // Mutation for deleting a lesson
     const deleteLessonMutation = useMutation({
         mutationFn: async (id) => {
@@ -72,36 +84,113 @@ const Lessons = () => {
     if (error) return <p>{error.message}</p>;
 
     return (
+
+
         <Container>
-            <h1 className="text-2xl text-center font-bold mb-6"> All Lessons {lessons.length}</h1>
+            <h1 className="text-2xl text-center font-bold mb-6">
+                All Lessons {lessons.length}
+            </h1>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {lessons.map((lesson) => (
-                    <div key={lesson._id}
-                        className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
-                        lesson={lesson}>
-                        <img src={lesson.image} className="w-full h-48 object-cover rounded-lg mb-3" />
-                        <h3 className="text-lg font-semibold">{lesson.title}</h3>
-                        <p className="text-base-600">`${lesson.description.slice(0, 60).concat("...")}<Link to={`/lessons/${lesson._id}`}>Read More</Link> `</p>
-                        <div className="flex justify-end mt-3 gap-4 items-center">
+                {visibleLessons.map((lesson) => {
+                    const isOwner = lesson.authorEmail === user?.email;
 
-                            <LoveReact lessonId={lesson._id}></LoveReact>
-                            
+                    return (
+                        <div
+                            key={lesson._id}
+                            className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
+                        >
+                            <img
+                                src={lesson.image}
+                                className="w-full h-48 object-cover rounded-lg mb-3"
+                            />
 
-                            {isOwner && (
+                            <h3 className="text-lg font-semibold">{lesson.title}</h3>
+
+                            {/* Description with See More */}
+                            <p className="text-base-600">
+                                {expanded[lesson._id]
+                                    ? lesson.description
+                                    : lesson.description.slice(0, 80) + "..."
+                                }
+
                                 <button
-                                    onClick={() => handleDelete(lesson._id)}
-                                    className="text-red-600 text-2xl hover:text-red-800"
+                                    onClick={() => toggleExpand(lesson._id)}
+                                    className="text-blue-600 underline ml-2"
                                 >
-                                    <MdDeleteForever />
+                                    {expanded[lesson._id] ? "See Less" : "See More"}
                                 </button>
-                            )}
-                        </div>
-                        <Comments postId={lesson._id}></Comments>
-                    </div>
-                ))}
-            </div>
+                            </p>
 
+                            <div className="flex justify-end mt-3 gap-4 items-center">
+                                <LoveReact lessonId={lesson._id} />
+
+                                {/* Delete button only owner can see */}
+                                {isOwner && (
+                                    <button
+                                        onClick={() => handleDelete(lesson._id)}
+                                        className="text-red-600 text-2xl hover:text-red-800"
+                                    >
+                                        <MdDeleteForever />
+                                    </button>
+                                )}
+                            </div>
+
+                            <Comments postId={lesson._id} />
+                        </div>
+                    );
+                })}
+            </div>
+            {/* Show More / Show Less Buttons */}
+            <div className="flex justify-center mt-6">
+                {visibleCount < lessons.length ? (
+                    <button
+                        onClick={() => setVisibleCount((prev) => prev + 6)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
+                        Show More
+                    </button>
+                ) : (
+                    lessons.length > 6 && (
+                        <button
+                            onClick={() => setVisibleCount(6)}
+                            className="px-4 py-2 bg-gray-600 text-white rounded"
+                        >
+                            Show Less
+                        </button>
+                    )
+                )}
+            </div>
         </Container>
+
+
+        // <Container>
+        //     <h1 className="text-2xl text-center font-bold mb-6"> All Lessons {lessons.length}</h1>
+        //     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        //         {lessons.map((lesson) => (
+        //             <div key={lesson._id}
+        //                 className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
+        //                 lesson={lesson}>
+        //                 <img src={lesson.image} className="w-full h-48 object-cover rounded-lg mb-3" />
+        //                 <h3 className="text-lg font-semibold">{lesson.title}</h3>
+        //                 <p className="text-base-600">`${lesson.description.slice(0, 60).concat("...")}<Link to={`/lessons/${lesson._id}`}>Read More</Link> `</p>
+        //                 <div className="flex justify-end mt-3 gap-4 items-center">
+        //                     <LoveReact lessonId={lesson._id}></LoveReact>
+        //                     {isOwner && (
+        //                         <button
+        //                             onClick={() => handleDelete(lesson._id)}
+        //                             className="text-red-600 text-2xl hover:text-red-800"
+        //                         >
+        //                             <MdDeleteForever />
+        //                         </button>
+        //                     )}
+        //                 </div>
+        //                 <Comments postId={lesson._id}></Comments>
+        //             </div>
+        //         ))}
+        //     </div>
+
+        // </Container>
     );
 };
 
