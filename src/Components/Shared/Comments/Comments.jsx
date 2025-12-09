@@ -27,6 +27,8 @@ const Comments = ({ postId, }) => {
                 postId,
                 user: user?.displayName || "Anonymous",
                 comment: inputComment,
+                photo: user?.photoURL || "",
+                createdAt: new Date().toISOString(),
             });
         },
         onSuccess: () => {
@@ -64,8 +66,8 @@ const Comments = ({ postId, }) => {
 
             <div
                 className={`mt-5 space-y-3 ${comments.length > 1
-                        ? "overflow-y-scroll h-32"
-                        : "overflow-y-auto h-auto"
+                    ? "overflow-y-scroll h-32"
+                    : "overflow-y-auto h-auto"
                     }`}
             >
                 {isLoading ? (
@@ -76,28 +78,16 @@ const Comments = ({ postId, }) => {
                             key={c._id}
                             className="border rounded-md p-3 shadow-sm"
                         >
-                            <h5 className="font-semibold">{c.user}</h5>
+                            <div className='flex justify-between'>
+                                <h5 className="font-semibold">{c.user}</h5>
+                                <img className='w-10 h-10 rounded-full' src={c.photo} alt="" />
+                            </div>
+
                             <p>{c.comment}</p>
                         </div>
                     ))
                 )}
             </div>
-
-            {/* <div className="mt-5  overflow-y-scroll h-[120px]  space-y-3">
-                {isLoading ? (
-                    <p>Loading comments...</p>
-                ) : (
-                    comments.map((c) => (
-                        <div
-                            key={c._id}
-                            className="border   rounded-md p-3 shadow-sm"
-                        >
-                            <h5 className="font-semibold">{c.user}</h5>
-                            <p>{c.comment}</p>
-                        </div>
-                    ))
-                )}
-            </div> */}
         </div>
     );
 };

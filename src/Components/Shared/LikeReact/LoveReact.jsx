@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import useAuth from '../../../Hooks/useAuth';
+import toast from 'react-hot-toast';
 
 // LoveReact component
 // Props: `lessonId` (string)
@@ -68,7 +69,7 @@ const LoveReact = ({ lessonId }) => {
   const handleToggle = () => {
     if (!userEmail) {
       // simple feedback; app-specific behavior (redirect to login) can be added
-      alert('Please login to like');
+      toast.error('Please login to like');
       return;
     }
 
