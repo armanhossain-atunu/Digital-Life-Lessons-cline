@@ -4,9 +4,7 @@ import Container from "../../Shared/Container";
 import { MdDeleteForever } from "react-icons/md";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
-import Card from "../Card";
 import Comments from "../../Shared/Comments/Comments";
-import LikeButton from "../../Shared/LikeReact/LoveReact";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { Link } from "react-router";
@@ -87,7 +85,7 @@ const Lessons = () => {
                         <div className="flex justify-end mt-3 gap-4 items-center">
 
                             <LoveReact lessonId={lesson._id}></LoveReact>
-                            {/* 
+                            
 
                             {isOwner && (
                                 <button
@@ -96,14 +94,7 @@ const Lessons = () => {
                                 >
                                     <MdDeleteForever />
                                 </button>
-                            )} */}
-                            <button
-                                className="text-red-600 cursor-pointer hover:text-red-800 transition-colors"
-                                onClick={() => handleDelete(lesson._id)}
-                            >
-                                <MdDeleteForever size={22} />
-                            </button>
-
+                            )}
                         </div>
                         <Comments postId={lesson._id}></Comments>
                     </div>

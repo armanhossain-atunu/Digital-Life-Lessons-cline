@@ -15,7 +15,6 @@ const LoveReact = ({ lessonId }) => {
 
   // Fetch like status + total likes
   const { data = { liked: false, totalLikes: 0 }, isLoading } = useQuery({
-
     queryKey,
     queryFn: async () => {
       const url = `${import.meta.env.VITE_API_URL}/loveReact/${lessonId}` + (userEmail ? `?userEmail=${userEmail}` : '');
@@ -39,11 +38,8 @@ const LoveReact = ({ lessonId }) => {
     // Optimistic update
     onMutate: async () => {
       if (!lessonId) return;
-
       await queryClient.cancelQueries({ queryKey });
-
       const previous = queryClient.getQueryData(queryKey);
-
       // compute optimistic value
       const prevLiked = previous?.liked ?? data.liked;
       const prevCount = previous?.totalLikes ?? data.totalLikes ?? 0;
