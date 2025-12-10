@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import useAuth from '../../../Hooks/useAuth';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import SocialMedia from '../Button/SocialMedia';
 
 const Comments = ({ postId, }) => {
     console.log(postId);
@@ -41,7 +42,7 @@ const Comments = ({ postId, }) => {
         return (
             <div className="mt-5">
                 <h4 className="text-lg font-bold">Comment</h4>
-                   <textarea
+                <textarea
                     className="w-full border border-gray-300 rounded-md p-2"
                     rows="2"
                     placeholder="Add a comment..."
@@ -61,7 +62,9 @@ const Comments = ({ postId, }) => {
     };
     return (
         <div className="mt-5">
-            <h4 className="text-lg font-bold">Comment</h4> 
+
+            <h4 className="text-lg font-bold">Comment</h4>
+
             {/* Comment Input */}
             <form onSubmit={handleComment} className="mt-2 ">
                 <textarea
@@ -71,17 +74,21 @@ const Comments = ({ postId, }) => {
                     value={inputComment}
                     onChange={(e) => setInputComment(e.target.value)}
                 ></textarea>
-                <button
-                    type="submit"
-                    disabled={isPending}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
-                >
-                    {
-                        user ?
-                            isPending ? "Commenting..." : "Comment"
-                            : "Login to comment"
-                    }
-                </button>
+                <div className='flex justify-between items-center'>
+                    <button
+                        type="submit"
+                        disabled={isPending}
+                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+                    >
+                        {
+                            user ?
+                                isPending ? "Commenting..." : "Comment"
+                                : "Login to comment"
+                        }
+
+                    </button>
+                    <SocialMedia></SocialMedia>
+                </div>
             </form>
             {/* Show Comments */}
 

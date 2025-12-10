@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaRegBookmark } from "react-icons/fa";
 import useAuth from "../../../Hooks/useAuth";
+import toast from "react-hot-toast";
 
 
 const Favorite = ({ lessonId }) => {
@@ -57,7 +58,7 @@ const Favorite = ({ lessonId }) => {
     });
 
     const handleFavorite = () => {
-        if (!user?.email) return alert("Please login to favorite");
+        if (!user?.email) return toast.error("Please login to favorite");
         mutation.mutate();
     };
 
@@ -66,7 +67,7 @@ const Favorite = ({ lessonId }) => {
             onClick={handleFavorite}
             className="flex items-center gap-2 cursor-pointer"
         >
-            <FaHeart
+            <FaRegBookmark
                 className={`text-2xl transition-all ${
                     favoriteData.favorited ? "text-red-600" : "text-gray-400"
                 }`}

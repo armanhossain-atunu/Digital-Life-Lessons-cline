@@ -9,7 +9,8 @@ import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { Link } from "react-router";
 import { useState } from "react";
-import FavoriteLessons from "./FavoriteLessons";
+import FavoriteLessons from "./Favorite";
+
 
 
 const Lessons = () => {
@@ -18,7 +19,7 @@ const Lessons = () => {
     // Show More system
     const [visibleCount, setVisibleCount] = useState(6);
     const [expanded, setExpanded] = useState({});
-   
+
     const toggleExpand = (id) => {
         setExpanded((prev) => ({
             ...prev,
@@ -80,7 +81,7 @@ const Lessons = () => {
         );
     }
 
- 
+
     if (isLoading) return <LoadingSpinner></LoadingSpinner>;
     if (error) return <p>{error.message}</p>;
 
@@ -133,7 +134,7 @@ const Lessons = () => {
                                     onClick={() => toggleExpand(_id)}
                                     className="text-blue-600 underline ml-2"
                                 >
-                                    {expanded[_id] ? "See Less" : (<Link to={`/lessonsDetails/${_id}`}>See More</Link>)}
+                                    {expanded[_id] ? "See Less" : (<Link to={`/lesson-details/${_id}`}>See More</Link>)}
                                 </button>
                             </p>
 
@@ -150,7 +151,8 @@ const Lessons = () => {
 
                             <div className="flex justify-between items-center">
                                 <p>Public: {isPublic ? "Yes" : "No"}</p>
-                                <Link to={`/lessonsDetails/${_id}`} className="text-red-600 mt-2  hover:text-red-800">Details</Link>
+                                <Link to={`/lesson-details/${_id}`} className=" mt-2  ">Details</Link>
+                            
                             </div>
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
@@ -163,7 +165,7 @@ const Lessons = () => {
                                         <MdDeleteForever />
                                     </button>
                                 )}
-                               {/* Favorite button */}
+                                {/* Favorite button */}
                                 <FavoriteLessons lessonId={lesson._id}></FavoriteLessons>
 
                                 {/* Edit button only owner can see */}

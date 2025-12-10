@@ -13,6 +13,8 @@ import AddLesson from "../Pages/Add_Lesson/AddLesson";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import AdminProfile from "../Components/Dashboard/Admin/AdminProfile";
 import DashboardHome from "../Components/Dashboard/DashboardHome/DashboardHome";
+import LessonDetails from "../Components/Home/Lessons/LessonDetails";
+import FavoriteLessons from "../Pages/Favorite_Lessons/FavoriteLessons";
 
 const router = createBrowserRouter([
     {
@@ -44,12 +46,20 @@ const router = createBrowserRouter([
             {
                 path: '/add-lessons',
                 element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>,
-            }
-            ,
+            },
+            {
+                path: '/lesson-details/:id',
+                element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>,
+            },
             {
                 path: '/my-lessons',
                 element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute>,
+            },
+            {
+                path: '/favorite-lessons',
+                element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>,
             }
+
         ],
 
     },

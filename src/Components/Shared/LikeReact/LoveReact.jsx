@@ -84,9 +84,8 @@ const LoveReact = ({ lessonId }) => {
         onClick={handleToggle}
         disabled={mutation.isLoading || isLoading}
         aria-pressed={data.liked}
-        className={`p-1 rounded-full transition-colors duration-150 focus:outline-none ${
-          data.liked ? 'text-red-500' : 'text-gray-400'
-        }`}
+        className={`p-1 rounded-full transition-colors duration-150 cursor-pointer focus:outline-none ${data.liked ? 'text-red-500' : 'text-gray-400'
+          }`}
         title={data.liked ? 'Unlike' : 'Like'}
       >
         {/* simple heart icon */}

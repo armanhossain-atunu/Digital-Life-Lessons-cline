@@ -1,19 +1,25 @@
 import { FaEdit, FaRegBookmark, FaRegFileAlt, FaCalendarAlt } from "react-icons/fa";
 import useAuth from "../../../Hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import LoadingSpinner from "../../Shared/LoadingSpinner";
 
 const UserProfile = () => {
-    const {user}=useAuth()
-
-  // Demo user info (replace with real data)
-//   const user = {
-//     name: "John Doe",
-//     email: "john@example.com",
-//     bio: "Passionate learner who loves sharing meaningful life lessons.",
-//     joined: "2024-01-10",
-//     photo: "https://i.pravatar.cc/150?img=12",
-//     totalLessons: 24,
-//     savedLessons: 56
-//   };
+  const { user } = useAuth();
+  // my lessons
+  const { data: lessons = [] } = useQuery({
+    queryKey: ["myLessons", user?.email],
+    queryFn: async () =>
+      (await axios.get(`${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`)).data,
+    enabled: !!user?.email
+  })
+  // favorite 
+  const { data: favoriteLessons = [] } = useQuery({
+    queryKey: ["favoriteLessons", user?.email],
+    queryFn: async () =>
+      (await axios.get(`${import.meta.env.VITE_API_URL}/favoriteFull?email=${user?.email}`)).data,
+    enabled: !!user?.email
+  });
 
   return (
     <div className="bg-base-100 min-h-screen pb-12 pt-20 px-4">
@@ -32,7 +38,7 @@ const UserProfile = () => {
             <p className="text-base-500">{user.email}</p>
 
             <div className="flex items-center gap-2 text-base-500 mt-2">
-              <FaCalendarAlt /> 
+              <FaCalendarAlt />
               <span>Joined: {user.joined}</span>
             </div>
           </div>
@@ -54,7 +60,7 @@ const UserProfile = () => {
             <FaRegFileAlt className="text-4xl text-indigo-600" />
             <div>
               <h4 className="text-lg font-semibold text-gray-800">Total Lessons</h4>
-              <p className="text-2xl font-bold text-indigo-700">{user.totalLessons}</p>
+              <p className="text-2xl font-bold text-indigo-700">{lessons.length}</p>
             </div>
           </div>
 
@@ -62,7 +68,7 @@ const UserProfile = () => {
             <FaRegBookmark className="text-4xl text-yellow-600" />
             <div>
               <h4 className="text-lg font-semibold text-gray-800">Saved Lessons</h4>
-              <p className="text-2xl font-bold text-yellow-700">{user.savedLessons}</p>
+              <p className="text-2xl font-bold text-yellow-700">{favoriteLessons.length}</p>
             </div>
           </div>
         </div>
