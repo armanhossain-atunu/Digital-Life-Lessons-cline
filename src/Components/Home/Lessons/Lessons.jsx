@@ -9,6 +9,7 @@ import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { Link } from "react-router";
 import { useState } from "react";
+import FavoriteLessons from "./FavoriteLessons";
 
 
 const Lessons = () => {
@@ -17,7 +18,7 @@ const Lessons = () => {
     // Show More system
     const [visibleCount, setVisibleCount] = useState(6);
     const [expanded, setExpanded] = useState({});
-    const [favoriteCount, setFavoriteCount] = useState({});
+   
     const toggleExpand = (id) => {
         setExpanded((prev) => ({
             ...prev,
@@ -32,7 +33,7 @@ const Lessons = () => {
         },
     });
     const visibleLessons = lessons.slice(0, visibleCount);
-    // const isOwner = lessons.authorEmail === user?.email;
+
     // Mutation for deleting a lesson
     const deleteLessonMutation = useMutation({
         mutationFn: async (id) => {
@@ -79,13 +80,7 @@ const Lessons = () => {
         );
     }
 
-    // Handle favorite
-    const handleFavorite = (id) => {
-        setFavoriteCount((prev) => ({
-            ...prev,
-            [id]: (prev[id] || 0) + 1,
-        }));
-    };
+ 
     if (isLoading) return <LoadingSpinner></LoadingSpinner>;
     if (error) return <p>{error.message}</p>;
 
@@ -138,7 +133,7 @@ const Lessons = () => {
                                     onClick={() => toggleExpand(_id)}
                                     className="text-blue-600 underline ml-2"
                                 >
-                                    {expanded[_id] ? "See Less" : "See More"}
+                                    {expanded[_id] ? "See Less" : (<Link to={`/lessonsDetails/${_id}`}>See More</Link>)}
                                 </button>
                             </p>
 
@@ -152,7 +147,11 @@ const Lessons = () => {
 
                             <p>Author: {authorEmail}</p>
                             <p>Access Level: {accessLevel}</p>
-                            <p>Public: {isPublic ? "Yes" : "No"}</p>
+
+                            <div className="flex justify-between items-center">
+                                <p>Public: {isPublic ? "Yes" : "No"}</p>
+                                <Link to={`/lessonsDetails/${_id}`} className="text-red-600 mt-2  hover:text-red-800">Details</Link>
+                            </div>
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
                                 {/* Delete button only owner can see */}
@@ -164,17 +163,9 @@ const Lessons = () => {
                                         <MdDeleteForever />
                                     </button>
                                 )}
-                                {/* Favorites count */}
-                                <p className="text-sm text-blue-600 font-medium mt-1">
-                                    favorites: {favoriteCount[_id] || 0}
-                                </p>
-                                <button
-                                    onClick={() => handleFavorite(_id)}
-                                    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-lg"
-                                >
-                                    Favorite
-                                </button>
-                                
+                               {/* Favorite button */}
+                                <FavoriteLessons lessonId={lesson._id}></FavoriteLessons>
+
                                 {/* Edit button only owner can see */}
                                 {isOwner && (
                                     <Link to={`/edit/${_id}`}>

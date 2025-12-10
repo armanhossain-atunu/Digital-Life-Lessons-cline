@@ -37,6 +37,23 @@ const Comments = ({ postId, }) => {
         },
     });
 
+    if (!user) {
+        return (
+            <div className="mt-5">
+                <h4 className="text-lg font-bold">Comment</h4>
+                   <textarea
+                    className="w-full border border-gray-300 rounded-md p-2"
+                    rows="2"
+                    placeholder="Add a comment..."
+                    value={inputComment}
+                    onChange={(e) => setInputComment(e.target.value)}
+                ></textarea>
+                <p className="text-red-600 mt-2">Please login to comment.</p>
+            </div>
+        );
+    }
+
+
     const handleComment = async (e) => {
         e.preventDefault();
         if (!inputComment.trim()) return;
@@ -44,7 +61,7 @@ const Comments = ({ postId, }) => {
     };
     return (
         <div className="mt-5">
-            <h4 className="text-lg font-bold">Comment</h4>
+            <h4 className="text-lg font-bold">Comment</h4> 
             {/* Comment Input */}
             <form onSubmit={handleComment} className="mt-2 ">
                 <textarea
@@ -59,7 +76,11 @@ const Comments = ({ postId, }) => {
                     disabled={isPending}
                     className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
                 >
-                    {isPending ? "Posting..." : "Post Comment"}
+                    {
+                        user ?
+                            isPending ? "Commenting..." : "Comment"
+                            : "Login to comment"
+                    }
                 </button>
             </form>
             {/* Show Comments */}
