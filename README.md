@@ -1,16 +1,56 @@
-# React + Vite
+# 🌱 Digital Life Lessons  
+A platform to share personal growth stories, life lessons, and motivational insights.  
+Users can read lessons, like (favorite), comment, and interact in real-time.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 📝 Lessons  
+- Add, view, edit & delete life lessons  
+- Show More / Show Less description  
+- Responsive lesson cards  
 
-## React Compiler
+### ❤️ Favorite System  
+- Logged-in users can favorite any lesson  
+- Instant UI update (optimistic update)  
+- Favorite count shows in real-time  
+- Uses MongoDB `$addToSet` and `$pull`  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 💬 Comments (Real-time)  
+- Only logged-in users can comment  
+- Auto reload comments every second  
+- User name & photo displayed in each comment  
+- Comment box disabled for non-auth users  
 
-## Expanding the ESLint configuration
+### 🔐 Authentication  
+- Firebase Auth  
+- Google Login  
+- Email Login  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### ⚡ React Query Integrated  
+- Optimistic UI  
+- Cache update  
+- Background data refresh  
+
+---
+
+## 🛠 Tech Stack
+
+### **Frontend**
+- React.js
+- React Router
+- Tailwind CSS
+- React Query (TanStack Query)
+- Axios
+- Firebase Authentication
+
+### **Backend**
+- Node.js
+- Express.js  
+- MongoDB (Favorite, Comments, Lessons Collections)
+
+---
+
+## 📁 Project Structure
+
