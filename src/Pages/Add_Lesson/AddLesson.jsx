@@ -1,5 +1,5 @@
 // import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm, Watch } from "react-hook-form";
 import useAuth from "../../Hooks/useAuth";
 import { imageUpload } from "../../Utils";
 import axios from "axios";
@@ -13,7 +13,10 @@ import LottieAnimation from "../../Components/Shared/LottieAnimation";
 const AddLesson = () => {
     const { user } = useAuth();
     const [showAnimation, setShowAnimation] = useState(false);
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm();
+
+    // watchAccess কে watch ব্যবহার করে রাখুন
+    const watchAccess = watch("accessLevel", "Free");
     // useMutation hook useCase (POST || PUT || PATCH || DELETE)
     const { mutateAsync, isPending, isError, reset: mutationReset } = useMutation({
         mutationFn: async (lessonData) => {
@@ -29,7 +32,7 @@ const AddLesson = () => {
 
     // Form submit handler
     const onSubmit = async (data) => {
-        const { title, description, category, tone, isPublic, accessLevel, image } = data;
+        const { title, description, category, tone, isPublic, accessLevel, image ,price} = data;
 
         const imageFile = image[0]
         try {
@@ -41,6 +44,7 @@ const AddLesson = () => {
                 tone,
                 isPublic,
                 accessLevel,
+                price: accessLevel === "Premium" ?  Number(price) : 0,
                 authorName: user.name,
                 authorEmail: user.email,
                 image: imageUrl,
@@ -167,12 +171,27 @@ const AddLesson = () => {
                     <label className="block font-semibold mb-1">Access Level</label>
                     <select
                         {...register("accessLevel")}
-className="bg-base-200"
+                        className="bg-base-200"
                     >
                         <option value="Free">Free</option>
                         <option value="Premium">Premium</option>
                     </select>
                 </div>
+                {/* Conditional Price Input */}
+                {watchAccess === "Premium" && (
+                    <Controller
+                        name="price"
+                        control={control}
+                        render={({ field }) => (
+                            <input
+                                {...field}
+                                type="number"
+                                placeholder="Enter price"
+                                className="w-full px-3 py-2 border rounded-md"
+                            />
+                        )}
+                    />
+                )}
                 {/* Submit Button */}
                 <div >
                     <button

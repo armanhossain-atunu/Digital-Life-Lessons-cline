@@ -3,6 +3,7 @@ import useAuth from "../../../Hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
+import DashboardHome from "../DashboardHome/DashboardHome";
 
 const UserProfile = () => {
   const { user } = useAuth();
@@ -13,6 +14,18 @@ const UserProfile = () => {
       (await axios.get(`${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`)).data,
     enabled: !!user?.email
   })
+  // profile
+   const { data: profile = {} } = useQuery({
+    queryKey: ["users", user?.email],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/users?email=${user.email}`
+      );
+      return res.data;
+    },
+    enabled: !!user?.email,
+
+  });
   // favorite 
   const { data: favoriteLessons = [], isLoading } = useQuery({
     queryKey: ["favoriteFullLessons", user?.email],
@@ -20,7 +33,7 @@ const UserProfile = () => {
       (await axios.get(`${import.meta.env.VITE_API_URL}/favoriteFullLessons?email=${user?.email}`)).data,
     enabled: !!user?.email,
   });
-
+  <DashboardHome lessons={lessons} favoriteLessons={favoriteLessons}></DashboardHome>
   if (isLoading) {
     return <LoadingSpinner></LoadingSpinner>
   }
@@ -38,11 +51,11 @@ const UserProfile = () => {
 
           <div>
             <h2 className="text-3xl font-bold text-base-800">{user.displayName}</h2>
-            <p className="text-base-500">{user.email}</p>
+            <p className="text-base-500">{profile[0]?.email}</p>
 
             <div className="flex items-center gap-2 text-base-500 mt-2">
               <FaCalendarAlt />
-              <span>Joined: {user.createdAt}</span>
+              <span>Joined: {profile[0]?.createdAt}</span>
             </div>
           </div>
 

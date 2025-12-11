@@ -13,7 +13,7 @@ import axios from 'axios'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const SignUp = () => {
-    const { createUser, updateUserProfile, signInWithGoogle, loading } = useAuth()
+    const { createUser, updateUserProfile, signInWithGoogle, loading, setUser } = useAuth()
     const [show, setShow] = useState(false);
     const navigate = useNavigate()
     const location = useLocation()
@@ -31,6 +31,7 @@ const SignUp = () => {
 
     // ----------- (2) SAVE USER TO DB (TanStack Query) ----------
     const saveUserMutation = useMutation({
+        mutationKey: ["users"],
         mutationFn: async (userInfo) => {
             return await axios.post(`${import.meta.env.VITE_API_URL}/users`, userInfo);
         },
@@ -45,34 +46,35 @@ const SignUp = () => {
 
         try {
             const exists = await checkUserExists(email);
-
             if (exists) {
                 toast.error("User already exists!");
                 return;
             }
 
-            // Upload image
+            // 1. Upload Image
             const imageURL = await imageUpload(image[0]);
 
-            // Firebase signup
+            // 2. Create User
             const result = await createUser(email, password);
-            const loggedUser = result.user;
+            const createdUser = result.user;
 
-            // Update name
-            await loggedUser.updateProfile({
-                displayName: name
-            });
-
-            // Update profile
+            // 3. Update Profile
             await updateUserProfile(name, imageURL);
 
-            // Save to DB
+            // 4. Manually update context user (ensure UI updates)
+            setUser({
+                ...createdUser,
+                displayName: name,
+                photoURL: imageURL,
+            });
+
+            // 7. Save user to DB
             saveUserMutation.mutate({
                 name,
                 email,
                 image: imageURL,
-                role: "user",
-                createdAt: new Date()
+                role: "admin",
+                createdAt: new Date().toLocaleString(),
             });
 
             toast.success("Signup Successful");

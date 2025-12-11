@@ -11,7 +11,7 @@ const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
     const { user, logOut } = useAuth();
 
-    // 🔹 fetch user role
+    // function to fetch user role
     const useUserRole = (email) => {
         return useQuery({
             queryKey: ["userRole", email],
@@ -19,14 +19,14 @@ const Navbar = () => {
                 const res = await axios.get(
                     `${import.meta.env.VITE_API_URL}/users?email=${email}`
                 );
-                return res.data; // array
+                return res.data; 
             },
             enabled: !!email,
         });
     };
 
     const { data: userDataArray } = useUserRole(user?.email);
-    const userData = userDataArray ? userDataArray[0] : null; // get first element
+    const userData = userDataArray ? userDataArray[0] : null; 
 
     useEffect(() => {
         const html = document.querySelector("html");

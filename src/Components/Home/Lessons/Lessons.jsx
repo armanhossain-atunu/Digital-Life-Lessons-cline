@@ -7,15 +7,31 @@ import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
-import { Link } from "react-router";
 import { useState } from "react";
 import FavoriteLessons from "./Favorite";
-
-
+import { Link } from "react-router";
 
 const Lessons = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
+
+    // function to fetch user role
+    const useUserRole = (email) => {
+        return useQuery({
+            queryKey: ["userRole", email],
+            queryFn: async () => {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/users?email=${email}`
+                );
+                return res.data;
+            },
+            enabled: !!email,
+        });
+    };
+
+    const { data: userDataArray } = useUserRole(user?.email);
+    const userData = userDataArray ? userDataArray[0] : null;
+
     // Show More system
     const [visibleCount, setVisibleCount] = useState(6);
     const [expanded, setExpanded] = useState({});
@@ -26,6 +42,8 @@ const Lessons = () => {
             [id]: !prev[id]
         }));
     };
+
+    // Fetch lessons
     const { data: lessons = [], isLoading, error } = useQuery({
         queryKey: ["lessons"],
         queryFn: async () => {
@@ -33,6 +51,7 @@ const Lessons = () => {
             return res.data;
         },
     });
+
     const visibleLessons = lessons.slice(0, visibleCount);
 
     // Mutation for deleting a lesson
@@ -40,19 +59,17 @@ const Lessons = () => {
         mutationFn: async (id) => {
             await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
         },
-        // Update the cache after a successful delete
         onSuccess: (_, id) => {
             queryClient.setQueryData(["lessons"], (oldLessons) =>
                 oldLessons.filter((lesson) => lesson._id !== id)
             );
             toast.success("Lesson deleted successfully!");
         },
-        // Handle error
         onError: () => {
             toast.error("Failed to delete the lesson.");
         }
     });
-    // Handle delete with toast confirmation
+
     const handleDelete = (id) => {
         toast(
             (t) => (
@@ -81,7 +98,7 @@ const Lessons = () => {
         );
     }
 
-    if (isLoading) return <LoadingSpinner></LoadingSpinner>;
+    if (isLoading) return <LoadingSpinner />;
     if (error) return <p>{error.message}</p>;
 
     return (
@@ -90,7 +107,7 @@ const Lessons = () => {
                 All Lessons {lessons.length}
             </h1>
 
-            <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {visibleLessons.map((lesson) => {
                     const {
                         _id,
@@ -102,21 +119,31 @@ const Lessons = () => {
                         isPublic: rawIsPublic = false,
                     } = lesson || {};
 
+                    const isAdmin = userData?.role?.toLowerCase() === "admin";
+                    const isOwner = authorEmail === user?.email;
+                    const userIsPremium = String(user?.plan || "free").toLowerCase() === "premium";
                     const isPublic = rawIsPublic === true || String(rawIsPublic).toLowerCase() === "true";
                     const accessLevel = String(rawAccess || "free").toLowerCase();
-                    const isOwner = authorEmail === user?.email;
-                    const userIsPremium = String(user?.plan || user?.role || "free").toLowerCase() === "premium";
-                    const isLocked = isPublic && accessLevel === "premium" && !userIsPremium && !(isOwner && user);
+
+                    // Determine if user can view this lesson
+                    const canView =
+                        (accessLevel === "premium"
+                            ? isAdmin || isOwner || userIsPremium
+                            : true) &&
+                        (isPublic || isAdmin || isOwner);
+
+                    const isLocked = !canView;
+
                     return (
                         <div
                             key={_id}
-                            className="relative border  overflow-hidden rounded-lg group border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
+                            className="relative border overflow-hidden rounded-lg group border-gray-300 p-4 shadow hover:shadow-lg transition"
                         >
                             {image && (
                                 <img
                                     src={image}
-                                    className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform duration-500 group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""
-                                        }`}
+                                    className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform duration-500 
+                                        group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""}`}
                                 />
                             )}
 
@@ -126,8 +153,7 @@ const Lessons = () => {
                             <p className="text-base-600">
                                 {expanded[_id]
                                     ? description
-                                    : (description ? description.slice(0, 80) : "") + "..."
-                                }
+                                    : (description ? description.slice(0, 80) : "") + "..."}
                                 <button
                                     onClick={() => toggleExpand(_id)}
                                     className="text-blue-600 underline ml-2"
@@ -136,25 +162,52 @@ const Lessons = () => {
                                 </button>
                             </p>
 
+                            {/* Lock overlay */}
                             {isLocked && (
-                                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 rounded-lg">
+                                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col 
+                                items-center justify-center text-center p-6 rounded-lg">
                                     <div className="mb-2 font-semibold text-purple-600">🔒 Premium Lesson</div>
                                     <p className="text-gray-700 mb-3">Upgrade to Premium to unlock this lesson.</p>
-                                    <Link to="/upgrade" className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all">Upgrade Now</Link>
+                                    <button
+                                        onClick={() => document.getElementById('my_modal_3').showModal()}
+                                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all"
+                                    >
+                                        Upgrade Now
+                                    </button>
                                 </div>
                             )}
+
+                            {/* Modal for premium */}
+                            <dialog id="my_modal_3" className="modal">
+                                <div className="modal-box">
+                                    <h3 className="font-bold text-lg">Upgrade to Premium to unlock this lesson</h3>
+                                    <p>{title}</p>
+                                    <div className="flex justify-between items-center py-5">
+                                        <Link to="/upgrade"
+                                            className="shadow focus:shadow-outline focus:outline-none hover:text-white 
+                                        font-bold py-2 px-4 rounded hover:bg-purple-300 ">
+                                            Pay Now
+                                        </Link>
+                                        <button
+                                            onClick={() => document.getElementById('my_modal_3').close()}
+                                            className="shadow focus:shadow-outline focus:outline-none hover:text-white
+                                             font-bold py-2 px-4 rounded hover:bg-red-300">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </dialog>
 
                             <p>Author: {authorEmail}</p>
                             <p>Access Level: {accessLevel}</p>
 
                             <div className="flex justify-between items-center">
                                 <p>Public: {isPublic ? "Yes" : "No"}</p>
-                                <Link to={`/lesson-details/${_id}`} className=" mt-2  ">Details</Link>
-
+                                <Link to={`/lesson-details/${_id}`} className="mt-2">Details</Link>
                             </div>
+
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
-                                {/* Delete button only owner can see */}
                                 {isOwner && (
                                     <button
                                         onClick={() => handleDelete(_id)}
@@ -163,10 +216,7 @@ const Lessons = () => {
                                         <MdDeleteForever />
                                     </button>
                                 )}
-                                {/* Favorite button */}
-                                <FavoriteLessons lessonId={lesson._id}></FavoriteLessons>
-
-                                {/* Edit button only owner can see */}
+                                <FavoriteLessons lessonId={lesson._id} />
                                 {isOwner && (
                                     <Link to={`/edit/${_id}`}>
                                         <button className="text-blue-600 text-2xl hover:text-blue-800">
@@ -174,7 +224,6 @@ const Lessons = () => {
                                         </button>
                                     </Link>
                                 )}
-
                             </div>
 
                             <Comments postId={_id} />
@@ -182,6 +231,7 @@ const Lessons = () => {
                     );
                 })}
             </div>
+
             {/* Show More / Show Less Buttons */}
             <div className="flex justify-center mt-6 mb-6">
                 {visibleCount < lessons.length ? (
@@ -203,8 +253,6 @@ const Lessons = () => {
                 )}
             </div>
         </Container>
-
-
     );
 };
 
