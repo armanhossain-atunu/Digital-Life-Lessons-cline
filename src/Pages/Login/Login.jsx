@@ -24,7 +24,7 @@ const Login = () => {
         formState: { errors },
     } = useForm();
 
-    // 🔥 TanStack Query: Save User to Database
+    // TanStack Query: Save User to Database
     const queryClient = useQueryClient();
 
     const saveUserMutation = useMutation({
@@ -35,7 +35,7 @@ const Login = () => {
         },
     });
 
-    // 🔥 Check if user exists (Frontend)
+    // Check if user exists (Frontend)
     const checkUserExists = async (email) => {
         try {
             const { data } = await axios.get(
@@ -49,7 +49,7 @@ const Login = () => {
     };
 
     // -----------------------------------
-    // 🔐 Email + Password Login
+    // Email + Password Login
     // -----------------------------------
     const handleLogin = async (data) => {
         try {
@@ -64,7 +64,7 @@ const Login = () => {
     };
 
     // -----------------------------------
-    // 🔥 Google Login + Save To DB
+    //  Google Login + Save To DB
     // -----------------------------------
     const handleGoogleSignIn = async () => {
         try {

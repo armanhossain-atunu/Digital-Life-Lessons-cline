@@ -14,13 +14,16 @@ const UserProfile = () => {
     enabled: !!user?.email
   })
   // favorite 
-  const { data: favoriteLessons = [] } = useQuery({
-    queryKey: ["favoriteLessons", user?.email],
+  const { data: favoriteLessons = [], isLoading } = useQuery({
+    queryKey: ["favoriteFullLessons", user?.email],
     queryFn: async () =>
-      (await axios.get(`${import.meta.env.VITE_API_URL}/checkFavorite?email=${user?.email}`)).data,
-    enabled: !!user?.email
+      (await axios.get(`${import.meta.env.VITE_API_URL}/favoriteFullLessons?email=${user?.email}`)).data,
+    enabled: !!user?.email,
   });
 
+  if (isLoading) {
+    return <LoadingSpinner></LoadingSpinner>
+  }
   return (
     <div className="bg-base-100 min-h-screen pb-12 pt-20 px-4">
       <div className="max-w-4xl mx-auto bg-base-200 shadow-lg rounded-2xl p-8">

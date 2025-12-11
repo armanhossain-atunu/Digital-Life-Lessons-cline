@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
+import { MdAdminPanelSettings } from "react-icons/md";
 import DashboardHome from '../Components/Dashboard/DashboardHome/DashboardHome';
 
 const DashboardLayout = () => {
@@ -51,7 +52,7 @@ const DashboardLayout = () => {
                             <NavLink to="/dashboard/admin-profile">
                                 <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Profile">
                                     {/* Profile icon */}
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="my-1.5 inline-block size-4"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21h13a2.5 2.5 0 0 0 -2.5 -2.5h-8a2.5 2.5 0 0 0 -2.5 2.5z"></path></svg>
+                                  <MdAdminPanelSettings className="my-1.5 inline-block size-4" />
                                     <span className="is-drawer-close:hidden">Profile</span>
                                 </button>
 

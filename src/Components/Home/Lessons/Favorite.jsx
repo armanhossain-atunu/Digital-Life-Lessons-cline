@@ -30,7 +30,7 @@ const Favorite = ({ lessonId }) => {
             );
         },
 
-        // ⭐⭐ Optimistic UI Update ⭐⭐
+        //Optimistic UI Update 
         onMutate: async () => {
             await queryClient.cancelQueries(["favorite", lessonId]);
 
@@ -68,9 +68,8 @@ const Favorite = ({ lessonId }) => {
             className="flex items-center gap-2 cursor-pointer"
         >
             <FaRegBookmark
-                className={`text-2xl transition-all ${
-                    favoriteData.favorited ? "text-red-600" : "text-gray-400"
-                }`}
+                className={`text-2xl transition-all ${favoriteData.favorited ? "text-red-600" : "text-gray-400"
+                    }`}
             />
             <span>{favoriteData.totalFavorites}</span>
         </button>
