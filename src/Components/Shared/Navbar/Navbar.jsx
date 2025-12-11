@@ -1,40 +1,56 @@
 import React, { useEffect, useState } from "react";
 import MyLink from "./MyLink";
-import { Link, } from "react-router";
+import { Link } from "react-router";
 import Container from "../Container";
 import useAuth from "../../../Hooks/useAuth";
 import avatarImg from '../../../assets/placeholder.jpg'
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
     const { user, logOut } = useAuth();
 
-    //   const navigate = useNavigate();
+    // 🔹 fetch user role
+    const useUserRole = (email) => {
+        return useQuery({
+            queryKey: ["userRole", email],
+            queryFn: async () => {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/users?email=${email}`
+                );
+                return res.data; // array
+            },
+            enabled: !!email,
+        });
+    };
+
+    const { data: userDataArray } = useUserRole(user?.email);
+    const userData = userDataArray ? userDataArray[0] : null; // get first element
+
     useEffect(() => {
         const html = document.querySelector("html");
         html.setAttribute("data-theme", theme);
         localStorage.setItem("theme", theme);
     }, [theme]);
+
     const handelTheme = (checked) => {
         setTheme(checked ? "dark" : "light");
     };
+
     const handleLogOut = () => {
         logOut()
-            .then(() => {
-
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            .then(() => console.log("Logged out"))
+            .catch((error) => console.log(error));
     };
 
     const navItems = (
         <>
             <li>
-                <MyLink to="/" className={'text-base font-medium'}>Home</MyLink>
+                <MyLink to="/" className="text-base font-medium">Home</MyLink>
             </li>
             <li>
-                <MyLink to="/about" className={'text-base font-medium'}>About</MyLink>
+                <MyLink to="/about" className="text-base font-medium">About</MyLink>
             </li>
             <div className="text-base font-medium flex flex-col lg:flex-row">
                 <li>
@@ -54,9 +70,9 @@ const Navbar = () => {
     );
 
     return (
-        <div className="bg-base-300 shadow-sm fixed top-0 left-0 w-full  to-0 z-50">
+        <div className="bg-base-300 shadow-sm fixed top-0 left-0 w-full z-50">
             <Container>
-                <div className="navbar p-0 ">
+                <div className="navbar p-0">
                     <div className="navbar-start">
                         <div className="dropdown">
                             <div
@@ -76,7 +92,7 @@ const Navbar = () => {
                                         strokeLinejoin="round"
                                         strokeWidth="2"
                                         d="M4 6h16M4 12h8m-8 6h16"
-                                    />{" "}
+                                    />
                                 </svg>
                             </div>
                             <ul
@@ -85,17 +101,18 @@ const Navbar = () => {
                             >
                                 {navItems}
                             </ul>
-
                         </div>
                         <Link to="/" className="text-2xl font-bold">
                             Digital <span className="text-[#875DF8]">Life Lessons</span>
                         </Link>
                     </div>
+
                     <div className="navbar-center hidden lg:flex">
                         <ul className="menu menu-horizontal px-1">{navItems}</ul>
                     </div>
-                    <div className="navbar-end ">
-                        {/* theme toggle */}
+
+                    <div className="navbar-end">
+                        {/* Theme Toggle */}
                         <label className="toggle text-base-content mr-5">
                             <input
                                 type="checkbox"
@@ -103,19 +120,8 @@ const Navbar = () => {
                                 className="theme-controller"
                                 onChange={(e) => handelTheme(e.target.checked)}
                             />
-
-                            <svg
-                                aria-label="sun"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                            >
-                                <g
-                                    strokeLinejoin="round"
-                                    strokeLinecap="round"
-                                    strokeWidth="2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
+                            <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
                                     <circle cx="12" cy="12" r="4"></circle>
                                     <path d="M12 2v2"></path>
                                     <path d="M12 20v2"></path>
@@ -127,75 +133,46 @@ const Navbar = () => {
                                     <path d="m19.07 4.93-1.41 1.41"></path>
                                 </g>
                             </svg>
-                            <svg
-                                aria-label="moon"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                            >
-                                <g
-                                    strokeLinejoin="round"
-                                    strokeLinecap="round"
-                                    strokeWidth="2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
+                            <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
                                     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
                                 </g>
                             </svg>
                         </label>
-                        {/*  user avatar */}
+
+                        {/* User Avatar */}
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                 <div className="w-10 rounded-full">
                                     <img
-                                        className='rounded-full'
-                                        referrerPolicy='no-referrer'
-                                        src={user && user.photoURL ? user.photoURL : avatarImg}
-                                        alt='profile'
-                                        height='30'
-                                        width='30'
+                                        className="rounded-full"
+                                        referrerPolicy="no-referrer"
+                                        src={user?.photoURL || avatarImg}
+                                        alt="profile"
                                     />
                                 </div>
                             </div>
-                            <ul
-                                tabIndex="-1"
-                                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-
+                            <ul tabIndex="-1" className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                                 {user ? (
                                     <>
-                                    <h1>{user.displayName}</h1>
-                                        <Link to={'/UserProfile'}
-                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
-                                        >
-                                            Profile
-                                        </Link>
+                                        <h1 className="px-4 py-3 font-semibold">{user.displayName}</h1>
                                         <Link
-                                            to='/dashboard'
-                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
+                                            to={userData?.role === "admin" ? "/dashboard/admin-profile" : "/userprofile"}
+                                            className="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
-                                            Dashboard
+                                            {userData?.role === "admin" ? "Admin Dashboard" : "Profile"}
                                         </Link>
                                         <div
                                             onClick={handleLogOut}
-                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold cursor-pointer'
+                                            className="px-4 py-3 hover:bg-base-100 transition font-semibold cursor-pointer"
                                         >
                                             Logout
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <Link
-                                            to='/auth/login'
-                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
-                                        >
-                                            Login
-                                        </Link>
-                                        <Link
-                                            to='/auth/signup'
-                                            className='px-4 py-3 hover:bg-neutral-100 transition font-semibold'
-                                        >
-                                            Sign Up
-                                        </Link>
+                                        <Link to="/auth/login" className="px-4 py-3 hover:bg-base-100 transition font-semibold">Login</Link>
+                                        <Link to="/auth/signup" className="px-4 py-3 hover:bg-purple-300 shadow-2xs transition font-semibold">Sign Up</Link>
                                     </>
                                 )}
                             </ul>

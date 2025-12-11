@@ -95,7 +95,7 @@ const AddLesson = () => {
                     <label className="block font-semibold mb-1">Category</label>
                     <select
                         {...register("category", { required: true })}
-                        className="w-full border p-2 rounded"
+                        className="w-full border bg-base-200 p-2 rounded"
                     >
                         <option value="">Select category</option>
                         <option value="Personal Growth">Personal Growth</option>
@@ -111,7 +111,7 @@ const AddLesson = () => {
                     <label className="block font-semibold mb-1">Emotional Tone</label>
                     <select
                         {...register("tone", { required: true })}
-                        className="w-full border p-2 rounded"
+                        className="w-full bg-base-200 border p-2 rounded"
                     >
                         <option value="">Select tone</option>
                         <option value="Motivational">Motivational</option>
@@ -155,7 +155,7 @@ const AddLesson = () => {
                     <label className="block font-semibold mb-1">Privacy</label>
                     <select
                         {...register("isPublic", { required: true })}
-                        className="w-full border p-2 rounded"
+                        className="w-full bg-base-200 border p-2 rounded"
                     >
                         <option value="true">Public</option>
                         <option value="false">Private</option>
@@ -167,7 +167,7 @@ const AddLesson = () => {
                     <label className="block font-semibold mb-1">Access Level</label>
                     <select
                         {...register("accessLevel")}
-
+className="bg-base-200"
                     >
                         <option value="Free">Free</option>
                         <option value="Premium">Premium</option>

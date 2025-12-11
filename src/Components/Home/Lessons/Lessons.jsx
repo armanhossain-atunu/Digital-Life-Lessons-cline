@@ -81,19 +81,16 @@ const Lessons = () => {
         );
     }
 
-
     if (isLoading) return <LoadingSpinner></LoadingSpinner>;
     if (error) return <p>{error.message}</p>;
 
     return (
-
-
         <Container>
             <h1 className="text-2xl text-center font-bold mb-6">
                 All Lessons {lessons.length}
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {visibleLessons.map((lesson) => {
                     const {
                         _id,
@@ -113,12 +110,13 @@ const Lessons = () => {
                     return (
                         <div
                             key={_id}
-                            className="relative border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
+                            className="relative border  overflow-hidden rounded-lg group border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
                         >
                             {image && (
                                 <img
                                     src={image}
-                                    className={`w-full h-48 object-cover rounded-lg mb-3 ${isLocked ? "blur-md brightness-75" : ""}`}
+                                    className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform duration-500 group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""
+                                        }`}
                                 />
                             )}
 
@@ -152,7 +150,7 @@ const Lessons = () => {
                             <div className="flex justify-between items-center">
                                 <p>Public: {isPublic ? "Yes" : "No"}</p>
                                 <Link to={`/lesson-details/${_id}`} className=" mt-2  ">Details</Link>
-                            
+
                             </div>
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
