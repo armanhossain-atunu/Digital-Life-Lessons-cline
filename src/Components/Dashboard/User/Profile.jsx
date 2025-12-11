@@ -17,7 +17,7 @@ const UserProfile = () => {
   const { data: favoriteLessons = [] } = useQuery({
     queryKey: ["favoriteLessons", user?.email],
     queryFn: async () =>
-      (await axios.get(`${import.meta.env.VITE_API_URL}/favoriteFull?email=${user?.email}`)).data,
+      (await axios.get(`${import.meta.env.VITE_API_URL}/checkFavorite?email=${user?.email}`)).data,
     enabled: !!user?.email
   });
 
@@ -39,7 +39,7 @@ const UserProfile = () => {
 
             <div className="flex items-center gap-2 text-base-500 mt-2">
               <FaCalendarAlt />
-              <span>Joined: {user.joined}</span>
+              <span>Joined: {user.createdAt}</span>
             </div>
           </div>
 
