@@ -15,6 +15,7 @@ import AdminProfile from "../Components/Dashboard/Admin/AdminProfile";
 import DashboardHome from "../Components/Dashboard/DashboardHome/DashboardHome";
 import LessonDetails from "../Components/Home/Lessons/LessonDetails";
 import FavoriteLessons from "../Pages/Favorite_Lessons/FavoriteLessons";
+import PaymentSuccess from "../Pages/Payment/paymentSuccess";
 
 const router = createBrowserRouter([
     {
@@ -72,7 +73,8 @@ const router = createBrowserRouter([
             { index: true, element: <DashboardHome></DashboardHome> },
             { path: 'admin-profile', element: <AdminProfile></AdminProfile> },
             { path: 'add-lessons', element: <AddLesson></AddLesson> },
-            { path: 'my-lessons', element: <MyLessons></MyLessons> }
+            { path: 'my-lessons', element: <MyLessons></MyLessons> },
+            {path:'payment-success',element:<PaymentSuccess></PaymentSuccess>}
         ]
 
     },

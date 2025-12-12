@@ -15,7 +15,9 @@ const Lessons = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
 
-    // function to fetch user role
+    // ================================================================================================
+    //                        Fetch user role
+    // ===============================================================================================
     const useUserRole = (email) => {
         return useQuery({
             queryKey: ["userRole", email],
@@ -32,18 +34,22 @@ const Lessons = () => {
     const { data: userDataArray } = useUserRole(user?.email);
     const userData = userDataArray ? userDataArray[0] : null;
 
-    // Show More system
+    // ================================================================================================
+    //                        Show More state
+    // ===============================================================================================
     const [visibleCount, setVisibleCount] = useState(6);
     const [expanded, setExpanded] = useState({});
 
     const toggleExpand = (id) => {
         setExpanded((prev) => ({
             ...prev,
-            [id]: !prev[id]
+            [id]: !prev[id],
         }));
     };
 
-    // Fetch lessons
+    // ================================================================================================
+    //                        Fetch lessons
+    // ===============================================================================================
     const { data: lessons = [], isLoading, error } = useQuery({
         queryKey: ["lessons"],
         queryFn: async () => {
@@ -54,7 +60,9 @@ const Lessons = () => {
 
     const visibleLessons = lessons.slice(0, visibleCount);
 
-    // Mutation for deleting a lesson
+    // ================================================================================================
+    //                        Delete Mutation
+    // ===============================================================================================
     const deleteLessonMutation = useMutation({
         mutationFn: async (id) => {
             await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
@@ -67,44 +75,80 @@ const Lessons = () => {
         },
         onError: () => {
             toast.error("Failed to delete the lesson.");
-        }
+        },
     });
 
     const handleDelete = (id) => {
-        toast(
-            (t) => (
-                <div className="p-3 bg-white border rounded shadow-md">
-                    <p className="mb-2">Are you sure you want to delete this lesson?</p>
-                    <div className="flex justify-end gap-2">
-                        <button
-                            className="bg-red-600 text-white px-3 py-1 rounded"
-                            onClick={() => {
-                                deleteLessonMutation.mutate(id);
-                                toast.dismiss(t.id);
-                            }}
-                        >
-                            Yes
-                        </button>
-                        <button
-                            className="bg-gray-300 text-black px-3 py-1 rounded"
-                            onClick={() => toast.dismiss(t.id)}
-                        >
-                            No
-                        </button>
-                    </div>
+        toast((t) => (
+            <div className="p-3 bg-white border rounded shadow-md">
+                <p className="mb-2">Are you sure you want to delete this lesson?</p>
+                <div className="flex justify-end gap-2">
+                    <button
+                        className="bg-red-600 text-white px-3 py-1 rounded"
+                        onClick={() => {
+                            deleteLessonMutation.mutate(id);
+                            toast.dismiss(t.id);
+                        }}
+                    >
+                        Yes
+                    </button>
+                    <button
+                        className="bg-gray-300 text-black px-3 py-1 rounded"
+                        onClick={() => toast.dismiss(t.id)}
+                    >
+                        No
+                    </button>
                 </div>
-            ),
+            </div>
+        ),
             { duration: Infinity }
         );
-    }
+    };
 
+    // ================================================================================================
+    //                        Payment Handler Function
+    // ===============================================================================================
+    const handelPayment = async (lesson) => {
+        if (!user) {
+            toast.error("Please login first!");
+            return;
+        }
+
+        if (!lesson) {
+            toast.error("Lesson data missing!");
+            return;
+        }
+
+        const paymentInfo = {
+            lessonId: lesson._id,
+            name: lesson.title,
+            price: lesson.price,
+            quantity: 1,
+            customer: {
+                name: user?.displayName || "Unknown User",
+                email: user?.email || "No Email",
+                image: user?.photoURL || "",
+            },
+        };
+
+        console.log("Payment Info:", paymentInfo);
+
+        const result = await axios.post(
+            `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+            paymentInfo
+        );
+
+        window.location.href = result.data.url;
+    };
+
+    // ================================================================================================
     if (isLoading) return <LoadingSpinner />;
     if (error) return <p>{error.message}</p>;
 
     return (
         <Container>
             <h1 className="text-2xl text-center font-bold mb-6">
-                All Lessons {lessons.length}
+                All Lessons ({lessons.length})
             </h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -113,19 +157,24 @@ const Lessons = () => {
                         _id,
                         image,
                         title,
+                        price,
                         description,
-                        accessLevel: rawAccess = "Free",
+                        accessLevel: rawAccess = "free",
                         authorEmail,
                         isPublic: rawIsPublic = false,
                     } = lesson || {};
 
                     const isAdmin = userData?.role?.toLowerCase() === "admin";
                     const isOwner = authorEmail === user?.email;
-                    const userIsPremium = String(user?.plan || "free").toLowerCase() === "premium";
-                    const isPublic = rawIsPublic === true || String(rawIsPublic).toLowerCase() === "true";
+                    const userIsPremium =
+                        String(user?.plan || "free").toLowerCase() === "premium";
+
+                    const isPublic =
+                        rawIsPublic === true ||
+                        String(rawIsPublic).toLowerCase() === "true";
+
                     const accessLevel = String(rawAccess || "free").toLowerCase();
 
-                    // Determine if user can view this lesson
                     const canView =
                         (accessLevel === "premium"
                             ? isAdmin || isOwner || userIsPremium
@@ -139,37 +188,47 @@ const Lessons = () => {
                             key={_id}
                             className="relative border overflow-hidden rounded-lg group border-gray-300 p-4 shadow hover:shadow-lg transition"
                         >
+                            {/* Image */}
                             {image && (
                                 <img
                                     src={image}
-                                    className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform duration-500 
-                                        group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""}`}
+                                    className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform
+                                        duration-500 group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""}`}
                                 />
                             )}
 
                             <h3 className="text-lg font-semibold">{title}</h3>
 
-                            {/* Description with See More */}
+                            {/* Description */}
                             <p className="text-base-600">
                                 {expanded[_id]
                                     ? description
-                                    : (description ? description.slice(0, 80) : "") + "..."}
+                                    : `${description?.slice(0, 80)}...`}
                                 <button
                                     onClick={() => toggleExpand(_id)}
                                     className="text-blue-600 underline ml-2"
                                 >
-                                    {expanded[_id] ? "See Less" : (<Link to={`/lesson-details/${_id}`}>See More</Link>)}
+                                    {expanded[_id] ? "See Less" : (
+                                        <Link to={`/lesson-details/${_id}`}>See More</Link>
+                                    )}
                                 </button>
                             </p>
 
-                            {/* Lock overlay */}
+                            {/* Lock Screen */}
                             {isLocked && (
                                 <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col 
                                 items-center justify-center text-center p-6 rounded-lg">
-                                    <div className="mb-2 font-semibold text-purple-600">🔒 Premium Lesson</div>
-                                    <p className="text-gray-700 mb-3">Upgrade to Premium to unlock this lesson.</p>
+                                    <div className="mb-2 font-semibold text-purple-600">
+                                        🔒 Premium Lesson
+                                    </div>
+                                    <p className="text-gray-700 mb-3">
+                                        Upgrade to Premium to unlock this lesson.
+                                    </p>
+
                                     <button
-                                        onClick={() => document.getElementById('my_modal_3').showModal()}
+                                        onClick={() =>
+                                            document.getElementById(`premium_modal_${_id}`).showModal()
+                                        }
                                         className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all"
                                     >
                                         Upgrade Now
@@ -177,22 +236,30 @@ const Lessons = () => {
                                 </div>
                             )}
 
-                            {/* Modal for premium */}
-                            <dialog id="my_modal_3" className="modal">
+                            {/* Dynamic MODAL */}
+                            <dialog id={`premium_modal_${_id}`} className="modal">
                                 <div className="modal-box">
-                                    <h3 className="font-bold text-lg">Upgrade to Premium to unlock this lesson</h3>
-                                    <p>{title}</p>
+                                    <h3 className="font-bold text-lg">Upgrade to Premium</h3>
+
+                                    <p><b>Name:</b> {title}</p>
+                                    <p><b>Price:</b> ${price}</p>
+                                    <p><b>Access Level:</b> {accessLevel}</p>
+
                                     <div className="flex justify-between items-center py-5">
-                                        <Link to="/upgrade"
-                                            className="shadow focus:shadow-outline focus:outline-none hover:text-white 
-                                        font-bold py-2 px-4 rounded hover:bg-purple-300 ">
-                                            Pay Now
-                                        </Link>
                                         <button
-                                            onClick={() => document.getElementById('my_modal_3').close()}
-                                            className="shadow focus:shadow-outline focus:outline-none hover:text-white
-                                             font-bold py-2 px-4 rounded hover:bg-red-300">
+                                            onClick={() =>
+                                                document.getElementById(`premium_modal_${_id}`).close()
+                                            }
+                                            className="shadow hover:bg-red-300 font-bold py-2 px-4 rounded"
+                                        >
                                             Close
+                                        </button>
+
+                                        <button
+                                            onClick={() => handelPayment(lesson)}
+                                            className="shadow hover:bg-green-400 font-bold py-2 px-4 rounded"
+                                        >
+                                            Pay
                                         </button>
                                     </div>
                                 </div>
@@ -203,12 +270,12 @@ const Lessons = () => {
 
                             <div className="flex justify-between items-center">
                                 <p>Public: {isPublic ? "Yes" : "No"}</p>
-                                <Link to={`/lesson-details/${_id}`} className="mt-2">Details</Link>
+                                <Link to={`/lesson-details/${_id}`} className="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Details</Link>
                             </div>
 
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
-                                {isOwner  && (
+                                {isOwner && (
                                     <button
                                         onClick={() => handleDelete(_id)}
                                         className="text-red-600 text-2xl hover:text-red-800"
@@ -232,7 +299,7 @@ const Lessons = () => {
                 })}
             </div>
 
-            {/* Show More / Show Less Buttons */}
+            {/* Show More */}
             <div className="flex justify-center mt-6 mb-6">
                 {visibleCount < lessons.length ? (
                     <button
