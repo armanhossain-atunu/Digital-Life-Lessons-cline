@@ -9,12 +9,12 @@ import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { useState } from "react";
 import FavoriteLessons from "./Favorite";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const Lessons = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
-
+    const navigate = useNavigate()
     // ================================================================================================
     //                        Fetch user role
     // ===============================================================================================
@@ -23,16 +23,16 @@ const Lessons = () => {
             queryKey: ["userRole", email],
             queryFn: async () => {
                 const res = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/users?email=${email}`
+                    `${import.meta.env.VITE_API_URL}/user?email=${email}`
                 );
                 return res.data;
             },
             enabled: !!email,
         });
     };
-
     const { data: userDataArray } = useUserRole(user?.email);
     const userData = userDataArray ? userDataArray[0] : null;
+    console.log(userData);
 
     // ================================================================================================
     //                        Show More state
@@ -111,6 +111,7 @@ const Lessons = () => {
     const handelPayment = async (lesson) => {
         if (!user) {
             toast.error("Please login first!");
+            navigate('/auth/login')
             return;
         }
 
@@ -163,8 +164,8 @@ const Lessons = () => {
                         authorEmail,
                         isPublic: rawIsPublic = false,
                     } = lesson || {};
-
                     const isAdmin = userData?.role?.toLowerCase() === "admin";
+                
                     const isOwner = authorEmail === user?.email;
                     const userIsPremium =
                         String(user?.plan || "free").toLowerCase() === "premium";
@@ -174,13 +175,23 @@ const Lessons = () => {
                         String(rawIsPublic).toLowerCase() === "true";
 
                     const accessLevel = String(rawAccess || "free").toLowerCase();
+                    // Step 1: Premium access check
+                    const hasPremiumAccess =
+                        accessLevel !== "premium" ||
+                        isAdmin ||
+                        isOwner ||
+                        userIsPremium;
 
-                    const canView =
-                        (accessLevel === "premium"
-                            ? isAdmin || isOwner || userIsPremium
-                            : true) &&
-                        (isPublic || isAdmin || isOwner);
+                    // Step 2: Public / ownership check
+                    const hasVisibilityAccess =
+                        isPublic ||
+                        isAdmin ||
+                        isOwner;
 
+                    // Final check: Can user view the content?
+                    const canView = hasPremiumAccess && hasVisibilityAccess;
+
+                    // If cannot view, the content is locked
                     const isLocked = !canView;
 
                     return (
@@ -275,7 +286,7 @@ const Lessons = () => {
 
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
-                                {isOwner && (
+                                {(isOwner || isAdmin) && (
                                     <button
                                         onClick={() => handleDelete(_id)}
                                         className="text-red-600 text-2xl hover:text-red-800"
@@ -284,7 +295,7 @@ const Lessons = () => {
                                     </button>
                                 )}
                                 <FavoriteLessons lessonId={lesson._id} />
-                                {isOwner && (
+                                {(isOwner || isAdmin) && (
                                     <Link to={`/edit/${_id}`}>
                                         <button className="text-blue-600 text-2xl hover:text-blue-800">
                                             <MdEdit />

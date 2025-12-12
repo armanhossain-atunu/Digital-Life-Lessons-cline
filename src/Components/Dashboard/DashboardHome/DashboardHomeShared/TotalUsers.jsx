@@ -11,7 +11,7 @@ const TotalUsers = () => {
     return (
         <div className='bg-base-100 shadow-lg rounded-2xl p-8' >
             <h1>Total Active Users</h1>
-            <p className='text-2xl font-semibold'>{users.length}</p>
+            <p className='text-2xl text-center font-semibold'>{users.length}</p>
         </div>
     );
 };

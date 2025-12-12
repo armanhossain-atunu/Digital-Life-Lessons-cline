@@ -3,7 +3,7 @@ import MyLink from "./MyLink";
 import { Link } from "react-router";
 import Container from "../Container";
 import useAuth from "../../../Hooks/useAuth";
-import avatarImg from '../../../assets/placeholder.jpg'
+import avatarImg from "../../../assets/placeholder.jpg";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -11,23 +11,23 @@ const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
     const { user, logOut } = useAuth();
 
-    // function to fetch user role
+    // Fetch user role (returns a single object)
     const useUserRole = (email) => {
         return useQuery({
             queryKey: ["userRole", email],
             queryFn: async () => {
                 const res = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/users?email=${email}`
+                    `${import.meta.env.VITE_API_URL}/user?email=${email}`
                 );
-                return res.data; 
+                return res.data; // should be a single user object
             },
             enabled: !!email,
         });
     };
 
-    const { data: userDataArray } = useUserRole(user?.email);
-    const userData = userDataArray ? userDataArray[0] : null; 
+    const { data: userData } = useUserRole(user?.email);
 
+    // Theme Handler
     useEffect(() => {
         const html = document.querySelector("html");
         html.setAttribute("data-theme", theme);
@@ -44,14 +44,17 @@ const Navbar = () => {
             .catch((error) => console.log(error));
     };
 
+    // Navigation Items
     const navItems = (
         <>
             <li>
                 <MyLink to="/" className="text-base font-medium">Home</MyLink>
             </li>
+
             <li>
                 <MyLink to="/about" className="text-base font-medium">About</MyLink>
             </li>
+
             <div className="text-base font-medium flex flex-col lg:flex-row">
                 <li>
                     <MyLink to="/add-lessons">Add Lesson</MyLink>
@@ -60,7 +63,7 @@ const Navbar = () => {
                     <MyLink to="/my-lessons">My Lessons</MyLink>
                 </li>
                 <li>
-                    <MyLink to="/favorite-lessons">Favorites</MyLink>
+                    <MyLink to="/favorite-lessons">Favorites Lessons</MyLink>
                 </li>
                 <li>
                     <MyLink to="/Reports">Reports</MyLink>
@@ -73,7 +76,10 @@ const Navbar = () => {
         <div className="bg-base-300 shadow-sm fixed top-0 left-0 w-full z-50">
             <Container>
                 <div className="navbar p-0">
+
+                    {/* Left Side */}
                     <div className="navbar-start">
+                        {/* Mobile Menu */}
                         <div className="dropdown">
                             <div
                                 tabIndex={0}
@@ -95,6 +101,7 @@ const Navbar = () => {
                                     />
                                 </svg>
                             </div>
+
                             <ul
                                 tabIndex="-1"
                                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
@@ -102,23 +109,27 @@ const Navbar = () => {
                                 {navItems}
                             </ul>
                         </div>
+
                         <Link to="/" className="text-2xl font-bold">
                             Digital <span className="text-[#875DF8]">Life Lessons</span>
                         </Link>
                     </div>
 
+                    {/* Center Menu */}
                     <div className="navbar-center hidden lg:flex">
                         <ul className="menu menu-horizontal px-1">{navItems}</ul>
                     </div>
 
+                    {/* Right Side */}
                     <div className="navbar-end">
+
                         {/* Theme Toggle */}
                         <label className="toggle text-base-content mr-5">
                             <input
                                 type="checkbox"
-                                value="synthwave"
                                 className="theme-controller"
                                 onChange={(e) => handelTheme(e.target.checked)}
+                                checked={theme === "dark"}
                             />
                             <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
@@ -133,6 +144,7 @@ const Navbar = () => {
                                     <path d="m19.07 4.93-1.41 1.41"></path>
                                 </g>
                             </svg>
+
                             <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
                                     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
@@ -142,26 +154,40 @@ const Navbar = () => {
 
                         {/* User Avatar */}
                         <div className="dropdown dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div
+                                tabIndex={0}
+                                role="button"
+                                className="btn btn-ghost btn-circle avatar"
+                            >
                                 <div className="w-10 rounded-full">
                                     <img
                                         className="rounded-full"
                                         referrerPolicy="no-referrer"
-                                        src={user?.photoURL || avatarImg}
+                                        src={userData?.photoURL || avatarImg}
                                         alt="profile"
                                     />
                                 </div>
                             </div>
-                            <ul tabIndex="-1" className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+
+                            <ul
+                                tabIndex="-1"
+                                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                            >
                                 {user ? (
                                     <>
-                                        <h1 className="px-4 py-3 font-semibold">{user.displayName}</h1>
+                                        <h1 className="px-4 py-3 font-semibold">
+                                            {userData?.displayName || user.displayName}
+                                        </h1>
+
                                         <Link
-                                            to={userData?.role === "admin" ? "/dashboard/admin-profile" : "/userprofile"}
+                                            to={
+                                                userData?.role === "admin" ? "/dashboard" : "/userprofile"
+                                            }
                                             className="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
-                                            {userData?.role === "admin" ? "Admin Dashboard" : "Profile"}
+                                            {userData?.role === "admin" ? "Admin Dashboard" : "User Profile"}
                                         </Link>
+
                                         <div
                                             onClick={handleLogOut}
                                             className="px-4 py-3 hover:bg-base-100 transition font-semibold cursor-pointer"
@@ -171,8 +197,18 @@ const Navbar = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Link to="/auth/login" className="px-4 py-3 hover:bg-base-100 transition font-semibold">Login</Link>
-                                        <Link to="/auth/signup" className="px-4 py-3 hover:bg-purple-300 shadow-2xs transition font-semibold">Sign Up</Link>
+                                        <Link
+                                            to="/auth/login"
+                                            className="px-4 py-3 hover:bg-base-100 transition font-semibold"
+                                        >
+                                            Login
+                                        </Link>
+                                        <Link
+                                            to="/auth/signup"
+                                            className="px-4 py-3 hover:bg-purple-300 shadow-2xs transition font-semibold"
+                                        >
+                                            Sign Up
+                                        </Link>
                                     </>
                                 )}
                             </ul>

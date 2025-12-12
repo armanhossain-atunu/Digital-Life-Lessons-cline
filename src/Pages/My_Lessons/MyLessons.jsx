@@ -9,13 +9,13 @@ const MyLessons = () => {
   const { user } = useAuth();
 
   // Fetch lessons from API
-const { data : lessons = [], isLoading,error } = useQuery({
-  queryKey: ["myLessons", user?.email],
-  queryFn: async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`);
-    return res.data;
-  },
-});
+  const { data: lessons = [], isLoading, error } = useQuery({
+    queryKey: ["myLessons", user?.email],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`);
+      return res.data;
+    },
+  });
 
   return (
     <Container className="mb-10">
@@ -26,19 +26,11 @@ const { data : lessons = [], isLoading,error } = useQuery({
         {lessons.map((lesson) => (
           <div
             key={lesson._id}
-            className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
+            className="border border-gray-300 h-96 mb-10 overflow-y-scroll rounded-lg p-4 shadow hover:shadow-lg transition"
           >
             <img src={lesson.image} alt={lesson.title} className="w-full h-60 object-cover rounded-2xl mb-2 " />
             <h3 className="text-lg font-semibold mb-2">{lesson.title}</h3>
             <p className="text-gray-600">{lesson.description}</p>
-            <div className="flex items-center mt-2">
-              <FaRegThumbsUp className="mr-2" />
-              <span className="text-gray-600">{lesson.likes}</span>
-            </div>
-            <div className="flex items-center mt-2">
-              <FaHeart className="mr-2" />
-              <span className="text-gray-600">{lesson.dislikes}</span>
-            </div>
             <Comments postId={lesson._id}></Comments>
           </div>
         ))}

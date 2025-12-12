@@ -13,7 +13,7 @@ const PaymentSuccess = () => {
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
     if (!sessionId) {
-      setStatus("No payment session found.");
+      ("No payment session found.");
       return;
     }
 
@@ -47,8 +47,8 @@ const PaymentSuccess = () => {
   }, [searchParams, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white rounded-2xl shadow-lg p-10 text-center max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-base-300 bg-opacity-50 p-4">
+      <div className="bg-base-100 rounded-2xl shadow-lg p-10 text-center max-w-md w-full">
         <div className="flex justify-center mb-6">
           {success ? (
             <MdCheckCircle className="text-green-500 text-9xl animate-bounce" />
