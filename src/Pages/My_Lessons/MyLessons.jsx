@@ -17,9 +17,6 @@ const { data : lessons = [], isLoading,error } = useQuery({
   },
 });
 
-console.log(lessons);
-
-
   return (
     <Container className="mb-10">
       <h2 className="text-3xl  mt-20 font-bold text-center mb-4">My Lessons</h2>

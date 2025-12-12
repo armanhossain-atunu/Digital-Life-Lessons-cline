@@ -208,7 +208,7 @@ const Lessons = () => {
 
                             <div className="flex justify-end mt-3 gap-4 items-center">
                                 <LoveReact lessonId={_id} />
-                                {isOwner && (
+                                {isOwner  && (
                                     <button
                                         onClick={() => handleDelete(_id)}
                                         className="text-red-600 text-2xl hover:text-red-800"

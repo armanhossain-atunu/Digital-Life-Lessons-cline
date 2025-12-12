@@ -15,7 +15,7 @@ const AddLesson = () => {
     const [showAnimation, setShowAnimation] = useState(false);
     const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm();
 
-    // watchAccess কে watch ব্যবহার করে রাখুন
+   
     const watchAccess = watch("accessLevel", "Free");
     // useMutation hook useCase (POST || PUT || PATCH || DELETE)
     const { mutateAsync, isPending, isError, reset: mutationReset } = useMutation({

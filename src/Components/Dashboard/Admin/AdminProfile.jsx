@@ -17,8 +17,7 @@ const AdminProfile = () => {
     enabled: !!user?.email,
 
   });
-  console.log(profile[0]?.role);
-
+ 
   if (isLoading) {
     return <LoadingSpinner></LoadingSpinner>
   }

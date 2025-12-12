@@ -5,7 +5,6 @@ import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import SocialMedia from '../Button/SocialMedia';
 
 const Comments = ({ postId, }) => {
-    console.log(postId);
     const { user } = useAuth()
     const [inputComment, setInputComment] = useState("");
     // Load Comments using useQuery

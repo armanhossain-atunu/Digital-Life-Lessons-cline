@@ -45,12 +45,7 @@ const SignUp = () => {
         const { name, image, email, password } = data;
 
         try {
-            const exists = await checkUserExists(email);
-            if (exists) {
-                toast.error("User already exists!");
-                return;
-            }
-
+           
             // 1. Upload Image
             const imageURL = await imageUpload(image[0]);
 
@@ -73,7 +68,7 @@ const SignUp = () => {
                 name,
                 email,
                 image: imageURL,
-                role: "admin",
+                role: "user",
                 createdAt: new Date().toLocaleString(),
             });
 
