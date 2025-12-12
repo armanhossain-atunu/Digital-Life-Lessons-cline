@@ -59,7 +59,8 @@ const router = createBrowserRouter([
             {
                 path: '/favorite-lessons',
                 element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>,
-            }
+            },
+            { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> }
 
         ],
 
@@ -74,7 +75,7 @@ const router = createBrowserRouter([
             { path: 'admin-profile', element: <AdminProfile></AdminProfile> },
             { path: 'add-lessons', element: <AddLesson></AddLesson> },
             { path: 'my-lessons', element: <MyLessons></MyLessons> },
-            {path:'payment-success',element:<PaymentSuccess></PaymentSuccess>}
+
         ]
 
     },
