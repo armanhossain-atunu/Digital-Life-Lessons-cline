@@ -74,7 +74,7 @@ const Navbar = () => {
                     <MyLink to="/favorite-lessons">Favorites Lessons</MyLink>
                 </li>
                 <li>
-                    <MyLink to="/Reports">Reports</MyLink>
+                    <MyLink to="/reported-lessons">Reports</MyLink>
                 </li>
             </div>
         </>
