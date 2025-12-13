@@ -1,4 +1,3 @@
-import React from 'react';
 import Container from '../../Shared/Container';
 import TotalUsers from './DashboardHomeShared/TotalUsers';
 import useAuth from '../../../Hooks/useAuth';
@@ -8,10 +7,15 @@ import LoadingSpinner from '../../Shared/LoadingSpinner';
 import { FaRegBookmark, FaRegFileAlt, FaStar } from 'react-icons/fa';
 import { Link } from 'react-router';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { MdMenuBook } from "react-icons/md";
+import useLessons from '../../../Hooks/ShareAllApi/useLessons';
+import useFavoriteLessons from '../../../Hooks/ShareAllApi/useFavoriteLessons';
+
 
 const DashboardHome = () => {
     const { user } = useAuth();
-
+    // Fetch all lessons
+    const { data: allLessons = [] } = useLessons()
     // Fetch my lessons
     const { data: lessons = [], isLoading: lessonsLoading } = useQuery({
         queryKey: ["myLessons", user?.email],
@@ -19,15 +23,8 @@ const DashboardHome = () => {
             (await axios.get(`${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`)).data,
         enabled: !!user?.email
     });
-
     // Fetch favorite lessons
-    const { data: favoriteLessons = [], isLoading: favLoading } = useQuery({
-        queryKey: ["favoriteFullLessons", user?.email],
-        queryFn: async () =>
-            (await axios.get(`${import.meta.env.VITE_API_URL}/favoriteFullLessons?email=${user?.email}`)).data,
-        enabled: !!user?.email,
-    });
-
+    const { favoriteLessons, isLoading: favLoading } = useFavoriteLessons();
     const isLoading = lessonsLoading || favLoading;
     // Fetch total number of premium lessons
     const { data } = useQuery({
@@ -36,7 +33,9 @@ const DashboardHome = () => {
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/premiumLessonsCount`);
             return res.data;
         }
+
     });
+    
     // Fetch total number of free lessons
     const { data: free = [], } = useQuery({
         queryKey: ["freeLessonsCount"],
@@ -79,6 +78,14 @@ const DashboardHome = () => {
                     </div>
                 </div>
 
+                <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
+                    <MdMenuBook className="text-4xl text-purple-600" ></MdMenuBook>
+                    <div>
+                        <h4 className="text-lg font-semibold text-gray-800">Total Lessons</h4>
+                        <p className="text-2xl text-center font-bold text-purple-700">{allLessons.length}</p>
+                    </div>
+                </div>
+
                 <div className="bg-yellow-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegBookmark className="text-4xl text-yellow-600" />
                     <div>
@@ -105,14 +112,14 @@ const DashboardHome = () => {
                     <FaStar className="text-4xl text-green-600" />
                     <div>
                         <h4 className="text-lg font-semibold text-gray-800">Premium Lessons</h4>
-                        <p className="text-2xl text-center font-bold text-green-700">{data.premiumCount}</p>
+                        <p className="text-2xl text-center font-bold text-green-700">{data?.premiumCount}</p>
                     </div>
                 </div>
 
                 <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-purple-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Premium Status</h4>
+                        <h4 className="text-lg font-semibold text-gray-800">User Role</h4>
                         <p className="text-2xl text-center font-bold text-purple-700">{user.role ? "⭐ Premium" : "Free"}</p>
                     </div>
                 </div>

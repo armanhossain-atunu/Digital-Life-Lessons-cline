@@ -19,14 +19,13 @@ const Navbar = () => {
                 const res = await axios.get(
                     `${import.meta.env.VITE_API_URL}/user?email=${email}`
                 );
-                return res.data; // should be a single user object
+                return res.data; 
             },
             enabled: !!email,
         });
     };
-
     const { data: userData } = useUserRole(user?.email);
-
+    
     // Theme Handler
     useEffect(() => {
         const html = document.querySelector("html");
@@ -163,7 +162,7 @@ const Navbar = () => {
                                     <img
                                         className="rounded-full"
                                         referrerPolicy="no-referrer"
-                                        src={userData?.photoURL || avatarImg}
+                                        src={ user?.photoURL || userData?.photoURL || avatarImg}
                                         alt="profile"
                                     />
                                 </div>

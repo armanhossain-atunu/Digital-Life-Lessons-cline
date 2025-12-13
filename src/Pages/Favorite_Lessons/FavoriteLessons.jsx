@@ -1,33 +1,17 @@
 import React from "react";
 import Container from "../../Components/Shared/Container";
 import useAuth from "../../Hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { Link } from "react-router"; 
+import { Link } from "react-router";
+import useFavoriteLessons from "../../Hooks/ShareAllApi/useFavoriteLessons";
+import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 
 const FavoriteLessons = () => {
   const { user } = useAuth();
-
-  const { data: favoriteLessons = [], isLoading, error } = useQuery({
-    queryKey: ["favoriteFullLessons", user?.email],
-    queryFn: async () => {
-      const url = `${import.meta.env.VITE_API_URL}/favoriteFullLessons?email=${user?.email}`;
-      try {
-        console.debug("Fetching favorites from:", url);
-        const res = await axios.get(url);
-        console.debug("Favorites response:", res.data);
-        return res.data;
-      } catch (err) {
-        console.error("Failed to fetch favoriteFullLessons:", err);
-        throw err;
-      }
-    },
-    enabled: !!user?.email,
-  });
-
+  //favoriteLessons is the array of favorite lessons
+  const { favoriteLessons, isLoading, error } = useFavoriteLessons()
 
   if (!user) return <Container><p className="mt-20 text-center">Please login to see your favorite lessons.</p></Container>;
-  if (isLoading) return <Container><p className="mt-20 text-center">Loading favorites...</p></Container>;
+  if (isLoading) return <LoadingSpinner />
   if (error) return <Container><p className="mt-20 text-center text-red-500">Failed to load favorites</p></Container>;
 
   return (

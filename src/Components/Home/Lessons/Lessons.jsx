@@ -15,6 +15,8 @@ const Lessons = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const navigate = useNavigate()
+    const [visibleCount, setVisibleCount] = useState(6);
+    const [expanded, setExpanded] = useState({});
     // ================================================================================================
     //                        Fetch user role
     // ===============================================================================================
@@ -32,13 +34,12 @@ const Lessons = () => {
     };
     const { data: userDataArray } = useUserRole(user?.email);
     const userData = userDataArray ? userDataArray[0] : null;
-    console.log(userData);
+
 
     // ================================================================================================
     //                        Show More state
     // ===============================================================================================
-    const [visibleCount, setVisibleCount] = useState(6);
-    const [expanded, setExpanded] = useState({});
+
 
     const toggleExpand = (id) => {
         setExpanded((prev) => ({
@@ -165,7 +166,7 @@ const Lessons = () => {
                         isPublic: rawIsPublic = false,
                     } = lesson || {};
                     const isAdmin = userData?.role?.toLowerCase() === "admin";
-                
+
                     const isOwner = authorEmail === user?.email;
                     const userIsPremium =
                         String(user?.plan || "free").toLowerCase() === "premium";

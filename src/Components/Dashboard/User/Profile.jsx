@@ -113,7 +113,7 @@ const UserProfile = () => {
             ) : (
               <>
                 <h2 className="text-3xl font-bold text-base-800">{user.displayName}</h2>
-                <p className="text-base-500">{profile[0]?.email}</p>
+                <p className="text-base-500">{ user.email}</p>
                 <div className="flex items-center gap-2 text-base-500 mt-2">
                   <FaCalendarAlt />
                   <span>Joined: {profile[0]?.createdAt}</span>
