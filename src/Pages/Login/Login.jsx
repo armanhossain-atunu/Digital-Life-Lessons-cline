@@ -35,19 +35,6 @@ const Login = () => {
         },
     });
 
-    // Check if user exists (Frontend)
-    const checkUserExists = async (email) => {
-        try {
-            const { data } = await axios.get(
-                `${import.meta.env.VITE_API_URL}/users?email=${email}`
-            );
-            return data.length > 0;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    };
-
     // -----------------------------------
     // Email + Password Login
     // -----------------------------------
@@ -69,33 +56,25 @@ const Login = () => {
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithGoogle();
-            const loggedUser = result.user;
+            const user = result.user;
 
-            const email = loggedUser.email;
-            const name = loggedUser.displayName;
-            const imageURL = loggedUser.photoURL;
+            await saveUserMutation.mutateAsync({
+                name: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                role: "user",
+                plan: "free",
+                createdAt: new Date().toLocaleString(),
+            });
 
-            const exists = await checkUserExists(email);
-
-            if (!exists) {
-                saveUserMutation.mutate({
-                    name,
-                    email,
-                    image: imageURL,
-                    role: "user",
-                    createdAt: new Date(),
-                });
-            }
-
-            toast.success("Login Successful");
+            toast.success("Signup Successful db");
             navigate(from, { replace: true });
 
         } catch (err) {
             console.log(err);
             toast.error(err.message);
         }
-    };
-
+    }
     // Loading / Already Logged in
     if (loading) return <LoadingSpinner />;
     if (user) return <Navigate to={from} replace={true} />;
@@ -172,9 +151,9 @@ const Login = () => {
                     <div>
                         <button
                             type="submit"
-                            className="bg-lime-500 w-full rounded-md py-3 text-white font-semibold hover:bg-lime-600 transition"
+                            className="bg-lime-500 w-full rounded-md py-3 cursor-pointer text-white font-semibold hover:bg-lime-600 transition"
                         >
-                            {loading ? <LoadingSpinner /> : "Continue"}
+                            {loading ? <LoadingSpinner /> : "Log In"}
                         </button>
                     </div>
                 </form>
@@ -195,7 +174,7 @@ const Login = () => {
                 </div>
 
                 <p className="px-6 text-sm text-center text-gray-400">
-                    Don&apos;t have an account yet?{" "}
+                    Don&apos;t have an account yet?
                     <Link
                         state={from}
                         to="/auth/signup"

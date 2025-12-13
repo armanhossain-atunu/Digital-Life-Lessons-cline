@@ -48,7 +48,7 @@ const PaymentSuccess = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-300 bg-opacity-50 p-4">
-      <div className="bg-base-100 rounded-2xl shadow-lg p-10 text-center max-w-md w-full">
+      <div className="bg-base-100 mt-10 rounded-2xl shadow-lg p-10 text-center max-w-md w-full">
         <div className="flex justify-center mb-6">
           {success ? (
             <MdCheckCircle className="text-green-500 text-9xl animate-bounce" />

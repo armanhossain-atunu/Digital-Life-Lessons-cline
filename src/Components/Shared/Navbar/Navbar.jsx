@@ -19,13 +19,22 @@ const Navbar = () => {
                 const res = await axios.get(
                     `${import.meta.env.VITE_API_URL}/user?email=${email}`
                 );
-                return res.data; 
+                return res.data;
             },
             enabled: !!email,
         });
     };
     const { data: userData } = useUserRole(user?.email);
-    
+
+    // const { data: userData } = useUserRole(user?.email);
+    const { data: userDB } = useUserRole(user?.email);
+
+    // console.log(userDB);
+
+    const photoURL = userDB?.photoURL || userDB?.image;
+
+    // console.log(photoURL);
+
     // Theme Handler
     useEffect(() => {
         const html = document.querySelector("html");
@@ -162,7 +171,7 @@ const Navbar = () => {
                                     <img
                                         className="rounded-full"
                                         referrerPolicy="no-referrer"
-                                        src={ user?.photoURL || userData?.photoURL || avatarImg}
+                                        src={photoURL || avatarImg}
                                         alt="profile"
                                     />
                                 </div>

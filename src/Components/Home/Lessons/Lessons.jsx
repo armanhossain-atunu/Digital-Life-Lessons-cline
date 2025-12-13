@@ -10,6 +10,8 @@ import useAuth from "../../../Hooks/useAuth";
 import { useState } from "react";
 import FavoriteLessons from "./Favorite";
 import { Link, useNavigate } from "react-router";
+import Search from "./Search";
+;
 
 const Lessons = () => {
     const queryClient = useQueryClient();
@@ -17,6 +19,7 @@ const Lessons = () => {
     const navigate = useNavigate()
     const [visibleCount, setVisibleCount] = useState(6);
     const [expanded, setExpanded] = useState({});
+    const [searchTerm, setSearchTerm] = useState("");
     // ================================================================================================
     //                        Fetch user role
     // ===============================================================================================
@@ -32,8 +35,7 @@ const Lessons = () => {
             enabled: !!email,
         });
     };
-    const { data: userDataArray } = useUserRole(user?.email);
-    const userData = userDataArray ? userDataArray[0] : null;
+    const role = useUserRole(user?.email).data?.role;
 
 
     // ================================================================================================
@@ -58,8 +60,11 @@ const Lessons = () => {
             return res.data;
         },
     });
+    const filteredLessons = lessons.filter((lesson) =>
+        lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    const visibleLessons = lessons.slice(0, visibleCount);
+    const visibleLessons = filteredLessons.slice(0, visibleCount);
 
     // ================================================================================================
     //                        Delete Mutation
@@ -78,7 +83,9 @@ const Lessons = () => {
             toast.error("Failed to delete the lesson.");
         },
     });
-
+    // ================================================================================================
+    //                        Delete Handler
+    // ===============================================================================================
     const handleDelete = (id) => {
         toast((t) => (
             <div className="p-3 bg-white border rounded shadow-md">
@@ -120,7 +127,9 @@ const Lessons = () => {
             toast.error("Lesson data missing!");
             return;
         }
-
+        // ================================================================================================
+        //                        Payment Handler payment info
+        // ===============================================================================================
         const paymentInfo = {
             lessonId: lesson._id,
             name: lesson.title,
@@ -133,8 +142,10 @@ const Lessons = () => {
             },
         };
 
-        console.log("Payment Info:", paymentInfo);
-
+        // console.log("Payment Info:", paymentInfo);
+        // ================================================================================================
+        //                        Payment Handler Function post
+        // ===============================================================================================
         const result = await axios.post(
             `${import.meta.env.VITE_API_URL}/create-checkout-session`,
             paymentInfo
@@ -153,7 +164,12 @@ const Lessons = () => {
                 All Lessons ({lessons.length})
             </h1>
 
+
+            <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} ></Search>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+
                 {visibleLessons.map((lesson) => {
                     const {
                         _id,
@@ -165,7 +181,7 @@ const Lessons = () => {
                         authorEmail,
                         isPublic: rawIsPublic = false,
                     } = lesson || {};
-                    const isAdmin = userData?.role?.toLowerCase() === "admin";
+                    const isAdmin = role?.toLowerCase() === "admin";
 
                     const isOwner = authorEmail === user?.email;
                     const userIsPremium =
@@ -176,23 +192,20 @@ const Lessons = () => {
                         String(rawIsPublic).toLowerCase() === "true";
 
                     const accessLevel = String(rawAccess || "free").toLowerCase();
-                    // Step 1: Premium access check
+
                     const hasPremiumAccess =
                         accessLevel !== "premium" ||
                         isAdmin ||
                         isOwner ||
                         userIsPremium;
 
-                    // Step 2: Public / ownership check
                     const hasVisibilityAccess =
                         isPublic ||
                         isAdmin ||
                         isOwner;
 
-                    // Final check: Can user view the content?
                     const canView = hasPremiumAccess && hasVisibilityAccess;
 
-                    // If cannot view, the content is locked
                     const isLocked = !canView;
 
                     return (

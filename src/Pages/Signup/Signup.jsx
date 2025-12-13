@@ -23,13 +23,7 @@ const SignUp = () => {
     // React Hook Form
     const { register, handleSubmit, formState: { errors } } = useForm()
 
-    // ----------- (1) CHECK IF USER EXISTS ----------
-    const checkUserExists = async (email) => {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/users?email=${email}`);
-        return res.data.length > 0;
-    };
-
-    // ----------- (2) SAVE USER TO DB (TanStack Query) ----------
+    // ----------- SAVE USER TO DB (TanStack Query) ----------
     const saveUserMutation = useMutation({
         mutationKey: ["users"],
         mutationFn: async (userInfo) => {
@@ -40,35 +34,36 @@ const SignUp = () => {
         }
     });
 
-    // ----------- (3) EMAIL SIGNUP ----------
+    // -----------EMAIL SIGNUP ----------
     const handleCreateUser = async (data) => {
         const { name, image, email, password } = data;
 
         try {
-           
-            // 1. Upload Image
+
+            // Upload Image
             const imageURL = await imageUpload(image[0]);
 
-            // 2. Create User
+            // Create User
             const result = await createUser(email, password);
             const createdUser = result.user;
 
-            // 3. Update Profile
+            // Update Profile
             await updateUserProfile(name, imageURL);
 
-            // 4. Manually update context user (ensure UI updates)
+            // Manually update context user (ensure UI updates)
             setUser({
                 ...createdUser,
                 displayName: name,
                 photoURL: imageURL,
             });
 
-            // 7. Save user to DB
+            // Save user to DB
             saveUserMutation.mutate({
                 name,
                 email,
-                image: imageURL,
+                photoURL: imageURL,
                 role: "user",
+                plan: "free",
                 createdAt: new Date().toLocaleString(),
             });
 
@@ -81,29 +76,23 @@ const SignUp = () => {
         }
     };
 
-    // ----------- (4) GOOGLE SIGN-IN ----------
+    // -----------  GOOGLE SIGN-IN ----------
+
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithGoogle();
-            const loggedUser = result.user;
+            const user = result.user;
 
-            const email = loggedUser.email;
-            const name = loggedUser.displayName;
-            const imageURL = loggedUser.photoURL;
+            await saveUserMutation.mutateAsync({
+                name: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                role: "user",
+                plan: "free",
+                createdAt: new Date().toLocaleString(),
+            });
 
-            const exists = await checkUserExists(email);
-
-            if (!exists) {
-                saveUserMutation.mutate({
-                    name,
-                    email,
-                    image: imageURL,
-                    role: "user",
-                    createdAt: new Date()
-                });
-            }
-
-            toast.success("Signup Successful");
+            toast.success("Signup Successful db");
             navigate(from, { replace: true });
 
         } catch (err) {
@@ -203,8 +192,8 @@ const SignUp = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className='bg-lime-500 w-full rounded-md py-3 text-white'>
-                        {loading ? <TbFidgetSpinner className='animate-spin m-auto' /> : 'Continue'}
+                    <button type="submit" className='bg-lime-500 w-full cursor-pointer rounded-md py-3 text-white'>
+                        {loading ? <TbFidgetSpinner className='animate-spin m-auto' /> : 'Sign Up'}
                     </button>
                 </form>
 
@@ -216,14 +205,14 @@ const SignUp = () => {
                 </div>
 
                 <div onClick={handleGoogleSignIn}
-                    className='flex justify-center items-center space-x-2 border p-2 cursor-pointer'>
+                    className='flex justify-center my-3 items-center space-x-2 border p-2 cursor-pointer'>
                     <FcGoogle size={32} />
                     <p>Continue with Google</p>
                 </div>
 
                 <p className='px-6 text-sm text-center text-gray-400'>
-                    Already have an account?{' '}
-                    <Link to='/auth/login' className='hover:underline'>Login</Link>.
+                    Already have an account?
+                    <Link to='/auth/login' className='hover:underline hover:text-lime-500'>Login</Link>.
                 </p>
             </div>
         </div>

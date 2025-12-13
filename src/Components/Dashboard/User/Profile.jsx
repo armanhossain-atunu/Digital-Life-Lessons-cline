@@ -13,7 +13,7 @@ const UserProfile = () => {
 
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(user.displayName || "");
-  const [photoFile, setPhotoFile] = useState(null); // for local file
+  const [photoFile, setPhotoFile] = useState(null); 
   const [photoPreview, setPhotoPreview] = useState(user.photoURL || "");
 
   // Fetch user profile
@@ -54,23 +54,23 @@ const UserProfile = () => {
     try {
       toast.loading("Updating profile...");
 
-      // 1. If new photo selected, upload and get URL
+      //  If new photo selected, upload and get URL
       let photoURL = user.photoURL || "";
       if (photoFile) {
         photoURL = await imageUpload(photoFile);
       }
 
-      // 2. Update Firebase profile
+      //  Update Firebase profile
       if (updateUserProfile) await updateUserProfile(name, photoURL);
 
-      // 3. Update backend user record
+      // Update backend user record
       await axios.put(`${import.meta.env.VITE_API_URL}/updateUserProfile`, {
         email: user.email,
         displayName: name,
         photoURL,
       });
 
-      // 4. Update local context and queries
+      //  Update local context and queries
       setUser({ ...user, displayName: name, photoURL });
       queryClient.invalidateQueries(["users", user?.email]);
 
