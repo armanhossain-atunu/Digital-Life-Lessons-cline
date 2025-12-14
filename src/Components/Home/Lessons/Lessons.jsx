@@ -1,378 +1,333 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Container from "../../Shared/Container";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
+import { MdDeleteForever, MdEdit, MdFavorite} from "react-icons/md";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { useState } from "react";
-import FavoriteLessons from "./Favorite";
-import { Link, useNavigate } from "react-router";
+import FavoriteLessons from "./Favorite"; 
+import { Link, useNavigate } from "react-router"; 
 import Search from "./Search";
 import ReportLesson from "../../../Pages/Reports/ReportLesson";
 import ReviewSection from "../../Reviews/ReviewSection";
 
-
 const Lessons = () => {
-    const queryClient = useQueryClient();
-    const { user } = useAuth();
-    const navigate = useNavigate()
-    const [visibleCount, setVisibleCount] = useState(6);
-    const [expanded, setExpanded] = useState({});
-    const [searchTerm, setSearchTerm] = useState("");
-    // ================================================================================================
-    //                        Fetch user role
-    // ===============================================================================================
-    const useUserRole = (email) => {
-        return useQuery({
-            queryKey: ["userRole", email],
-            queryFn: async () => {
-                const res = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/user?email=${email}`
-                );
-                return res.data;
-            },
-            enabled: !!email,
-        });
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [expanded, setExpanded] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Fetch user role
+  const { data: userData } = useQuery({
+    queryKey: ["userRole", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/user?email=${user.email}`);
+      return res.data;
+    },
+    enabled: !!user?.email,
+  });
+
+  const role = userData?.role?.toLowerCase();
+  const isAdmin = role === "admin";
+  const isPremium = (userData?.plan || "free").toLowerCase() === "premium";
+
+  const toggleExpand = (id) => {
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Fetch lessons
+  const { data: lessons = [], isLoading, error } = useQuery({
+    queryKey: ["lessons"],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons`);
+      return res.data;
+    },
+  });
+
+  // Fetch user's favorite lessons to show "Remove" button
+  const { data: favoriteLessons = [] } = useQuery({
+    queryKey: ["favoriteLessons", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/favorites?email=${user.email}`);
+      return res.data;
+    },
+    enabled: !!user?.email,
+  });
+
+  const isFavorited = (lessonId) => {
+    return favoriteLessons.some((fav) => fav.lessonId === lessonId || fav._id === lessonId);
+  };
+
+  const filteredLessons = lessons.filter((lesson) =>
+    lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const visibleLessons = filteredLessons.slice(0, visibleCount);
+
+  // Delete Mutation
+  const deleteLessonMutation = useMutation({
+    mutationFn: async (id) => {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
+    },
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(["lessons"], (old = []) =>
+        old.filter((lesson) => lesson._id !== id)
+      );
+      toast.success("Lesson deleted successfully!");
+    },
+  });
+
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div className="p-4 bg-white rounded-lg shadow-lg">
+        <p className="font-medium">Delete this lesson permanently?</p>
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={() => {
+              deleteLessonMutation.mutate(id);
+              toast.dismiss(t.id);
+            }}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Yes, Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity });
+  };
+
+  const handlePayment = async (lesson) => {
+    if (!user) {
+      toast.error("Please login first!");
+      navigate("/auth/login");
+      return;
+    }
+
+    const paymentInfo = {
+      lessonId: lesson._id,
+      name: lesson.title,
+      price: lesson.price,
+      quantity: 1,
+      customer: {
+        name: user.displayName || "User",
+        email: user.email,
+        image: user.photoURL || "",
+      },
     };
-    const role = useUserRole(user?.email).data?.role;
 
+   try {
+  const { data } = await axios.post(
+    `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+    paymentInfo
+  );
 
-    // ================================================================================================
-    //                        Show More state
-    // ===============================================================================================
+  // Safe redirect inside click handler
+  window.location.assign(data.url); 
+ 
 
+} catch (err) {
+  toast.error("Payment failed. Try again.");
+}
+  };
 
-    const toggleExpand = (id) => {
-        setExpanded((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
-    };
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <p className="text-center text-red-500">Failed to load lessons.</p>;
 
-    // ================================================================================================
-    //                        Fetch lessons
-    // ===============================================================================================
-    const { data: lessons = [], isLoading, error } = useQuery({
-        queryKey: ["lessons"],
-        queryFn: async () => {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons`);
-            return res.data;
-        },
-    });
-    const filteredLessons = lessons.filter((lesson) =>
-        lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  return (
+    <Container>
+      <h1 className="text-3xl font-bold text-center my-8">
+        All Lessons ({lessons.length})
+      </h1>
 
-    const visibleLessons = filteredLessons.slice(0, visibleCount);
+      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-    // ================================================================================================
-    //                        Delete Mutation
-    // ===============================================================================================
-    const deleteLessonMutation = useMutation({
-        mutationFn: async (id) => {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
-        },
-        onSuccess: (_, id) => {
-            queryClient.setQueryData(["lessons"], (oldLessons = []) =>
-                oldLessons.filter((lesson) => lesson._id !== id)
-            );
-            toast.success("Lesson deleted successfully!");
-        },
-        onError: () => {
-            toast.error("Failed to delete the lesson.");
-        },
-    });
-    // ================================================================================================
-    //                        Delete Handler
-    // ===============================================================================================
-    const handleDelete = (id) => {
-        toast((t) => (
-            <div className="p-3 bg-white border rounded shadow-md">
-                <p className="mb-2">Are you sure you want to delete this lesson?</p>
-                <div className="flex justify-end gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredLessons.length === 0 ? (
+          <div className="col-span-full text-center py-20">
+            <h2 className="text-2xl font-semibold text-gray-500">Lesson not found</h2>
+            <p className="text-gray-400 mt-2">Try searching with different keywords</p>
+          </div>
+        ) : (
+          visibleLessons.map((lesson) => {
+            const {
+              _id,
+              image,
+              title,
+              price,
+              description,
+              accessLevel = "free",
+              authorEmail,
+              isPublic = false,
+            } = lesson;
+
+            const isOwner = authorEmail === user?.email;
+            const access = accessLevel.toLowerCase();
+            const publicAccess = isPublic === true || String(isPublic).toLowerCase() === "true";
+            const locked = access === "premium" && !isPremium && !isAdmin && !isOwner;
+
+            const favorited = isFavorited(_id);
+
+            return (
+              <div
+                key={_id}
+                className="relative bg-white rounded-xl shadow hover:shadow-xl transition-all border overflow-hidden"
+              >
+                {/* Premium Lock Overlay */}
+                {locked && (
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-white text-center p-6">
+                    <span className="text-5xl mb-3">Premium</span>
+                    <p className="text-sm mb-4">Upgrade to access this lesson</p>
                     <button
-                        className="bg-red-600 text-white px-3 py-1 rounded"
-                        onClick={() => {
-                            deleteLessonMutation.mutate(id);
-                            toast.dismiss(t.id);
-                        }}
+                      onClick={() => handlePayment(lesson)}
+                      className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700"
                     >
-                        Yes
+                      Upgrade Now (${price})
                     </button>
-                    <button
-                        className="bg-gray-300 text-black px-3 py-1 rounded"
-                        onClick={() => toast.dismiss(t.id)}
-                    >
-                        No
-                    </button>
-                </div>
-            </div>
-        ),
-            { duration: Infinity }
-        );
-    };
-
-    // ================================================================================================
-    //                        Payment Handler Function
-    // ===============================================================================================
-    const handlePayment = async (lesson) => {
-        if (!user) {
-            toast.error("Please login first!");
-            navigate('/auth/login')
-            return;
-        }
-
-        if (!lesson) {
-            toast.error("Lesson data missing!");
-            return;
-        }
-        // ================================================================================================
-        //                        Payment Handler payment info
-        // ===============================================================================================
-        const paymentInfo = {
-            lessonId: lesson._id,
-            name: lesson.title,
-            price: lesson.price,
-            quantity: 1,
-            customer: {
-                name: user?.displayName || "Unknown User",
-                email: user?.email || "No Email",
-                image: user?.photoURL || "",
-            },
-        };
-
-        // console.log("Payment Info:", paymentInfo);
-        // ================================================================================================
-        //                        Payment Handler Function post
-        // ===============================================================================================
-        const result = await axios.post(
-            `${import.meta.env.VITE_API_URL}/create-checkout-session`,
-            paymentInfo
-        );
-
-        window.location.href = result.data.url;
-    };
-
-    // ================================================================================================
-    if (isLoading) return <LoadingSpinner />;
-    if (error) return <p>{error.message}</p>;
-
-    return (
-        <Container>
-            <h1 className="text-2xl text-center font-bold mb-6">
-                All Lessons ({lessons.length})
-            </h1>
-
-
-            <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} ></Search>
-
-            <  div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                {filteredLessons.length === 0 ? (
-                    <div className="col-span-full text-center py-20">
-                        <h2 className="text-2xl font-semibold text-gray-500">
-                            🔍 Lesson not found
-                        </h2>
-                        <p className="text-gray-400 mt-2">
-                            Try searching with a different keyword
-                        </p>
-                    </div>
-                ) : (
-                    visibleLessons.map((lesson) => {
-                        const {
-                            _id,
-                            image,
-                            title,
-                            price,
-                            description,
-                            accessLevel: rawAccess = "free",
-                            authorEmail,
-                            isPublic: rawIsPublic = false,
-                        } = lesson || {};
-                        const isAdmin = role?.toLowerCase() === "admin";
-
-                        const isOwner = authorEmail === user?.email;
-                        const userIsPremium =
-                            String(user?.plan || "free").toLowerCase() === "premium";
-
-                        const isPublic =
-                            rawIsPublic === true ||
-                            String(rawIsPublic).toLowerCase() === "true";
-
-                        const accessLevel = String(rawAccess || "free").toLowerCase();
-
-                        const hasPremiumAccess =
-                            accessLevel !== "premium" ||
-                            isAdmin ||
-                            isOwner ||
-                            userIsPremium;
-
-                        const hasVisibilityAccess =
-                            isPublic ||
-                            isAdmin ||
-                            isOwner;
-
-                        const canView = hasPremiumAccess && hasVisibilityAccess;
-
-                        const isLocked = !canView;
-
-                        return (
-                            <div
-                                key={_id}
-                                className="relative border overflow-hidden rounded-lg group border-gray-300 p-4 shadow hover:shadow-lg transition"
-                            >
-                                {/* Image */}
-                                {image && (
-                                    <img
-                                        src={image}
-                                        className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform
-                                        duration-500 group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""}`}
-                                    />
-                                )}
-
-                                <h3 className="text-lg font-semibold">{title}</h3>
-
-                                {/* Description */}
-                                <div p className="text-base-600" >
-                                    {
-                                        expanded[_id]
-                                            ? description
-                                            : `${description?.slice(0, 80)}...`}
-                                    <button
-                                        onClick={() => toggleExpand(_id)}
-                                        className="text-blue-600 underline ml-2"
-                                    >
-                                        {expanded[_id] ? "See Less" : (
-                                            <Link to={`/lesson-details/${_id}`}>See More</Link>
-                                        )}
-                                    </button>
-                                </div>
-                                {/* Lock Screen */}
-                                {isLocked && (
-                                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col 
-                                items-center justify-center text-center p-6 rounded-lg">
-                                        <div className="mb-2 font-semibold text-purple-600">
-                                            🔒 Premium Lesson
-                                        </div>
-                                        <p className="text-gray-700 mb-3">
-                                            Upgrade to Premium to unlock this lesson.
-                                        </p>
-                                        <button
-                                            onClick={() =>
-                                                document.getElementById(`premium_modal_${_id}`).showModal()
-                                            }
-                                            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all"
-                                        >
-                                            Upgrade Now
-                                        </button>
-                                    </div>
-                                )}
-                                {/* Dynamic MODAL */}
-                                <dialog id={`premium_modal_${_id}`} className="modal">
-                                    <div className="modal-box">
-                                        <h3 className="font-bold text-lg">Upgrade to Premium</h3>
-
-                                        <p><b>Name:</b> {title}</p>
-                                        <p><b>Price:</b> ${price}</p>
-                                        <p><b>Access Level:</b> {accessLevel}</p>
-
-                                        <div className="flex justify-between items-center py-5">
-                                            <button
-                                                onClick={() =>
-                                                    document.getElementById(`premium_modal_${_id}`).close()
-                                                }
-                                                className="shadow hover:bg-red-300 font-bold py-2 px-4 rounded"
-                                            >
-                                                Close
-                                            </button>
-
-                                            <button
-                                                onClick={() => handlePayment(lesson)}
-                                                className="shadow hover:bg-green-400 font-bold py-2 px-4 rounded"
-                                            >
-                                                Pay
-                                            </button>
-                                        </div>
-                                    </div>
-                                </dialog>
-                                <p>Author: {authorEmail}</p>
-                                <p>Access Level: {accessLevel}</p>
-
-                                <div className="flex justify-between items-center">
-                                    <p>Public: {isPublic ? "Yes" : "No"}</p>
-                                    <Link to={`/lesson-details/${_id}`} className="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Details</Link>
-                                </div>
-                                <div className="flex justify-end mt-3 gap-4 items-center">
-
-                                    <LoveReact lessonId={_id} />
-                                    {(isOwner || isAdmin) && (
-                                        <button
-                                            onClick={() => handleDelete(_id)}
-                                            className="text-red-600 text-2xl hover:text-red-800"
-                                        >
-                                            <MdDeleteForever />
-                                        </button>
-                                    )}
-                                    <FavoriteLessons lessonId={lesson._id} />
-                                    {(isOwner || isAdmin) && (
-                                        <Link to={`/edit/${_id}`}>
-                                            <button className="text-blue-600 text-2xl hover:text-blue-800">
-                                                <MdEdit />
-                                            </button>
-                                        </Link>
-                                    )}
-
-                                    <ReportLesson lessonId={_id}></ReportLesson>
-
-                                    {/* Open the modal using document.getElementById('ID').showModal() method */}
-                                    <button className="btn" onClick={() => document.getElementById('my_modal_5').showModal()}>Reviews</button>
-                                    <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-                                        <div className="modal-box">
-                                            <ReviewSection lessonId={_id}></ReviewSection>
-                                            <div className="modal-action">
-                                                <form method="dialog">
-                                                    {/* if there is a button in form, it will close the modal */}
-                                                    <button className="btn">Close</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </dialog>
-                                </div>
-
-                                <Comments postId={_id} />
-
-                            </div>
-                        );
-                    })
+                  </div>
                 )}
-            </div >
-            {/* Show More */}
-            < div className="flex justify-center mt-6 mb-6" >
-                {
-                    visibleCount < lessons.length ? (
+
+                <img
+                  src={image || "/placeholder.jpg"}
+                  alt={title}
+                  className={`w-full h-48 object-cover ${locked ? "brightness-50" : ""}`}
+                />
+
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+
+                  <p className="text-gray-600 text-sm mt-2">
+                    {expanded[_id] ? description : `${description?.slice(0, 100)}...`}
+                    <button
+                      onClick={() => toggleExpand(_id)}
+                      className="text-indigo-600 font-medium ml-1 hover:underline"
+                    >
+                      {expanded[_id] ? "less" : "more"}
+                    </button>
+                  </p>
+
+                  <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+                    <span>by {authorEmail}</span>
+                    <span className="capitalize">{access} • {publicAccess ? "Public" : "Private"}</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
+                    <Link
+                      to={`/lesson-details/${_id}`}
+                      className={`px-5 py-2 rounded-lg font-medium transition ${
+                        locked
+                          ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                          : "bg-indigo-600 text-white hover:bg-indigo-700"
+                      }`}
+                      onClick={(e) => locked && e.preventDefault()}
+                    >
+                      {locked ? "Locked" : "View Details"}
+                    </Link>
+
+                    <div className="flex items-center gap-3">
+                      <LoveReact lessonId={_id} />
+
+                      {/* Favorite Toggle Button */}
+                      <FavoriteLessons lessonId={_id} /> {/* This should toggle favorite */}
+
+                      {/* Show Remove Button if already favorited */}
+                      {favorited && (
                         <button
-                            onClick={() => setVisibleCount((prev) => prev + 6)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                          onClick={() => {
+                            // Assuming FavoriteLessons component has remove logic, or call API directly
+                            // Here we trigger the same component to remove
+                            document.querySelector(`[data-lesson-id="${_id}"]`)?.click();
+                            toast.success("Removed from favorites");
+                          }}
+                          className="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition text-sm font-medium"
+                          title="Remove from Favorites"
                         >
-                            Show More
+                          <MdFavorite className="text-red-600" />
+                          Remove
                         </button>
-                    ) : (
-                        lessons.length > 6 && (
-                            <button
-                                onClick={() => setVisibleCount(6)}
-                                className="px-4 py-2 bg-gray-600 text-white rounded"
-                            >
-                                Show Less
-                            </button>
-                        )
-                    )
-                }
-            </div >
-        </Container >
-    );
+                      )}
+
+                      {(isOwner || isAdmin) && (
+                        <>
+                          <button
+                            onClick={() => handleDelete(_id)}
+                            className="text-red-600 hover:text-red-800 text-2xl"
+                            title="Delete Lesson"
+                          >
+                            <MdDeleteForever />
+                          </button>
+                          <Link to={`/edit/${_id}`} className="text-blue-600 hover:text-blue-800 text-2xl">
+                            <MdEdit />
+                          </Link>
+                        </>
+                      )}
+
+                      <ReportLesson lessonId={_id} />
+                    </div>
+                  </div>
+
+                  {/* Reviews Modal */}
+                  <div className="mt-4">
+                    <button
+                      className="text-sm text-indigo-600 underline"
+                      onClick={() => document.getElementById(`review_${_id}`).showModal()}
+                    >
+                      View Reviews
+                    </button>
+                    <dialog id={`review_${_id}`} className="modal">
+                      <div className="modal-box">
+                        <ReviewSection lessonId={_id} />
+                        <div className="modal-action">
+                          <form method="dialog">
+                            <button className="btn">Close</button>
+                          </form>
+                        </div>
+                      </div>
+                    </dialog>
+                  </div>
+
+                  <Comments postId={_id} />
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Load More */}
+      <div className="text-center my-10">
+        {visibleCount < filteredLessons.length ? (
+          <button
+            onClick={() => setVisibleCount(prev => prev + 6)}
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            Load More
+          </button>
+        ) : (
+          filteredLessons.length > 6 && (
+            <button
+              onClick={() => setVisibleCount(6)}
+              className="px-6 py-3 bg-gray-600 text-white rounded-lg"
+            >
+              Show Less
+            </button>
+          )
+        )}
+      </div>
+    </Container>
+  );
 };
 
 export default Lessons;

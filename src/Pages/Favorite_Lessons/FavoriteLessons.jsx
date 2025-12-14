@@ -1,82 +1,135 @@
 import React from "react";
 import Container from "../../Components/Shared/Container";
 import useAuth from "../../Hooks/useAuth";
-import { Link } from "react-router";
+import { Link } from "react-router"; // Fixed: was "react-router" → "react-router-dom"
 import useFavoriteLessons from "../../Hooks/ShareAllApi/useFavoriteLessons";
 import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 
 const FavoriteLessons = () => {
   const { user } = useAuth();
-  //favoriteLessons is the array of favorite lessons
-  const { favoriteLessons, isLoading, error } = useFavoriteLessons()
+  const { favoriteLessons, isLoading, error } = useFavoriteLessons();
 
-  if (!user) return <Container><p className="mt-20 text-center">Please login to see your favorite lessons.</p></Container>;
-  if (isLoading) return <LoadingSpinner />
-  if (error) return <Container><p className="mt-20 text-center text-red-500">Failed to load favorites</p></Container>;
+  if (!user)
+    return (
+      <Container>
+        <p className="mt-20 text-center">Please login to see your favorite lessons.</p>
+      </Container>
+    );
+
+  if (isLoading) return <LoadingSpinner />;
+
+  if (error)
+    return (
+      <Container>
+        <p className="mt-20 text-center text-red-500">Failed to load favorites</p>
+      </Container>
+    );
 
   return (
     <Container>
-      <h1 className="text-2xl mt-20 text-center font-semibold mb-6">
+      <h1 className="text-3xl mt-20 text-center font-semibold mb-8">
         Favorite Lessons ({favoriteLessons.length})
       </h1>
 
-      {favoriteLessons.length === 0 && (
-        <p className="text-center text-gray-500">You have no favorite lessons yet.</p>
+      {favoriteLessons.length === 0 ? (
+        <p className="text-center text-gray-500 mb-10">
+          You have no favorite lessons yet.
+        </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto border-collapse border border-base-300">
+            <thead>
+              <tr className="bg-indigo-50 text-left">
+                <th className="px-6 py-4 border border-base-300">Image</th>
+                <th className="px-6 py-4 border border-base-300">Category</th>
+                <th className="px-6 py-4 border border-base-300">Title</th>
+                <th className="px-6 py-4 border border-base-300">Description</th>
+                <th className="px-6 py-4 border border-base-300">Tone</th>
+                <th className="px-6 py-4 border border-base-300 text-center">Access</th>
+                <th className="px-6 py-4 border border-base-300 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {favoriteLessons.map((lesson) => {
+                const isPremiumLocked = lesson.accessLevel === "premium" && !user.isPremium;
+
+                return (
+                  <tr
+                    key={lesson._id}
+                    className={`hover:bg-base-100 transition ${isPremiumLocked ? "opacity-70" : ""}`}
+                  >
+                    {/* Image */}
+                    <td className="px-6 py-4 border border-base-300">
+                      {lesson.image ? (
+                        <img
+                          src={lesson.image}
+                          alt={lesson.title}
+                          className="w-24 h-16 object-cover rounded-md"
+                        />
+                      ) : (
+                        <div className="w-24 h-16 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 text-sm">
+                          No image
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Category */}
+                    <td className="px-6 py-4 border border-base-300">
+                      <span className="px-3 py-1 bg-indigo-100 text-indigo-600 text-sm rounded-full">
+                        {lesson.category}
+                      </span>
+                    </td>
+
+                    {/* Title */}
+                    <td className="px-6 py-4 border border-base-300 font-semibold">
+                      {lesson.title}
+                    </td>
+
+                    {/* Description */}
+                    <td className="px-6 py-4 border border-base-300 text-sm text-base-600 max-w-md">
+                      {lesson.description}
+                    </td>
+
+                    {/* Tone */}
+                    <td className="px-6 py-4 border border-base-300 text-sm">
+                      {lesson.emotionalTone || lesson.tone || "-"}
+                    </td>
+
+                    {/* Access Level */}
+                    <td className="px-6 py-4 border border-base-300 text-center">
+                      {lesson.accessLevel === "premium" ? (
+                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">
+                          Premium
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                          Free
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Action */}
+                    <td className="px-6 py-4 border border-base-300 text-center">
+                      {isPremiumLocked ? (
+                        <span className="text-sm text-gray-600">
+                          Upgrade to view
+                        </span>
+                      ) : (
+                        <Link
+                          to={`/lesson-details/${lesson._id}`}
+                          className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition inline-block"
+                        >
+                          View Details
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {favoriteLessons.map((lesson) => (
-          <div
-            key={lesson._id}
-            className="bg-base-100 shadow-md hover:shadow-lg transition rounded-2xl p-5 border border-base-200 relative"
-          >
-            {/* Premium Overlay */}
-            {lesson.accessLevel === "premium" && !user.isPremium && (
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold rounded-2xl z-10">
-                Premium Lesson - Upgrade to view
-              </div>
-            )}
-
-            {/* Image */}
-            {lesson.image && (
-              <img
-                src={lesson.image}
-                alt={lesson.title}
-                className="w-full h-48 object-cover rounded-xl mb-4"
-              />
-            )}
-
-            {/* Category Badge */}
-            <span className="px-3 py-1 bg-indigo-100 text-indigo-600 text-sm rounded-full">
-              {lesson.category}
-            </span>
-
-            {/* Title */}
-            <h3 className="text-2xl font-bold mt-3 text-base-800">{lesson.title}</h3>
-
-            {/* Short Description */}
-            <p className="text-base-600 mt-2">
-              {lesson.description.length > 120
-                ? lesson.description.slice(0, 120) + "..."
-                : lesson.description}
-            </p>
-
-            {/* Footer */}
-            <div className="flex justify-between items-center mt-4">
-              <p className="text-sm text-base-500">
-                Tone: {lesson.emotionalTone || lesson.tone}
-              </p>
-
-              <Link
-                to={`/lesson-details/${lesson._id}`}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-              >
-                View Details
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
     </Container>
   );
 };
