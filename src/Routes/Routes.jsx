@@ -17,6 +17,8 @@ import LessonDetails from "../Components/Home/Lessons/LessonDetails";
 import FavoriteLessons from "../Pages/Favorite_Lessons/FavoriteLessons";
 import PaymentSuccess from "../Pages/Payment/paymentSuccess";
 import ReportLesson from "../Pages/Reports/ReportLesson";
+import Reports from "../Pages/Reports/Reports";
+import ReviewSection from "../Components/Reviews/ReviewSection";
 
 
 const router = createBrowserRouter([
@@ -63,7 +65,8 @@ const router = createBrowserRouter([
                 element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>,
             },
             { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
-            { path: '/reported-lessons', element:<PrivateRoute><ReportLesson></ReportLesson></PrivateRoute> }
+            { path: '/Reviews', element: <ReviewSection></ReviewSection> },
+
 
         ],
 
@@ -78,6 +81,7 @@ const router = createBrowserRouter([
             { path: 'admin-profile', element: <AdminProfile></AdminProfile> },
             { path: 'add-lessons', element: <AddLesson></AddLesson> },
             { path: 'my-lessons', element: <MyLessons></MyLessons> },
+            { path: 'Reports', element: <Reports></Reports> },
 
 
         ]

@@ -1,50 +1,65 @@
-import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import useAuth from "../../Hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const ReportLesson = ({ lessonId }) => {
-    const { user } = useAuth()
-    console.log(user)
+    console.log(lessonId);
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState("");
-    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const reportMutation = useMutation({
-        mutationFn: async (data) => {
-            return axios.post(`${import.meta.env.VITE_API_URL}/lessons/report/${lessonId}`, data);;
-        },
-        onSuccess: () => {
+    const handleOpenReport = () => {
+        if (!user) {
+            toast.error("Please login first");
+            navigate("/auth/login");
+            return;
+        }
+        setOpen(true);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!reason.trim()) {
+            toast.error("Please enter a reason");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            await axios.post(
+                `${import.meta.env.VITE_API_URL}/lessons/report/${lessonId}`,
+                {
+                    reason,
+                    reporterEmail: user.email,
+                }
+            );
+
             toast.success("Lesson reported successfully");
             setOpen(false);
             setReason("");
-            setEmail("");
-        },
-        onError: (err) => {
+        } catch (err) {
             if (err.response?.status === 409) {
                 toast.error("You already reported this lesson");
             } else {
                 toast.error("Failed to report lesson");
             }
-        },
-    });
-    console.log(reportMutation);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!reason.trim() || !email.trim()) {
-            toast.error("Please enter both reason and email");
-            return;
+        } finally {
+            setLoading(false);
         }
-        reportMutation.mutate({ reason, reporterEmail: email });
     };
 
     return (
         <>
             <button
                 className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                onClick={() => setOpen(true)}
+                onClick={handleOpenReport}
             >
                 Report
             </button>
@@ -52,16 +67,16 @@ const ReportLesson = ({ lessonId }) => {
             {open && (
                 <dialog open className="modal">
                     <div className="modal-box max-w-md">
-                        <h3 className="font-bold text-lg mb-3">Report Lesson</h3>
+                        <h3 className="font-bold text-lg mb-3">
+                            Report Lesson
+                        </h3>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <input
                                 type="email"
-                                placeholder="Your email"
-                                className="input w-full border"
-                                defaultValue={user?.email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                className="input w-full border bg-gray-100"
+                                value={user?.email || ""}
+                                disabled
                             />
                             <textarea
                                 className="textarea w-full border"
@@ -71,7 +86,6 @@ const ReportLesson = ({ lessonId }) => {
                                 rows={4}
                                 required
                             />
-
                             <div className="flex justify-end gap-2">
                                 <button
                                     type="button"
@@ -82,9 +96,10 @@ const ReportLesson = ({ lessonId }) => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn btn-sm btn-red"
+                                    className="btn btn-sm btn-error"
+                                    disabled={loading}
                                 >
-                                    Submit
+                                    {loading ? "Submitting..." : "Submit"}
                                 </button>
                             </div>
                         </form>

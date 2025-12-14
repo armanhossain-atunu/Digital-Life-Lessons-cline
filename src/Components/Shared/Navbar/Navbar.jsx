@@ -73,9 +73,6 @@ const Navbar = () => {
                 <li>
                     <MyLink to="/favorite-lessons">Favorites Lessons</MyLink>
                 </li>
-                <li>
-                    <MyLink to="/reported-lessons">Reports</MyLink>
-                </li>
             </div>
         </>
     );
@@ -194,6 +191,14 @@ const Navbar = () => {
                                             className="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
                                             {userData?.role === "admin" ? "Admin Dashboard" : "User Profile"}
+                                        </Link>
+                                        <Link
+                                            to={
+                                                userData?.role === "admin" ? "/dashboard/reports" : "/Reviews"
+                                            }
+                                            className="px-4 py-3 hover:bg-base-100 transition font-semibold"
+                                        >
+                                            {userData?.role === "admin" ? "Reports" : "Reviews"}
                                         </Link>
 
                                         <div
