@@ -10,16 +10,16 @@ const ReviewSection = ({ lessonId }) => {
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
 
-    const fetchReviews = async () => {
-        const res = await axios.get(
-            `${import.meta.env.VITE_API_URL}/lessons/${lessonId}/reviews`
-        );
-        setReviews(res.data.reviews || []);
-    };
-
     useEffect(() => {
+        const fetchReviews = async () => {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons/${lessonId}/reviews`
+            );
+            setReviews(res.data.reviews || []);
+        };
+
         fetchReviews();
-    }, [ fetchReviews]);
+    }, [lessonId]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,6 +41,8 @@ const ReviewSection = ({ lessonId }) => {
                     rating,
                     comment,
                     reviewerEmail: user.email,
+                    reviewerName: user.displayName,
+                    reviewerPhoto: user.photoURL,
                 }
             );
 
@@ -59,9 +61,9 @@ const ReviewSection = ({ lessonId }) => {
 
     return (
         <Container className="mt-16">
-            <h3 className="text-xl mt-20 font-bold mb-3">User Reviews</h3>
+            <h3 className="text-xl font-bold mb-3">User Reviews</h3>
 
-            {/* ⭐ Review Form */}
+            {/* Review Form */}
             <form onSubmit={handleSubmit} className="space-y-3 mb-6">
                 <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -69,11 +71,10 @@ const ReviewSection = ({ lessonId }) => {
                             key={star}
                             type="button"
                             onClick={() => setRating(star)}
-                            className={`text-2xl ${
-                                star <= rating
+                            className={`text-2xl ${star <= rating
                                     ? "text-yellow-400"
                                     : "text-gray-400"
-                            }`}
+                                }`}
                         >
                             ★
                         </button>
@@ -92,7 +93,7 @@ const ReviewSection = ({ lessonId }) => {
                 </button>
             </form>
 
-            {/* 📄 Reviews List */}
+            {/* Reviews List */}
             {reviews.map((review, index) => (
                 <div key={index} className="border p-3 rounded mb-3">
                     <div className="flex justify-between">

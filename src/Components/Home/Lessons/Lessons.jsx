@@ -231,135 +231,145 @@ const Lessons = () => {
                                         className={`w-full h-48 object-cover rounded-lg mb-3 transition-transform
                                         duration-500 group-hover:scale-110 ${isLocked ? "blur-md brightness-75" : ""}`}
                                     />
-                                )
-                                (
-                                    
-                                )
-
-                                }
+                                )}
 
                                 <h3 className="text-lg font-semibold">{title}</h3>
 
-                                {/* Description */ }
-                        < p className = "text-base-600" >
-                        {
-                            expanded[_id]
-                                ? description
-                                        : `${description?.slice(0, 80)}...`}
-                <button
-                    onClick={() => toggleExpand(_id)}
-                    className="text-blue-600 underline ml-2"
-                >
-                    {expanded[_id] ? "See Less" : (
-                        <Link to={`/lesson-details/${_id}`}>See More</Link>
-                    )}
-                </button>
-            </>
-            {/* Lock Screen */}
-            {isLocked && (
-                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col 
+                                {/* Description */}
+                                <div p className="text-base-600" >
+                                    {
+                                        expanded[_id]
+                                            ? description
+                                            : `${description?.slice(0, 80)}...`}
+                                    <button
+                                        onClick={() => toggleExpand(_id)}
+                                        className="text-blue-600 underline ml-2"
+                                    >
+                                        {expanded[_id] ? "See Less" : (
+                                            <Link to={`/lesson-details/${_id}`}>See More</Link>
+                                        )}
+                                    </button>
+                                </div>
+                                {/* Lock Screen */}
+                                {isLocked && (
+                                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col 
                                 items-center justify-center text-center p-6 rounded-lg">
-                    <div className="mb-2 font-semibold text-purple-600">
-                        🔒 Premium Lesson
-                    </div>
-                    <p className="text-gray-700 mb-3">
-                        Upgrade to Premium to unlock this lesson.
-                    </p>
-                    <button
-                        onClick={() =>
-                            document.getElementById(`premium_modal_${_id}`).showModal()
-                        }
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all"
-                    >
-                        Upgrade Now
-                    </button>
-                </div>
-            )}
-            {/* Dynamic MODAL */}
-            <dialog id={`premium_modal_${_id}`} className="modal">
-                <div className="modal-box">
-                    <h3 className="font-bold text-lg">Upgrade to Premium</h3>
+                                        <div className="mb-2 font-semibold text-purple-600">
+                                            🔒 Premium Lesson
+                                        </div>
+                                        <p className="text-gray-700 mb-3">
+                                            Upgrade to Premium to unlock this lesson.
+                                        </p>
+                                        <button
+                                            onClick={() =>
+                                                document.getElementById(`premium_modal_${_id}`).showModal()
+                                            }
+                                            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all"
+                                        >
+                                            Upgrade Now
+                                        </button>
+                                    </div>
+                                )}
+                                {/* Dynamic MODAL */}
+                                <dialog id={`premium_modal_${_id}`} className="modal">
+                                    <div className="modal-box">
+                                        <h3 className="font-bold text-lg">Upgrade to Premium</h3>
 
-                    <p><b>Name:</b> {title}</p>
-                    <p><b>Price:</b> ${price}</p>
-                    <p><b>Access Level:</b> {accessLevel}</p>
+                                        <p><b>Name:</b> {title}</p>
+                                        <p><b>Price:</b> ${price}</p>
+                                        <p><b>Access Level:</b> {accessLevel}</p>
 
-                    <div className="flex justify-between items-center py-5">
-                        <button
-                            onClick={() =>
-                                document.getElementById(`premium_modal_${_id}`).close()
-                            }
-                            className="shadow hover:bg-red-300 font-bold py-2 px-4 rounded"
-                        >
-                            Close
-                        </button>
+                                        <div className="flex justify-between items-center py-5">
+                                            <button
+                                                onClick={() =>
+                                                    document.getElementById(`premium_modal_${_id}`).close()
+                                                }
+                                                className="shadow hover:bg-red-300 font-bold py-2 px-4 rounded"
+                                            >
+                                                Close
+                                            </button>
 
-                        <button
-                            onClick={() => handlePayment(lesson)}
-                            className="shadow hover:bg-green-400 font-bold py-2 px-4 rounded"
-                        >
-                            Pay
-                        </button>
-                    </div>
-                </div>
-            </dialog>
-            <p>Author: {authorEmail}</p>
-            <p>Access Level: {accessLevel}</p>
+                                            <button
+                                                onClick={() => handlePayment(lesson)}
+                                                className="shadow hover:bg-green-400 font-bold py-2 px-4 rounded"
+                                            >
+                                                Pay
+                                            </button>
+                                        </div>
+                                    </div>
+                                </dialog>
+                                <p>Author: {authorEmail}</p>
+                                <p>Access Level: {accessLevel}</p>
 
-            <div className="flex justify-between items-center">
-                <p>Public: {isPublic ? "Yes" : "No"}</p>
-                <Link to={`/lesson-details/${_id}`} className="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Details</Link>
-            </div>
-            <div className="flex justify-end mt-3 gap-4 items-center">
+                                <div className="flex justify-between items-center">
+                                    <p>Public: {isPublic ? "Yes" : "No"}</p>
+                                    <Link to={`/lesson-details/${_id}`} className="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Details</Link>
+                                </div>
+                                <div className="flex justify-end mt-3 gap-4 items-center">
 
-                <LoveReact lessonId={_id} />
-                {(isOwner || isAdmin) && (
-                    <button
-                        onClick={() => handleDelete(_id)}
-                        className="text-red-600 text-2xl hover:text-red-800"
-                    >
-                        <MdDeleteForever />
-                    </button>
-                )}
-                <FavoriteLessons lessonId={lesson._id} />
-                {(isOwner || isAdmin) && (
-                    <Link to={`/edit/${_id}`}>
-                        <button className="text-blue-600 text-2xl hover:text-blue-800">
-                            <MdEdit />
-                        </button>
-                    </Link>
-                )}
+                                    <LoveReact lessonId={_id} />
+                                    {(isOwner || isAdmin) && (
+                                        <button
+                                            onClick={() => handleDelete(_id)}
+                                            className="text-red-600 text-2xl hover:text-red-800"
+                                        >
+                                            <MdDeleteForever />
+                                        </button>
+                                    )}
+                                    <FavoriteLessons lessonId={lesson._id} />
+                                    {(isOwner || isAdmin) && (
+                                        <Link to={`/edit/${_id}`}>
+                                            <button className="text-blue-600 text-2xl hover:text-blue-800">
+                                                <MdEdit />
+                                            </button>
+                                        </Link>
+                                    )}
 
-                <ReportLesson lessonId={_id}></ReportLesson>
-            </div>
+                                    <ReportLesson lessonId={_id}></ReportLesson>
 
-            <Comments postId={_id} />
-        </div>
-    );
-})
+                                    {/* Open the modal using document.getElementById('ID').showModal() method */}
+                                    <button className="btn" onClick={() => document.getElementById('my_modal_5').showModal()}>Reviews</button>
+                                    <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+                                        <div className="modal-box">
+                                            <ReviewSection lessonId={_id}></ReviewSection>
+                                            <div className="modal-action">
+                                                <form method="dialog">
+                                                    {/* if there is a button in form, it will close the modal */}
+                                                    <button className="btn">Close</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </dialog>
+                                </div>
+
+                                <Comments postId={_id} />
+
+                            </div>
+                        );
+                    })
                 )}
             </div >
-    {/* Show More */ }
-    < div className = "flex justify-center mt-6 mb-6" >
-    {
-        visibleCount<lessons.length ? (
-            <button
-                onClick={() => setVisibleCount((prev) => prev + 6)}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-                Show More
-            </button>
-        ) : (
-            lessons.length > 6 && (
-                <button
-                    onClick={() => setVisibleCount(6)}
-                    className="px-4 py-2 bg-gray-600 text-white rounded"
-                >
-                    Show Less
-                </button>
-            )
-        )
-    }
+            {/* Show More */}
+            < div className="flex justify-center mt-6 mb-6" >
+                {
+                    visibleCount < lessons.length ? (
+                        <button
+                            onClick={() => setVisibleCount((prev) => prev + 6)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                        >
+                            Show More
+                        </button>
+                    ) : (
+                        lessons.length > 6 && (
+                            <button
+                                onClick={() => setVisibleCount(6)}
+                                className="px-4 py-2 bg-gray-600 text-white rounded"
+                            >
+                                Show Less
+                            </button>
+                        )
+                    )
+                }
             </div >
         </Container >
     );
