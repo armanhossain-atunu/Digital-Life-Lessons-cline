@@ -6,6 +6,7 @@ import useAuth from "../../../Hooks/useAuth";
 import avatarImg from "../../../assets/placeholder.jpg";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+// import LessonAccessToggle from "../../LessonAccessToggle";
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
@@ -127,7 +128,8 @@ const Navbar = () => {
 
                     {/* Right Side */}
                     <div className="navbar-end">
-
+                        {/* <LessonAccessToggle></LessonAccessToggle> */}
+                        
                         {/* Theme Toggle */}
                         <label className="toggle text-base-content mr-5">
                             <input

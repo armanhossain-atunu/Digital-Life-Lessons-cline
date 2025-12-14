@@ -1,26 +1,30 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Container from "../../Shared/Container";
-import { MdDeleteForever, MdEdit, MdFavorite} from "react-icons/md";
+import { MdDeleteForever, MdEdit, MdFavorite } from "react-icons/md";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
-import { useState } from "react";
-import FavoriteLessons from "./Favorite"; 
-import { Link, useNavigate } from "react-router"; 
+import { useState, useEffect } from "react";
+import FavoriteLessons from "./Favorite";
+import { Link, useNavigate } from "react-router";
 import Search from "./Search";
 import ReportLesson from "../../../Pages/Reports/ReportLesson";
 import ReviewSection from "../../Reviews/ReviewSection";
+import Lottie from "lottie-react";
 
 const Lessons = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [currentPage, setCurrentPage] = useState(1);
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [completedLesson, setCompletedLesson] = useState(null);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const itemsPerPage = 6;
 
   // Fetch user role
   const { data: userData } = useQuery({
@@ -50,7 +54,7 @@ const Lessons = () => {
     },
   });
 
-  // Fetch user's favorite lessons to show "Remove" button
+  // Fetch user's favorite lessons
   const { data: favoriteLessons = [] } = useQuery({
     queryKey: ["favoriteLessons", user?.email],
     queryFn: async () => {
@@ -65,10 +69,31 @@ const Lessons = () => {
     return favoriteLessons.some((fav) => fav.lessonId === lessonId || fav._id === lessonId);
   };
 
+  // Filter and paginate lessons
   const filteredLessons = lessons.filter((lesson) =>
     lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const visibleLessons = filteredLessons.slice(0, visibleCount);
+
+  const totalPages = Math.ceil(filteredLessons.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedLessons = filteredLessons.slice(startIndex, endIndex);
+
+  // // Reset to page 1 when search term changes
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [searchTerm]);
+
+  // Hide animation after 2 seconds
+  useEffect(() => {
+    if (showAnimation) {
+      const timer = setTimeout(() => {
+        setShowAnimation(false);
+        setCompletedLesson(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAnimation]);
 
   // Delete Mutation
   const deleteLessonMutation = useMutation({
@@ -127,19 +152,26 @@ const Lessons = () => {
       },
     };
 
-   try {
-  const { data } = await axios.post(
-    `${import.meta.env.VITE_API_URL}/create-checkout-session`,
-    paymentInfo
-  );
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+        paymentInfo
+      );
 
-  // Safe redirect inside click handler
-  window.location.assign(data.url); 
- 
+      window.location.assign(data.url);
+    } catch (err) {
+      toast.error("Payment failed. Try again.");
+    }
+  };
 
-} catch (err) {
-  toast.error("Payment failed. Try again.");
-}
+  const handleLessonCompleted = (lessonTitle) => {
+    setCompletedLesson(lessonTitle);
+    setShowAnimation(true);
+  };
+
+  const handlePaginationChange = (pageNum) => {
+    setCurrentPage(pageNum);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (isLoading) return <LoadingSpinner />;
@@ -147,20 +179,33 @@ const Lessons = () => {
 
   return (
     <Container>
+      {/* Success Animation Overlay */}
+      {showAnimation && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm">
+          <div className="bg-white rounded-lg p-8 text-center max-w-sm">
+            <FiCheckCircle className="text-green-500 text-6xl mx-auto mb-4" />
+            <p className="mt-4 text-lg font-semibold text-gray-800">
+              Great job! Lesson Completed
+            </p>
+            <p className="text-gray-600">{completedLesson}</p>
+          </div>
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold text-center my-8">
         All Lessons ({lessons.length})
       </h1>
 
-      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Search className='flex justify-end' searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2 gap-6">
         {filteredLessons.length === 0 ? (
           <div className="col-span-full text-center py-20">
             <h2 className="text-2xl font-semibold text-gray-500">Lesson not found</h2>
             <p className="text-gray-400 mt-2">Try searching with different keywords</p>
           </div>
         ) : (
-          visibleLessons.map((lesson) => {
+          paginatedLessons.map((lesson) => {
             const {
               _id,
               image,
@@ -182,7 +227,7 @@ const Lessons = () => {
             return (
               <div
                 key={_id}
-                className="relative bg-white rounded-xl shadow hover:shadow-xl transition-all border overflow-hidden"
+                className="relative bg-white rounded-xl h-[700px] overflow-y-scroll shadow hover:shadow-xl transition-all border overflow-hidden"
               >
                 {/* Premium Lock Overlay */}
                 {locked && (
@@ -201,7 +246,7 @@ const Lessons = () => {
                 <img
                   src={image || "/placeholder.jpg"}
                   alt={title}
-                  className={`w-full h-48 object-cover ${locked ? "brightness-50" : ""}`}
+                  className={`w-full h-50 rounded-xl p-2 object-cover ${locked ? "brightness-50" : ""}`}
                 />
 
                 <div className="p-5">
@@ -226,11 +271,10 @@ const Lessons = () => {
                   <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
                     <Link
                       to={`/lesson-details/${_id}`}
-                      className={`px-5 py-2 rounded-lg font-medium transition ${
-                        locked
-                          ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                          : "bg-indigo-600 text-white hover:bg-indigo-700"
-                      }`}
+                      className={`px-5 py-2 rounded-lg font-medium transition ${locked
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        : "bg-indigo-600 text-white hover:bg-indigo-700"
+                        }`}
                       onClick={(e) => locked && e.preventDefault()}
                     >
                       {locked ? "Locked" : "View Details"}
@@ -238,16 +282,12 @@ const Lessons = () => {
 
                     <div className="flex items-center gap-3">
                       <LoveReact lessonId={_id} />
+                    
+                      <FavoriteLessons lessonId={_id} />
 
-                      {/* Favorite Toggle Button */}
-                      <FavoriteLessons lessonId={_id} /> {/* This should toggle favorite */}
-
-                      {/* Show Remove Button if already favorited */}
                       {favorited && (
                         <button
                           onClick={() => {
-                            // Assuming FavoriteLessons component has remove logic, or call API directly
-                            // Here we trigger the same component to remove
                             document.querySelector(`[data-lesson-id="${_id}"]`)?.click();
                             toast.success("Removed from favorites");
                           }}
@@ -268,7 +308,7 @@ const Lessons = () => {
                           >
                             <MdDeleteForever />
                           </button>
-                          <Link to={`/edit/${_id}`} className="text-blue-600 hover:text-blue-800 text-2xl">
+                          <Link to={`/lessonsUpdate/${_id}`} className="text-blue-600 hover:text-blue-800 text-2xl">
                             <MdEdit />
                           </Link>
                         </>
@@ -298,7 +338,7 @@ const Lessons = () => {
                     </dialog>
                   </div>
 
-                  <Comments postId={_id} />
+                  <Comments postId={_id} onLessonCompleted={() => handleLessonCompleted(title)} />
                 </div>
               </div>
             );
@@ -306,26 +346,44 @@ const Lessons = () => {
         )}
       </div>
 
-      {/* Load More */}
-      <div className="text-center my-10">
-        {visibleCount < filteredLessons.length ? (
+      {/* Pagination Controls */}
+      {filteredLessons.length > 0 && (
+        <div className="flex justify-center items-center gap-3 my-10">
+          {/* Previous Button */}
           <button
-            onClick={() => setVisibleCount(prev => prev + 6)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            onClick={() => handlePaginationChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
           >
-            Load More
+            Previous
           </button>
-        ) : (
-          filteredLessons.length > 6 && (
-            <button
-              onClick={() => setVisibleCount(6)}
-              className="px-6 py-3 bg-gray-600 text-white rounded-lg"
-            >
-              Show Less
-            </button>
-          )
-        )}
-      </div>
+
+          {/* Page Numbers */}
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePaginationChange(page)}
+                className={`px-3 py-2 rounded-lg font-medium transition ${currentPage === page
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={() => handlePaginationChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </Container>
   );
 };

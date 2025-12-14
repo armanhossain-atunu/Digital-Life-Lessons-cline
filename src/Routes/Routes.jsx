@@ -19,6 +19,8 @@ import PaymentSuccess from "../Pages/Payment/paymentSuccess";
 import ReportLesson from "../Pages/Reports/ReportLesson";
 import Reports from "../Pages/Reports/Reports";
 import ReviewSection from "../Components/Reviews/ReviewSection";
+import LessonsUpdate from "../Components/Home/Lessons/LessonsUpdate";
+import PaymentCancel from "../Pages/Payment/PaymentCancel";
 
 
 const router = createBrowserRouter([
@@ -64,8 +66,10 @@ const router = createBrowserRouter([
                 path: '/favorite-lessons',
                 element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>,
             },
-            { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
-            { path: '/Reviews', element: <ReviewSection></ReviewSection> },
+            { path: 'payment-success', element: <PrivateRoute> <PaymentSuccess></PaymentSuccess></PrivateRoute> },
+            { path: 'payment-cancel', element: <PrivateRoute> <PaymentCancel></PaymentCancel></PrivateRoute> },
+            { path: '/Reviews', element: <PrivateRoute> <ReviewSection></ReviewSection> </PrivateRoute> },
+            { path: '/lessonsUpdate/:id', element: <PrivateRoute> <LessonsUpdate></LessonsUpdate></PrivateRoute> },
 
 
         ],

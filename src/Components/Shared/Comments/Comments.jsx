@@ -1,24 +1,28 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import useAuth from '../../../Hooks/useAuth';
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import SocialMedia from '../Button/SocialMedia';
 
 const Comments = ({ postId, }) => {
     const { user } = useAuth()
     const [inputComment, setInputComment] = useState("");
     // Load Comments using useQuery
+    const queryClient = useQueryClient();
     const { data: comments = [], isLoading } = useQuery({
         queryKey: ["comments", postId],
-        queryFn: async () => {
+        queryFn: async ({ signal }) => {
             const url = `${import.meta.env.VITE_API_URL}/comments?postId=${postId}`;
-            const { data } = await axios.get(url);
-            return data || [];
+            try {
+                const res = await axios.get(url, { signal });
+                return res?.data ?? [];
+            } catch (err) {
+                // swallow transient errors and return empty array so UI doesn't break
+                return [];
+            }
         },
         enabled: !!postId,
-        refetchInterval: 1000,
-    }
-    );
+    });
 
     // Post Comment using useMutation
     const { mutateAsync: addComment, isPending } = useMutation({
@@ -31,9 +35,9 @@ const Comments = ({ postId, }) => {
                 createdAt: new Date().toISOString(),
             });
         },
-        onSuccess: () => {
+        onSuccess: async () => {
             setInputComment("");
-            QueryClient.invalidateQueries(["comments", postId]);
+            await queryClient.invalidateQueries(["comments", postId]);
         },
     });
 

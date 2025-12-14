@@ -1,13 +1,15 @@
 import React from "react";
 import Container from "../../Components/Shared/Container";
 import useAuth from "../../Hooks/useAuth";
-import { Link } from "react-router"; // Fixed: was "react-router" → "react-router-dom"
+import { Link } from "react-router";
 import useFavoriteLessons from "../../Hooks/ShareAllApi/useFavoriteLessons";
 import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const FavoriteLessons = () => {
   const { user } = useAuth();
-  const { favoriteLessons, isLoading, error } = useFavoriteLessons();
+  const { favoriteLessons, refetch, isLoading, error } = useFavoriteLessons();
 
   if (!user)
     return (
@@ -24,6 +26,22 @@ const FavoriteLessons = () => {
         <p className="mt-20 text-center text-red-500">Failed to load favorites</p>
       </Container>
     );
+
+  // Remove favorite lesson
+  const handleRemoveFavorite = async (lessonId) => {
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/favorite/${lessonId}`, {
+        userEmail: user.email,
+      });
+
+      // Refresh favorites list after removal
+      await refetch();
+      toast.success("Removed from favorites");
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to remove favorite");
+    }
+  };
 
   return (
     <Container>
@@ -43,10 +61,10 @@ const FavoriteLessons = () => {
                 <th className="px-6 py-4 border border-base-300">Image</th>
                 <th className="px-6 py-4 border border-base-300">Category</th>
                 <th className="px-6 py-4 border border-base-300">Title</th>
-                <th className="px-6 py-4 border border-base-300">Description</th>
                 <th className="px-6 py-4 border border-base-300">Tone</th>
                 <th className="px-6 py-4 border border-base-300 text-center">Access</th>
                 <th className="px-6 py-4 border border-base-300 text-center">Action</th>
+                <th className="px-6 py-4 border border-base-300 text-center">Remove</th>
               </tr>
             </thead>
             <tbody>
@@ -81,14 +99,7 @@ const FavoriteLessons = () => {
                     </td>
 
                     {/* Title */}
-                    <td className="px-6 py-4 border border-base-300 font-semibold">
-                      {lesson.title}
-                    </td>
-
-                    {/* Description */}
-                    <td className="px-6 py-4 border border-base-300 text-sm text-base-600 max-w-md">
-                      {lesson.description}
-                    </td>
+                    <td className="px-6 py-4 border border-base-300 font-semibold">{lesson.title}</td>
 
                     {/* Tone */}
                     <td className="px-6 py-4 border border-base-300 text-sm">
@@ -111,9 +122,7 @@ const FavoriteLessons = () => {
                     {/* Action */}
                     <td className="px-6 py-4 border border-base-300 text-center">
                       {isPremiumLocked ? (
-                        <span className="text-sm text-gray-600">
-                          Upgrade to view
-                        </span>
+                        <span className="text-sm text-gray-600">Upgrade to view</span>
                       ) : (
                         <Link
                           to={`/lesson-details/${lesson._id}`}
@@ -122,6 +131,16 @@ const FavoriteLessons = () => {
                           View Details
                         </Link>
                       )}
+                    </td>
+
+                    {/* Remove Favorite */}
+                    <td className="px-6 py-4 border border-base-300 text-center">
+                      <button
+                        onClick={() => handleRemoveFavorite(lesson._id)}
+                        className="px-4 py-2 bg-red-600 cursor-pointer text-white text-sm rounded-lg hover:bg-red-700 transition"
+                      >
+                        Remove
+                      </button>
                     </td>
                   </tr>
                 );

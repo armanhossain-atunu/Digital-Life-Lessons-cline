@@ -6,12 +6,13 @@ import Container from "../Shared/Container";
 
 const ReviewSection = ({ lessonId }) => {
   const { user } = useAuth();
+  console.log(user,'firebase user');
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hasReviewed, setHasReviewed] = useState(false); // Track if user already reviewed
+  const [hasReviewed, setHasReviewed] = useState(false);
 
   // Fetch reviews for this lesson
   const fetchReviews = async () => {
@@ -27,13 +28,13 @@ const ReviewSection = ({ lessonId }) => {
       // Handle ALL possible response shapes
       if (Array.isArray(res.data)) {
         fetchedReviews = res.data;
-      } 
+      }
       else if (res.data && Array.isArray(res.data.reviews)) {
         fetchedReviews = res.data.reviews;
-      } 
+      }
       else if (res.data && Array.isArray(res.data.data)) {
         fetchedReviews = res.data.data;
-      } 
+      }
       else if (res.data && typeof res.data === "object") {
         // If it's an object but not array, maybe empty
         fetchedReviews = [];
@@ -92,13 +93,13 @@ const ReviewSection = ({ lessonId }) => {
           rating,
           comment: comment.trim(),
           reviewerEmail: user.email,
-          reviewerName: user.displayName || "Anonymous",
-          reviewerPhoto: user.photoURL || "",
+          reviewerName: user?.displayName,
+          reviewerPhoto: user?.photoURL || "",
         }
       );
 
       toast.success("Thank you! Your review has been submitted.");
-      
+
       // Reset form
       setRating(0);
       setHoverRating(0);
@@ -110,7 +111,7 @@ const ReviewSection = ({ lessonId }) => {
     } catch (err) {
       const message =
         err.response?.data?.message ||
-        err.response?.status === 409
+          err.response?.status === 409
           ? "You have already reviewed this lesson"
           : "Failed to submit review. Try again.";
 
@@ -143,11 +144,10 @@ const ReviewSection = ({ lessonId }) => {
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
                     disabled={loading}
-                    className={`text-4xl transition-colors ${
-                      star <= (hoverRating || rating)
+                    className={`text-4xl transition-colors ${star <= (hoverRating || rating)
                         ? "text-yellow-400"
                         : "text-gray-300"
-                    } hover:text-yellow-400`}
+                      } hover:text-yellow-400`}
                   >
                     ★
                   </button>
