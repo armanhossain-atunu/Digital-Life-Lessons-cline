@@ -5,7 +5,7 @@ import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router";
 
 const ReportLesson = ({ lessonId }) => {
-    console.log(lessonId);
+    // console.log(lessonId);
     const { user } = useAuth();
     const navigate = useNavigate();
 

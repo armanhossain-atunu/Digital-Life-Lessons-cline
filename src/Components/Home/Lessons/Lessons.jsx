@@ -54,6 +54,7 @@ const Lessons = () => {
     },
   });
 
+
   // Fetch user's favorite lessons
   const { data: favoriteLessons = [] } = useQuery({
     queryKey: ["favoriteLessons", user?.email],
@@ -79,10 +80,6 @@ const Lessons = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedLessons = filteredLessons.slice(startIndex, endIndex);
 
-  // // Reset to page 1 when search term changes
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  // }, [searchTerm]);
 
   // Hide animation after 2 seconds
   useEffect(() => {
@@ -159,7 +156,7 @@ const Lessons = () => {
       );
 
       window.location.assign(data.url);
-    } catch (err) {
+    } catch {
       toast.error("Payment failed. Try again.");
     }
   };
@@ -193,7 +190,7 @@ const Lessons = () => {
       )}
 
       <h1 className="text-3xl font-bold text-center my-8">
-        All Lessons ({lessons.length})
+        Featured Life Lessons({lessons.length})
       </h1>
 
       <Search className='flex justify-end' searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -227,21 +224,23 @@ const Lessons = () => {
             return (
               <div
                 key={_id}
-                className="relative bg-white rounded-xl h-[700px] overflow-y-scroll shadow hover:shadow-xl transition-all border overflow-hidden"
+                className="relative bg-base-300 rounded-xl h-[700px] overflow-y-scroll shadow hover:shadow-xl transition-all border overflow-hidden"
               >
                 {/* Premium Lock Overlay */}
-                {locked && (
-                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-white text-center p-6">
-                    <span className="text-5xl mb-3">Premium</span>
-                    <p className="text-sm mb-4">Upgrade to access this lesson</p>
-                    <button
-                      onClick={() => handlePayment(lesson)}
-                      className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700"
-                    >
-                      Upgrade Now (${price})
-                    </button>
-                  </div>
-                )}
+                {
+                  locked && (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-white text-center p-6">
+                      <span className="text-5xl mb-3">Premium</span>
+                      <p className="text-sm mb-4">Upgrade to access this lesson</p>
+                      <button
+                        onClick={() => handlePayment(lesson)}
+                        className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700"
+                      >
+                        Upgrade Now (${price})
+                      </button>
+                    </div>
+                  )
+                }
 
                 <img
                   src={image || "/placeholder.jpg"}
@@ -282,7 +281,7 @@ const Lessons = () => {
 
                     <div className="flex items-center gap-3">
                       <LoveReact lessonId={_id} />
-                    
+
                       <FavoriteLessons lessonId={_id} />
 
                       {favorited && (

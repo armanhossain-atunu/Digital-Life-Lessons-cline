@@ -6,12 +6,15 @@ import useAuth from "../../../Hooks/useAuth";
 import avatarImg from "../../../assets/placeholder.jpg";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import useUsers from "../../../Hooks/ShareAllApi/useUsers";
+// import UpgradePayment from "../../../Pages/Payment/UpgradePayment";
 // import LessonAccessToggle from "../../LessonAccessToggle";
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
     const { user, logOut } = useAuth();
-
+    const { data: users = [] } = useUsers()
+    console.log(users[0]?.plan,'db users')
     // Fetch user role (returns a single object)
     const useUserRole = (email) => {
         return useQuery({
@@ -72,8 +75,12 @@ const Navbar = () => {
                     <MyLink to="/my-lessons">My Lessons</MyLink>
                 </li>
                 <li>
+                    <MyLink to="/public-lessons">Public Lessons </MyLink>
+                </li>
+                <li>
                     <MyLink to="/favorite-lessons">Favorites Lessons</MyLink>
                 </li>
+
             </div>
         </>
     );
@@ -129,7 +136,7 @@ const Navbar = () => {
                     {/* Right Side */}
                     <div className="navbar-end">
                         {/* <LessonAccessToggle></LessonAccessToggle> */}
-                        
+
                         {/* Theme Toggle */}
                         <label className="toggle text-base-content mr-5">
                             <input

@@ -35,18 +35,18 @@ const PaymentSuccess = () => {
           setLessonId(res.data.lessonId || null);
 
           setTimeout(() => {
-            navigate(res.data.lessonId ? `/lesson-details/${res.data.lessonId}` : "/lessons");
+            navigate(res.data.lessonId ? `/lesson-details/${res.data.lessonId}` : "/");
           }, 4000);
         } else {
           setSuccess(false);
           setStatus(res.data.message || "Payment failed");
-          setTimeout(() => navigate("/lessons"), 4000);
+          setTimeout(() => navigate("/payment-cancel"), 4000);
         }
       })
       .catch(() => {
         setSuccess(false);
         setStatus("Payment verification failed.");
-        setTimeout(() => navigate("/lessons"), 4000);
+        setTimeout(() => navigate("/payment-cancel"), 4000);
       });
   }, [searchParams, navigate]);
 
@@ -70,7 +70,7 @@ const PaymentSuccess = () => {
         </p>
 
         <Link
-          to={lessonId ? `/lesson-details/${lessonId}` : "/lessons"}
+          to={lessonId ? `/lesson-details/${lessonId}` : "/"}
           className="inline-block bg-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-purple-700 transition"
         >
           Go Now

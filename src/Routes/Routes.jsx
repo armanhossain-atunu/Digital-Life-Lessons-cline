@@ -21,6 +21,7 @@ import Reports from "../Pages/Reports/Reports";
 import ReviewSection from "../Components/Reviews/ReviewSection";
 import LessonsUpdate from "../Components/Home/Lessons/LessonsUpdate";
 import PaymentCancel from "../Pages/Payment/PaymentCancel";
+import PublicLessons from "../Pages/Public_Lessons/PublicLessons";
 
 
 const router = createBrowserRouter([
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
                 element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>,
             },
             {
+                path: '/public-lessons',
+                element: <PrivateRoute><PublicLessons></PublicLessons> </PrivateRoute>
+            },
+            {
                 path: '/lesson-details/:id',
                 element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>,
             },
@@ -66,8 +71,7 @@ const router = createBrowserRouter([
                 path: '/favorite-lessons',
                 element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>,
             },
-            { path: 'payment-success', element: <PrivateRoute> <PaymentSuccess></PaymentSuccess></PrivateRoute> },
-            { path: 'payment-cancel', element: <PrivateRoute> <PaymentCancel></PaymentCancel></PrivateRoute> },
+
             { path: '/Reviews', element: <PrivateRoute> <ReviewSection></ReviewSection> </PrivateRoute> },
             { path: '/lessonsUpdate/:id', element: <PrivateRoute> <LessonsUpdate></LessonsUpdate></PrivateRoute> },
 
@@ -86,7 +90,8 @@ const router = createBrowserRouter([
             { path: 'add-lessons', element: <AddLesson></AddLesson> },
             { path: 'my-lessons', element: <MyLessons></MyLessons> },
             { path: 'Reports', element: <Reports></Reports> },
-
+            { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
+            { path: 'payment-cancel', element: <PaymentCancel></PaymentCancel> },
 
         ]
 

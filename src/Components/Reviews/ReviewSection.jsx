@@ -6,7 +6,7 @@ import Container from "../Shared/Container";
 
 const ReviewSection = ({ lessonId }) => {
   const { user } = useAuth();
-  console.log(user,'firebase user');
+  // console.log(user,'firebase user');
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -182,7 +182,7 @@ const ReviewSection = ({ lessonId }) => {
           </form>
         </div>
       ) : user && hasReviewed ? (
-        <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg mb-8 text-center">
+        <div className="bg-base-50 border border-green-200 text-green-800 p-4 rounded-lg mb-8 text-center">
           ✅ Thank you for your review!
         </div>
       ) : null}
@@ -194,7 +194,7 @@ const ReviewSection = ({ lessonId }) => {
         </h4>
 
         {reviews.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">
+          <p className="text-base-500 text-center py-8">
             No reviews yet. Be the first to review this lesson!
           </p>
         ) : (
@@ -214,7 +214,7 @@ const ReviewSection = ({ lessonId }) => {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-semibold">{review.reviewerName || "Anonymous"}</p>
-                      <p className="text-sm text-gray-500">{review.reviewerEmail}</p>
+                      <p className="text-sm text-base-500">{review.reviewerEmail}</p>
                     </div>
                     <span className="text-2xl text-yellow-400">
                       {displayStars(review.rating)}
