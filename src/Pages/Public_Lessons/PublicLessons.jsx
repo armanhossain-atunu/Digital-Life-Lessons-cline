@@ -62,9 +62,6 @@ const PublicLessons = () => {
                   {lesson?.description}
                 </p>
 
-
-
-
                 <div className="flex items-center gap-1">
                   {lesson.averageRating ? (
                     <>
@@ -81,25 +78,25 @@ const PublicLessons = () => {
                   <LoveReact lessonId={lesson._id} />
                   <Favorite lessonId={lesson._id} />
                 </div>
-                  {/* Reviews Modal */}
-                                  <div className="mt-4">
-                                    <button
-                                      className="text-sm text-indigo-600 underline"
-                                      onClick={() => document.getElementById(`review_${lesson?._id}`).showModal()}
-                                    >
-                                      View Reviews
-                                    </button>
-                                    <dialog id={`review_${lesson?._id}`} className="modal">
-                                      <div className="modal-box">
-                                        <ReviewSection lessonId={lesson?._id}  />
-                                        <div className="modal-action">
-                                          <form method="dialog">
-                                            <button className="btn">Close</button>
-                                          </form>
-                                        </div>
-                                      </div>
-                                    </dialog>
-                                  </div>
+                {/* Reviews Modal */}
+                <div className="mt-4">
+                  <button
+                    className="text-sm text-indigo-600 underline"
+                    onClick={() => document.getElementById(`review_${lesson?._id}`).showModal()}
+                  >
+                    View Reviews
+                  </button>
+                  <dialog id={`review_${lesson?._id}`} className="modal">
+                    <div className="modal-box">
+                      <ReviewSection lessonId={lesson?._id} />
+                      <div className="modal-action">
+                        <form method="dialog">
+                          <button className="btn">Close</button>
+                        </form>
+                      </div>
+                    </div>
+                  </dialog>
+                </div>
 
 
 

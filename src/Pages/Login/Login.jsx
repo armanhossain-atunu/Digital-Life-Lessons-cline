@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 const Login = () => {
-    const { signIn, signInWithGoogle, loading, user, setLoading } = useAuth();
+    const { signIn, signInWithGoogle, loading, user } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -43,15 +43,33 @@ const Login = () => {
             await signIn(data.email, data.password);
             toast.success("Login Successful");
             navigate(from, { replace: true });
-        } catch (err) {
-            console.log(err);
-            setLoading(false);
-            toast.error(err?.message);
+        } catch (error) {
+            const errorCode = error.code;
+
+            switch (errorCode) {
+                case "auth/invalid-email":
+                    toast.error("Invalid email format");
+                    break;
+                case "auth/user-not-found":
+                    toast.error("No account found with this email");
+                    break;
+                case "auth/wrong-password":
+                    toast.error("Incorrect password");
+                    break;
+                case "auth/invalid-credential":
+                    toast.error("Invalid credentials. Please try again");
+                    break;
+                case "auth/network-request-failed":
+                    toast.error("Network error. Check your connection");
+                    break;
+                default:
+                    toast.error("Login failed. Please try again");
+            }
         }
     };
 
     // -----------------------------------
-    //  Google Login + Save To DB
+    // Google Login + Save To DB
     // -----------------------------------
     const handleGoogleSignIn = async () => {
         try {
@@ -67,14 +85,14 @@ const Login = () => {
                 createdAt: new Date().toLocaleString(),
             });
 
-            toast.success("Signup Successful db");
+            toast.success("Signup Successful");
             navigate(from, { replace: true });
-
         } catch (err) {
-            console.log(err);
-            toast.error(err.message);
+            console.error(err);
+            toast.error("Google login failed. Please try again");
         }
-    }
+    };
+
     // Loading / Already Logged in
     if (loading) return <LoadingSpinner />;
     if (user) return <Navigate to={from} replace={true} />;
@@ -91,10 +109,7 @@ const Login = () => {
                 </div>
 
                 {/* Login Form */}
-                <form
-                    onSubmit={handleSubmit(handleLogin)}
-                    className="space-y-6"
-                >
+                <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
                     <div className="space-y-4">
                         {/* Email */}
                         <div className="relative">
@@ -153,7 +168,7 @@ const Login = () => {
                             type="submit"
                             className="bg-lime-500 w-full rounded-md py-3 cursor-pointer text-white font-semibold hover:bg-lime-600 transition"
                         >
-                            {loading ? <LoadingSpinner /> : "Log In"}
+                            Log In
                         </button>
                     </div>
                 </form>

@@ -139,7 +139,7 @@ const SignUp = () => {
                                 type='file'
                                 id='image'
                                 accept='image/*'
-                                className='w-full text-sm bg-gray-100 border border-dashed p-2'
+                                className='w-full text-sm bg-base-100 border border-dashed p-2'
                                 {...register('image')}
                             />
                         </div>

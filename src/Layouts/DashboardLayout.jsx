@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet } from 'react-router';
 import { MdAdminPanelSettings } from "react-icons/md";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import useAuth from '../Hooks/useAuth';
+import { FaUserPlus } from 'react-icons/fa';
 
 const DashboardLayout = () => {
     const { logOut } = useAuth()
@@ -79,6 +80,17 @@ const DashboardLayout = () => {
                                     <span className="is-drawer-close:hidden">Profile</span>
                                 </button>
 
+                            </NavLink>
+                        </li>
+                        {/* create users item */}
+                        <li>
+
+                            <NavLink to="/dashboard/admin_User_Create">
+                                <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Create Users">
+                                    {/* create users icon */}
+                                   <FaUserPlus></FaUserPlus>
+                                    <span className="is-drawer-close:hidden">Create Users</span>
+                                </button>
                             </NavLink>
                         </li>
 

@@ -1,18 +1,3 @@
-// import React from 'react';
-
-// const Reports = () => {
-//     return (
-//         <div>
-//             <h1 className='text-2xl mt-20 font-semibold'>Reports</h1>
-            
-
-//         </div>
-//     );
-// };
-
-// export default Reports;
-
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -54,7 +39,7 @@ const Reports = () => {
     };
 
     const clearAllReports = async (lessonId) => {
-        if (!confirm("Clear all reports for this lesson?")) return;
+        if (!toast.confirm("Clear all reports for this lesson?")) return;
 
         try {
             await axios.patch(

@@ -13,8 +13,6 @@ import { Link, useNavigate } from "react-router";
 import Search from "./Search";
 import ReportLesson from "../../../Pages/Reports/ReportLesson";
 import ReviewSection from "../../Reviews/ReviewSection";
-import Lottie from "lottie-react";
-import Navbar from "../../Shared/Navbar/Navbar";
 
 const Lessons = () => {
   const queryClient = useQueryClient();
@@ -208,10 +206,10 @@ const Lessons = () => {
               _id,
               image,
               title,
-              price,
               description,
               accessLevel = "free",
               authorEmail,
+              createdAt,
               isPublic = false,
             } = lesson;
 
@@ -237,7 +235,7 @@ const Lessons = () => {
                         onClick={() => handlePayment(lesson)}
                         className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700"
                       >
-                        Upgrade Now (${price}
+                        Upgrade Now Pay
                       </button>
                     </div>
                   )
@@ -248,9 +246,11 @@ const Lessons = () => {
                   alt={title}
                   className={`w-full h-50 rounded-xl p-2 object-cover ${locked ? "brightness-50" : ""}`}
                 />
-
+                <div className="text-end px-2">
+                  <p> {createdAt}</p>
+                </div>
                 <div className="p-5">
-                  <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+                  <h3 className="text-xl font-bold text-base-800">{title}</h3>
 
                   <p className="text-gray-600 text-sm mt-2">
                     {expanded[_id] ? description : `${description?.slice(0, 100)}...`}
@@ -263,8 +263,8 @@ const Lessons = () => {
                   </p>
 
                   <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                    <span>by {authorEmail}</span>
-                    <span className="capitalize">{access} • {publicAccess ? "Public" : "Private"}</span>
+                    <Link to={`/my-lessons/${authorEmail}`} className="flex items-center underline hover:text-blue-500">Author: {authorEmail}</Link>
+                    <span className="capitalize">{access}:{publicAccess ? "Public" : "Private"}</span>
                   </div>
 
                   {/* Action Buttons */}

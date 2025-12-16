@@ -10,6 +10,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { MdMenuBook } from "react-icons/md";
 import useLessons from '../../../Hooks/ShareAllApi/useLessons';
 import useFavoriteLessons from '../../../Hooks/ShareAllApi/useFavoriteLessons';
+import UserList from '../User/UserList';
 
 
 const DashboardHome = () => {
@@ -35,7 +36,7 @@ const DashboardHome = () => {
         }
 
     });
-    
+
     // Fetch total number of free lessons
     const { data: free = [], } = useQuery({
         queryKey: ["freeLessonsCount"],
@@ -135,6 +136,7 @@ const DashboardHome = () => {
                         <table className="table w-full border border-base-200 rounded-xl">
                             <thead>
                                 <tr className="bg-base-200">
+                                    <th> Image</th>
                                     <th>Title</th>
                                     <th>Category</th>
                                     <th>Created Date</th>
@@ -145,6 +147,7 @@ const DashboardHome = () => {
                             <tbody>
                                 {lessons.slice(-5).map((lesson) => (
                                     <tr key={lesson._id}>
+                                        <td className='w-10 h-10'><img src={lesson?.image} alt="" /></td>
                                         <td>{lesson.title}</td>
                                         <td>{lesson.category}</td>
                                         <td>{new Date(lesson.createdAt).toLocaleDateString()}</td>
@@ -164,6 +167,9 @@ const DashboardHome = () => {
                     </div>
                 )}
             </div>
+
+
+            <UserList></UserList>
 
             {/* Weekly Lessons Chart */}
             <div className="mt-10 mb-20">

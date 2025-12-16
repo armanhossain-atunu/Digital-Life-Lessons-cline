@@ -6,20 +6,26 @@ import { Navigate } from 'react-router';
 
 const AdminRouter = ({ children }) => {
     const { user } = useAuth();
-    const { data: userAdmin = [], isLoading } = useUsers(user?.email);
-    if (isLoading) return <LoadingSpinner></LoadingSpinner>
-    // logged in but NOT admin
-    if (user && userAdmin?.role !== "admin") {
-        return <Navigate to="/unauthorized"/>;
-    }
+const { data: users = [], isLoading } = useUsers(); 
 
-    // admin allowed
-    if (user && userAdmin?.role === "admin") {
-        return children;
-    }
+// current user details
+const currentUser = users.find(u => u.email === user?.email);
 
-    // not logged in
-    return <Navigate to="/auth/login" replace />;
+if (isLoading) return <LoadingSpinner />;
+
+// not logged in
+if (!user) {
+  return <Navigate to="/auth/login" replace />;
+}
+
+// admin allowed
+if (currentUser?.role?.toLowerCase() === "admin") {
+  return children;
+}
+
+// logged in but NOT admin
+return <Navigate to="/unauthorized" />;
+
 };
 
 export default AdminRouter;

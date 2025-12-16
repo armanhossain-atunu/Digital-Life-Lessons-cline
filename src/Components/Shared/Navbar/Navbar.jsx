@@ -85,7 +85,6 @@ const Navbar = () => {
                             <path d="m19.07 4.93-1.41 1.41"></path>
                         </g>
                     </svg>
-
                     <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
                             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
@@ -111,7 +110,6 @@ const Navbar = () => {
                 <li>
                     <MyLink to="/favorite-lessons">Favorites Lessons</MyLink>
                 </li>
-
             </div>
         </>
     );
@@ -153,7 +151,7 @@ const Navbar = () => {
                                 {navItems}
                                 {/* User Plan Button / Badge */}
                                 {user && userPlan === "free" && (
-                                    <Link to="/dashboard/pricing" className="btn text-base-200 bg-purple-500 mr-2">
+                                    <Link to="/pricing" className="btn text-base-200 bg-purple-500 mr-2">
                                         Upgrade to Pro
                                     </Link>
                                 )}
@@ -167,7 +165,7 @@ const Navbar = () => {
                             </ul>
                         </div>
 
-                        <Link to="/pricing" className="text-2xl font-bold">
+                        <Link to="/" className="text-2xl font-bold">
                             Digital <span className="text-[#875DF8]">Life Lessons</span>
                         </Link>
                     </div>
@@ -182,7 +180,7 @@ const Navbar = () => {
                     <div className="navbar-end">
                         {/* User Plan Button / Badge */}
                         {user && userPlan === "free" && (
-                            <Link to="/dashboard/pricing" className="btn text-base-200 bg-purple-500 mr-2">
+                            <Link to="/pricing" className="btn text-base-200 bg-purple-500 mr-2">
                                 Upgrade to Pro
                             </Link>
                         )}
@@ -258,6 +256,7 @@ const Navbar = () => {
                                         >
                                             {userRole === "admin" ? "Dashboard" : "My Profile"}
                                         </Link>
+                                    
                                         <Link
                                             to={
                                                 userRole === "admin" ? "/dashboard/reports" : "/my-lessons"
@@ -278,13 +277,13 @@ const Navbar = () => {
                                     <>
                                         <Link
                                             to="/auth/login"
-                                            className="px-4 py-3 hover:bg-base-100 transition font-semibold"
+                                            className="px-4 hover:bg-purple-300 py-3 mt-2  transition font-semibold"
                                         >
                                             Login
                                         </Link>
                                         <Link
                                             to="/auth/signup"
-                                            className="px-4 py-3 hover:bg-purple-300 shadow-2xs transition font-semibold"
+                                            className="px-4 py-3 hover:bg-purple-300  transition font-semibold"
                                         >
                                             Sign Up
                                         </Link>

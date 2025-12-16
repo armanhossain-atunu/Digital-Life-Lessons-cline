@@ -1,4 +1,3 @@
-// import React, { useState } from "react";
 import { Controller, useForm, Watch } from "react-hook-form";
 import useAuth from "../../Hooks/useAuth";
 import { imageUpload } from "../../Utils";
@@ -7,15 +6,17 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import LottieAnimation from "../../Components/Shared/LottieAnimation";
+import { useNavigate } from "react-router";
 
 
 
 const AddLesson = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [showAnimation, setShowAnimation] = useState(false);
     const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm();
 
-   
+
     const watchAccess = watch("accessLevel", "Free");
     // useMutation hook useCase (POST || PUT || PATCH || DELETE)
     const { mutateAsync, isPending, isError, reset: mutationReset } = useMutation({
@@ -25,6 +26,7 @@ const AddLesson = () => {
             setShowAnimation(true);
             setTimeout(() => setShowAnimation(false), 2500);
             reset();
+            navigate("/");
             mutationReset();
             return data;
         }
@@ -32,7 +34,7 @@ const AddLesson = () => {
 
     // Form submit handler
     const onSubmit = async (data) => {
-        const { title, description, category, tone, isPublic, accessLevel, image ,price} = data;
+        const { title, description, category, tone, isPublic, accessLevel, image, price } = data;
 
         const imageFile = image[0]
         try {
@@ -44,8 +46,8 @@ const AddLesson = () => {
                 tone,
                 isPublic,
                 accessLevel,
-                price: accessLevel === "Premium" ?  Number(price) : 0,
-                authorName: user.name,
+                price: accessLevel === "Premium" ? Number(price) : 0,
+                authorName: user.displayName,
                 authorEmail: user.email,
                 image: imageUrl,
                 createdAt: new Date().toLocaleString(),

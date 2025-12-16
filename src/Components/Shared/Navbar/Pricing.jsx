@@ -36,7 +36,7 @@ const Pricing = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 border rounded-xl">
+    <div className="max-w-md mx-auto mt-20 mb-10 p-6 border rounded-xl">
       <h2 className="text-2xl font-bold">Premium Plan</h2>
       <p className="my-3">$20 / Lifetime</p>
 
