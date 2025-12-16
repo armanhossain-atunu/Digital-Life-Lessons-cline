@@ -22,6 +22,9 @@ import ReviewSection from "../Components/Reviews/ReviewSection";
 import LessonsUpdate from "../Components/Home/Lessons/LessonsUpdate";
 import PaymentCancel from "../Pages/Payment/PaymentCancel";
 import PublicLessons from "../Pages/Public_Lessons/PublicLessons";
+import Pricing from "../Components/Shared/Navbar/Pricing";
+import AdminRouter from "./AdminRouter";
+import Unauthorized from "../Pages/Error/Unauthorized/Unauthorized";
 
 
 const router = createBrowserRouter([
@@ -36,8 +39,7 @@ const router = createBrowserRouter([
                 Component: Home,
             },
             {
-                path: "/about",
-                Component: About,
+                path: "/about", Component: About,
             },
             {
                 path: '/auth/login',
@@ -64,26 +66,25 @@ const router = createBrowserRouter([
                 element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>,
             },
             {
-                path: '/my-lessons',
-                element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute>,
+                path: '/my-lessons', element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute>,
             },
-            {
-                path: '/favorite-lessons',
-                element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>,
-            },
+            { path: '/favorite-lessons', element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>, },
 
             { path: '/Reviews', element: <PrivateRoute> <ReviewSection></ReviewSection> </PrivateRoute> },
             { path: '/lessonsUpdate/:id', element: <PrivateRoute> <LessonsUpdate></LessonsUpdate></PrivateRoute> },
-
+            { phat: '/unauthorized', element: <Unauthorized></Unauthorized> },
 
         ],
 
     },
+    // ==============================================================================
+    //                    Dashboard Routes
+    //===============================================================================
     {
         path: '/dashboard',
-        element: <PrivateRoute>
+        element: <PrivateRoute><AdminRouter>
             <DashboardLayout></DashboardLayout>
-        </PrivateRoute>,
+        </AdminRouter></PrivateRoute>,
         children: [
             { index: true, element: <DashboardHome></DashboardHome> },
             { path: 'admin-profile', element: <AdminProfile></AdminProfile> },
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
             { path: 'Reports', element: <Reports></Reports> },
             { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
             { path: 'payment-cancel', element: <PaymentCancel></PaymentCancel> },
+            { path: "pricing", element: <Pricing /> },
+
+
+
 
         ]
 

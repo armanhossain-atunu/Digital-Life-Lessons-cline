@@ -14,6 +14,7 @@ import Search from "./Search";
 import ReportLesson from "../../../Pages/Reports/ReportLesson";
 import ReviewSection from "../../Reviews/ReviewSection";
 import Lottie from "lottie-react";
+import Navbar from "../../Shared/Navbar/Navbar";
 
 const Lessons = () => {
   const queryClient = useQueryClient();
@@ -236,7 +237,7 @@ const Lessons = () => {
                         onClick={() => handlePayment(lesson)}
                         className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700"
                       >
-                        Upgrade Now (${price})
+                        Upgrade Now (${price}
                       </button>
                     </div>
                   )

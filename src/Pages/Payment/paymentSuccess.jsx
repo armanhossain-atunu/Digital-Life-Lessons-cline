@@ -11,7 +11,7 @@ const PaymentSuccess = () => {
   const [status, setStatus] = useState("Verifying payment...");
   const [lessonId, setLessonId] = useState(null);
   const [success, setSuccess] = useState(false);
-
+  
   useEffect(() => {
     if (calledRef.current) return;
     calledRef.current = true;
@@ -70,7 +70,7 @@ const PaymentSuccess = () => {
         </p>
 
         <Link
-          to={lessonId ? `/lesson-details/${lessonId}` : "/"}
+          to={'/'}
           className="inline-block bg-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-purple-700 transition"
         >
           Go Now

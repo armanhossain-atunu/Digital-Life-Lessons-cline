@@ -7,15 +7,15 @@ import avatarImg from "../../../assets/placeholder.jpg";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import useUsers from "../../../Hooks/ShareAllApi/useUsers";
-// import UpgradePayment from "../../../Pages/Payment/UpgradePayment";
-// import LessonAccessToggle from "../../LessonAccessToggle";
 
 const Navbar = () => {
     const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
     const { user, logOut } = useAuth();
-    const { data: users = [] } = useUsers()
-    console.log(users[0]?.plan,'db users')
-    // Fetch user role (returns a single object)
+    const { data: users = [], } = useUsers( )
+    const currentUser = users.find(u => u.email === user?.email);
+    const userPlan = currentUser?.plan;
+    const userRole = currentUser?.role;
+  
     const useUserRole = (email) => {
         return useQuery({
             queryKey: ["userRole", email],
@@ -28,7 +28,7 @@ const Navbar = () => {
             enabled: !!email,
         });
     };
-    const { data: userData } = useUserRole(user?.email);
+    // const { data: userData } = useUserRole(user?.email);
 
     // const { data: userData } = useUserRole(user?.email);
     const { data: userDB } = useUserRole(user?.email);
@@ -59,9 +59,40 @@ const Navbar = () => {
     // Navigation Items
     const navItems = (
         <>
-            <li>
-                <MyLink to="/" className="text-base font-medium">Home</MyLink>
-            </li>
+            <div className="flex justify-between">
+                <li>
+                    <MyLink to="/" className="text-base font-medium">Home</MyLink>
+                </li>
+
+                {/* Theme Toggle */}
+                <label className="toggle lg:hidden  text-base-content mr-5">
+                    <input
+                        type="checkbox"
+                        className="theme-controller"
+                        onChange={(e) => handelTheme(e.target.checked)}
+                        checked={theme === "dark"}
+                    />
+                    <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2"></path>
+                            <path d="M12 20v2"></path>
+                            <path d="m4.93 4.93 1.41 1.41"></path>
+                            <path d="m17.66 17.66 1.41 1.41"></path>
+                            <path d="M2 12h2"></path>
+                            <path d="M20 12h2"></path>
+                            <path d="m6.34 17.66-1.41 1.41"></path>
+                            <path d="m19.07 4.93-1.41 1.41"></path>
+                        </g>
+                    </svg>
+
+                    <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        </g>
+                    </svg>
+                </label>
+            </div>
 
             <li>
                 <MyLink to="/about" className="text-base font-medium">About</MyLink>
@@ -71,9 +102,9 @@ const Navbar = () => {
                 <li>
                     <MyLink to="/add-lessons">Add Lesson</MyLink>
                 </li>
-                <li>
+                {/* <li>
                     <MyLink to="/my-lessons">My Lessons</MyLink>
-                </li>
+                </li> */}
                 <li>
                     <MyLink to="/public-lessons">Public Lessons </MyLink>
                 </li>
@@ -120,10 +151,23 @@ const Navbar = () => {
                                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
                             >
                                 {navItems}
+                                {/* User Plan Button / Badge */}
+                                {user && userPlan === "free" && (
+                                    <Link to="/dashboard/pricing" className="btn text-base-200 bg-purple-500 mr-2">
+                                        Upgrade to Pro
+                                    </Link>
+                                )}
+
+                                {user && userPlan === "premium" && (
+                                    <span className="badge badge-warning mr-2">
+                                        Premium ⭐
+                                    </span>
+                                )}
+
                             </ul>
                         </div>
 
-                        <Link to="/" className="text-2xl font-bold">
+                        <Link to="/pricing" className="text-2xl font-bold">
                             Digital <span className="text-[#875DF8]">Life Lessons</span>
                         </Link>
                     </div>
@@ -133,38 +177,22 @@ const Navbar = () => {
                         <ul className="menu menu-horizontal px-1">{navItems}</ul>
                     </div>
 
+
                     {/* Right Side */}
                     <div className="navbar-end">
-                        {/* <LessonAccessToggle></LessonAccessToggle> */}
+                        {/* User Plan Button / Badge */}
+                        {user && userPlan === "free" && (
+                            <Link to="/dashboard/pricing" className="btn text-base-200 bg-purple-500 mr-2">
+                                Upgrade to Pro
+                            </Link>
+                        )}
 
-                        {/* Theme Toggle */}
-                        <label className="toggle text-base-content mr-5">
-                            <input
-                                type="checkbox"
-                                className="theme-controller"
-                                onChange={(e) => handelTheme(e.target.checked)}
-                                checked={theme === "dark"}
-                            />
-                            <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
-                                    <circle cx="12" cy="12" r="4"></circle>
-                                    <path d="M12 2v2"></path>
-                                    <path d="M12 20v2"></path>
-                                    <path d="m4.93 4.93 1.41 1.41"></path>
-                                    <path d="m17.66 17.66 1.41 1.41"></path>
-                                    <path d="M2 12h2"></path>
-                                    <path d="M20 12h2"></path>
-                                    <path d="m6.34 17.66-1.41 1.41"></path>
-                                    <path d="m19.07 4.93-1.41 1.41"></path>
-                                </g>
-                            </svg>
+                        {user && userPlan === "premium" && (
+                            <span className="badge badge-warning mr-2">
+                                Premium ⭐
+                            </span>
+                        )}
 
-                            <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
-                                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-                                </g>
-                            </svg>
-                        </label>
 
                         {/* User Avatar */}
                         <div className="dropdown dropdown-end">
@@ -187,27 +215,56 @@ const Navbar = () => {
                                 tabIndex="-1"
                                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
                             >
+
+                                {/* Theme Toggle */}
+                                <label className="toggle text-base-content mr-5">
+                                    <input
+                                        type="checkbox"
+                                        className="theme-controller"
+                                        onChange={(e) => handelTheme(e.target.checked)}
+                                        checked={theme === "dark"}
+                                    />
+                                    <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
+                                            <circle cx="12" cy="12" r="4"></circle>
+                                            <path d="M12 2v2"></path>
+                                            <path d="M12 20v2"></path>
+                                            <path d="m4.93 4.93 1.41 1.41"></path>
+                                            <path d="m17.66 17.66 1.41 1.41"></path>
+                                            <path d="M2 12h2"></path>
+                                            <path d="M20 12h2"></path>
+                                            <path d="m6.34 17.66-1.41 1.41"></path>
+                                            <path d="m19.07 4.93-1.41 1.41"></path>
+                                        </g>
+                                    </svg>
+
+                                    <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor">
+                                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                                        </g>
+                                    </svg>
+                                </label>
                                 {user ? (
                                     <>
-                                        <h1 className="px-4 py-3 font-semibold">
-                                            {userData?.displayName || user.displayName}
+                                        <h1 className="px-4 py-3 text-xl font-semibold">
+                                            {userRole?.displayName || user.displayName}
                                         </h1>
 
                                         <Link
                                             to={
-                                                userData?.role === "admin" ? "/dashboard" : "/userprofile"
+                                                userRole === "admin" ? "/dashboard" : "/userprofile"
                                             }
                                             className="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
-                                            {userData?.role === "admin" ? "Admin Dashboard" : "User Profile"}
+                                            {userRole === "admin" ? "Dashboard" : "My Profile"}
                                         </Link>
                                         <Link
                                             to={
-                                                userData?.role === "admin" ? "/dashboard/reports" : "/Reviews"
+                                                userRole === "admin" ? "/dashboard/reports" : "/my-lessons"
                                             }
-                                            className="px-4 py-3 hover:bg-base-100 transition font-semibold"
+                                            className ="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
-                                            {userData?.role === "admin" ? "Reports" : "Reviews"}
+                                            {userRole === "admin" ? "Reports" : "My Lessons"}
                                         </Link>
 
                                         <div
