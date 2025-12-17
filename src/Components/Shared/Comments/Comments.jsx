@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import SocialMedia from "../Button/SocialMedia";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const Comments = ({ postId }) => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure()
   const [inputComment, setInputComment] = useState("");
   const queryClient = useQueryClient();
 
@@ -13,7 +15,7 @@ const Comments = ({ postId }) => {
     queryKey: ["comments", postId],
     queryFn: async ({ signal }) => {
       try {
-        const { data } = await axios.get(
+        const { data } = await axiosSecure.get(
           `${import.meta.env.VITE_API_URL}/comments?postId=${postId}`,
           { signal }
         );

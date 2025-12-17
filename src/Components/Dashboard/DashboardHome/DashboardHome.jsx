@@ -11,10 +11,14 @@ import { MdMenuBook } from "react-icons/md";
 import useLessons from '../../../Hooks/ShareAllApi/useLessons';
 import useFavoriteLessons from '../../../Hooks/ShareAllApi/useFavoriteLessons';
 import UserList from '../User/UserList';
+import useAxiosSecure from '../../../Hooks/useAxiosSecure';
+import TotalFavorite from './DashboardHomeShared/TotalFavorite';
+import TotalFreePremiumUser from '../User/TotalFreePremiumUser';
 
 
 const DashboardHome = () => {
     const { user } = useAuth();
+    const axiosSecure = useAxiosSecure();
     // Fetch all lessons
     const { data: allLessons = [] } = useLessons()
     // Fetch my lessons
@@ -31,7 +35,7 @@ const DashboardHome = () => {
     const { data } = useQuery({
         queryKey: ["premiumLessonsCount"],
         queryFn: async () => {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/premiumLessonsCount`);
+            const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/premiumLessonsCount`);
             return res.data;
         }
 
@@ -41,7 +45,7 @@ const DashboardHome = () => {
     const { data: free = [], } = useQuery({
         queryKey: ["freeLessonsCount"],
         queryFn: async () => {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/freeLessonsCount`);
+            const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/freeLessonsCount`);
             return res.data;
         }
     });
@@ -65,10 +69,10 @@ const DashboardHome = () => {
             <h1 className="text-2xl text-center font-semibold mt-20 mb-6">Dashboard Home</h1>
 
             {/* Total Users */}
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center gap-6 items-center">
                 <TotalUsers />
+                <TotalFreePremiumUser></TotalFreePremiumUser>
             </div>
-
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
                 <div className="bg-indigo-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
@@ -78,7 +82,6 @@ const DashboardHome = () => {
                         <p className="text-2xl text-center font-bold text-indigo-700">{lessons.length}</p>
                     </div>
                 </div>
-
                 <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <MdMenuBook className="text-4xl text-purple-600" ></MdMenuBook>
                     <div>
@@ -86,15 +89,7 @@ const DashboardHome = () => {
                         <p className="text-2xl text-center font-bold text-purple-700">{allLessons.length}</p>
                     </div>
                 </div>
-
-                <div className="bg-yellow-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
-                    <FaRegBookmark className="text-4xl text-yellow-600" />
-                    <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Saved Lessons</h4>
-                        <p className="text-2xl text-center font-bold text-yellow-700">{favoriteLessons.length}</p>
-                    </div>
-                </div>
-
+                <TotalFavorite></TotalFavorite>
                 <div className="bg-green-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-green-600" />
                     <div>
@@ -116,12 +111,19 @@ const DashboardHome = () => {
                         <p className="text-2xl text-center font-bold text-green-700">{data?.premiumCount}</p>
                     </div>
                 </div>
-
                 <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-purple-600" />
                     <div>
                         <h4 className="text-lg font-semibold text-gray-800">User Role</h4>
                         <p className="text-2xl text-center font-bold text-purple-700">{user.role ? "⭐ Premium" : "Free"}</p>
+                    </div>
+                </div>
+
+                <div className="bg-indigo-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
+                    <FaRegFileAlt className="text-4xl text-indigo-600" />
+                    <div>
+                        <h4 className="text-lg font-semibold text-gray-800">My Favorite</h4>
+                        <p className="text-2xl text-center font-bold text-indigo-700">{favoriteLessons.length}</p>
                     </div>
                 </div>
             </div>
@@ -168,7 +170,7 @@ const DashboardHome = () => {
                 )}
             </div>
 
-
+            {/* User List */}
             <UserList></UserList>
 
             {/* Weekly Lessons Chart */}

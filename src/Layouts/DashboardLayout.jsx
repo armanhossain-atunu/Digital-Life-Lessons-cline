@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
 import { MdAdminPanelSettings } from "react-icons/md";
 import { RiLogoutCircleLine } from "react-icons/ri";
+import { HiOutlineBanknotes } from "react-icons/hi2";
 import useAuth from '../Hooks/useAuth';
 import { FaUserPlus } from 'react-icons/fa';
 
@@ -88,7 +89,7 @@ const DashboardLayout = () => {
                             <NavLink to="/dashboard/admin_User_Create">
                                 <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Create Users">
                                     {/* create users icon */}
-                                   <FaUserPlus></FaUserPlus>
+                                    <FaUserPlus></FaUserPlus>
                                     <span className="is-drawer-close:hidden">Create Users</span>
                                 </button>
                             </NavLink>
@@ -105,6 +106,20 @@ const DashboardLayout = () => {
 
                             </NavLink>
                         </li>
+                        {/* my payments item */}
+                        <li>
+                            <NavLink to="/dashboard/paymentHistory">
+                                <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Payment History">
+                                    {/* my payments icon */}
+                           
+                               <HiOutlineBanknotes className="my-1.5 inline-block size-4"></HiOutlineBanknotes>
+                                    <span className="is-drawer-close:hidden">Payment History</span>
+                                </button>
+
+                            </NavLink>
+                        </li>
+                        {/* total favorites */}
+
                         {/* my Lessons item */}
                         <li>
                             <NavLink to="/dashboard/my-lessons">

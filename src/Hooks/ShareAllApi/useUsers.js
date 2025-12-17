@@ -3,7 +3,6 @@ import axios from 'axios';
 import React from 'react';
 
 const useUsers = () => {
-
     return useQuery({
         queryKey: ['users'],
         queryFn: async () => {

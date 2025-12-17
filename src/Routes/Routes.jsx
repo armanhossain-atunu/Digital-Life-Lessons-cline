@@ -27,6 +27,7 @@ import AdminRouter from "./AdminRouter";
 import Unauthorized from "../Pages/Error/Unauthorized/Unauthorized";
 import AdminUserCreate from "../Components/Dashboard/Admin/AdminUserCreate/AdminUserCreate";
 import AuthorLessons from "../Pages/My_Lessons/AuthorLessons";
+import PaymentHistory from "../Pages/Payment/PaymentHistory";
 
 
 const router = createBrowserRouter([
@@ -119,6 +120,7 @@ const router = createBrowserRouter([
             { path: 'reports', element: <Reports /> },
             { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
             { path: 'payment-cancel', element: <PaymentCancel></PaymentCancel> },
+            { path: 'paymentHistory', element:<PaymentHistory></PaymentHistory> },
 
 
         ]
