@@ -79,14 +79,15 @@ const Comments = ({ postId }) => {
         </form>
       )}
 
-      <div className="mt-5 space-y-3 max-h-64 overflow-y-auto">
+      <div className="mt-5  space-y-3 ">
         {isLoading ? (
           <p>Loading comments...</p>
         ) : (
           comments.map((c) => (
-            <div key={c._id} className="border rounded-md p-3 shadow-sm">
+            <div key={c._id} className="border  rounded-md p-3 shadow-sm">
               <div className="flex justify-between items-center mb-1">
                 <h5 className="font-semibold">{c.user}</h5>
+               
                 <img
                   className="w-10 h-10 rounded-full"
                   src={c.photo || "/placeholder.jpg"}
@@ -94,6 +95,7 @@ const Comments = ({ postId }) => {
                 />
               </div>
               <p>{c.comment}</p>
+               <h5 className="font-semibold">{c.createdAt}</h5>
             </div>
           ))
         )}

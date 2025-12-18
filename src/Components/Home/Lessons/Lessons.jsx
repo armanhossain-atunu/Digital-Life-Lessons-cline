@@ -1,6 +1,5 @@
-import { useQuery,} from "@tanstack/react-query";
+import { useQuery, } from "@tanstack/react-query";
 import Container from "../../Shared/Container";
-import { MdDeleteForever, MdEdit, MdFavorite } from "react-icons/md";
 import toast from "react-hot-toast";
 import axios from 'axios';
 import LoadingSpinner from "../../Shared/LoadingSpinner";
@@ -8,13 +7,13 @@ import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
 import useAuth from "../../../Hooks/useAuth";
 import { useState, useEffect } from "react";
-import FavoriteLessons from "./Favorite";
+import Lottie from "lottie-react";
+import LoveReactAnimation from "../../../assets/Love_react.json";
 import { Link, useNavigate } from "react-router";
 import Search from "./Search";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
-import ReportLesson from "../../../Pages/Reports/ReportLesson";
-import ReviewSection from "../../Reviews/ReviewSection";
 import Pagination from "../../Shared/Pagination";
+import LessonsByCategory from "../../Shared/LessonsByCategory";
 
 const Lessons = () => {
   // const queryClient = useQueryClient();
@@ -26,6 +25,7 @@ const Lessons = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [completedLesson, setCompletedLesson] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [play, setPlay] = useState(null)
   const itemsPerPage = 6;
 
   // Fetch user role
@@ -56,22 +56,6 @@ const Lessons = () => {
     },
   });
 
-
-  // Fetch user's favorite lessons
-  // const { data: favoriteLessons = [] } = useQuery({
-  //   queryKey: ["favoriteLessons", user?.email],
-  //   queryFn: async () => {
-  //     if (!user?.email) return [];
-  //     const res = await axios.get(`${import.meta.env.VITE_API_URL}/favorites?email=${user.email}`);
-  //     return res.data;
-  //   },
-  //   enabled: !!user?.email,
-  // });
-
-  // const isFavorited = (lessonId) => {
-  //   return favoriteLessons.some((fav) => fav.lessonId === lessonId || fav._id === lessonId);
-  // };
-
   // Filter and paginate lessons
   const filteredLessons = lessons.filter((lesson) =>
     lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -93,44 +77,6 @@ const Lessons = () => {
       return () => clearTimeout(timer);
     }
   }, [showAnimation]);
-
-  // // Delete Mutation
-  // const deleteLessonMutation = useMutation({
-  //   mutationFn: async (id) => {
-  //     await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
-  //   },
-  //   onSuccess: (_, id) => {
-  //     queryClient.setQueryData(["lessons"], (old = []) =>
-  //       old.filter((lesson) => lesson._id !== id)
-  //     );
-  //     toast.success("Lesson deleted successfully!");
-  //   },
-  // });
-
-  // const handleDelete = (id) => {
-  //   toast((t) => (
-  //     <div className="p-4 bg-white rounded-lg shadow-lg">
-  //       <p className="font-medium">Delete this lesson permanently?</p>
-  //       <div className="flex justify-end gap-3 mt-4">
-  //         <button
-  //           onClick={() => {
-  //             deleteLessonMutation.mutate(id);
-  //             toast.dismiss(t.id);
-  //           }}
-  //           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-  //         >
-  //           Yes, Delete
-  //         </button>
-  //         <button
-  //           onClick={() => toast.dismiss(t.id)}
-  //           className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-  //         >
-  //           Cancel
-  //         </button>
-  //       </div>
-  //     </div>
-  //   ), { duration: Infinity });
-  // };
 
   const handlePayment = async (lesson) => {
     if (!user) {
@@ -174,7 +120,10 @@ const Lessons = () => {
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <p className="text-center text-red-500">Failed to load lessons.</p>;
+  if (error) return <p className="text-center text-red-500">
+    Failed to load lessons. please try again.
+    <LoadingSpinner></LoadingSpinner>
+  </p>;
 
   return (
     <Container>
@@ -196,6 +145,7 @@ const Lessons = () => {
       </h1>
 
       <Search className='flex justify-end' searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <LessonsByCategory></LessonsByCategory>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2 gap-6">
         {filteredLessons.length === 0 ? (
@@ -213,25 +163,22 @@ const Lessons = () => {
               accessLevel = "free",
               authorEmail,
               createdAt,
-              // isPublic = false,
             } = lesson;
 
             const isOwner = authorEmail === user?.email;
             const access = accessLevel.toLowerCase();
-            // const publicAccess = isPublic === true || String(isPublic).toLowerCase() === "true";
             const locked = access === "premium" && !isPremium && !isAdmin && !isOwner;
 
-            // const favorited = isFavorited(_id);
 
             return (
               <div
                 key={_id}
-                className="relative bg-base-300 rounded-xl h-full shadow hover:shadow-xl transition-all border overflow-hidden"
+                className="relative bg-base-300 rounded-xl max-h-[600px] scrollbar-hide overflow-y-auto shadow hover:shadow-xl transition-all border overflow-hidden"
               >
                 {/* Premium Lock Overlay */}
                 {
                   locked && (
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-white text-center p-6">
+                    <div className="absolute  inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-white text-center p-6">
                       <span className="text-5xl mb-3">Premium</span>
                       <p className="text-sm mb-4">Upgrade to access this lesson</p>
                       <button
@@ -264,19 +211,15 @@ const Lessons = () => {
                       {expanded[_id] ? "less" : "more"}
                     </button>
                   </p>
-{/* 
-                  <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                    <Link to={`/my-lessons/${authorEmail}`} className="flex items-center underline hover:text-blue-500">Author: {authorEmail}</Link>
-                    <span className="capitalize">{access}:{publicAccess ? "Public" : "Private"}</span>
-                  </div> */}
-
+                  {/* 
+                
                   {/* Action Buttons */}
                   <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
                     <Link
                       to={`/lesson-details/${_id}`}
                       className={`px-5 py-2 rounded-lg font-medium transition ${locked
-                        ? "bg-base-400 text-base-600 shadow px-3 py-1.5 border cursor-not-allowed"
-                        :''
+                        ? " "
+                        : ' bg-blue-500 text-base-600 text-base-300 hover:bg-blue-600 px-1.5 py-0.5'
                         }`}
                       onClick={(e) => locked && e.preventDefault()}
                     >
@@ -284,63 +227,20 @@ const Lessons = () => {
                     </Link>
 
                     <div className="flex items-center gap-3">
-                      <LoveReact lessonId={_id} />
+                      <LoveReact lessonId={_id}>
+                        <div onClick={() => setPlay(_id)}>
+                          <Lottie
+                            animationData={LoveReactAnimation}
+                            loop={false}
+                            autoplay={play === _id}
+                            onComplete={() => setPlay(null)}
+                            className="w-8 h-8 z-50 cursor-pointer"
+                          />
+                        </div>
+                      </LoveReact>
 
-                      {/* <FavoriteLessons lessonId={_id} /> */}
-
-                      {/* {favorited && (
-                        <button
-                          onClick={() => {
-                            document.querySelector(`[data-lesson-id="${_id}"]`)?.click();
-                            toast.success("Removed from favorites");
-                          }}
-                          className="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition text-sm font-medium"
-                          title="Remove from Favorites"
-                        >
-                          <MdFavorite className="text-red-600" />
-                          Remove
-                        </button>
-                      )}
-
-                      {(isOwner || isAdmin) && (
-                        <>
-                          <button
-                            onClick={() => handleDelete(_id)}
-                            className="text-red-600 hover:text-red-800 text-2xl"
-                            title="Delete Lesson"
-                          >
-                            <MdDeleteForever />
-                          </button>
-                          <Link to={`/lessonsUpdate/${_id}`} className="text-blue-600 hover:text-blue-800 text-2xl">
-                            <MdEdit />
-                          </Link>
-                        </>
-                      )} */}
-{/* 
-                      <ReportLesson lessonId={_id} /> */}
                     </div>
                   </div>
-
-                  {/* Reviews Modal
-                  <div className="mt-4">
-                    <button
-                      className="text-sm text-indigo-600 underline"
-                      onClick={() => document.getElementById(`review_${_id}`).showModal()}
-                    >
-                      View Reviews
-                    </button>
-                    <dialog id={`review_${_id}`} className="modal">
-                      <div className="modal-box">
-                        <ReviewSection lessonId={_id} />
-                        <div className="modal-action">
-                          <form method="dialog">
-                            <button className="btn">Close</button>
-                          </form>
-                        </div>
-                      </div>
-                    </dialog>
-                  </div> */}
-
                   <Comments postId={_id} onLessonCompleted={() => handleLessonCompleted(title)} />
                 </div>
               </div>
@@ -351,7 +251,7 @@ const Lessons = () => {
 
       {/* Pagination Controls */}
       {filteredLessons.length > 0 && (
-        <Pagination  currentPage={currentPage}
+        <Pagination currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={onPageChange}></Pagination>
       )}

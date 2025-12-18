@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Container from "../../Shared/Container";
+import FavoriteButton from "./Favorite";
+import useAuth from "../../../Hooks/useAuth";
+import UpdateLesson from "./UpdateLesson";
 
 const LessonCard = ({ lesson }) => {
   return (
@@ -14,7 +17,7 @@ const LessonCard = ({ lesson }) => {
           className="h-40 w-full object-cover"
         />
       </figure>
-      
+
       <div className="card-body">
         <h2 className="card-title text-lg">{lesson.title}</h2>
         <p className="text-sm text-base-600">{lesson.category}</p>
@@ -25,14 +28,13 @@ const LessonCard = ({ lesson }) => {
 
 const LessonDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
 
   // Single lesson
   const { data: lesson, isLoading, isError } = useQuery({
     queryKey: ["lessonDetails", id],
     queryFn: async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/lessons/${id}`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
       return res.data;
     },
     enabled: !!id,
@@ -45,9 +47,7 @@ const LessonDetails = () => {
   } = useQuery({
     queryKey: ["similarLessons", id],
     queryFn: async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/lessons/similar/${id}`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons/similar/${id}`);
       return res.data;
     },
     enabled: !!id,
@@ -84,6 +84,12 @@ const LessonDetails = () => {
             </span>
             <span className="badge badge-outline">
               Access: {lesson.accessLevel}
+            </span>
+            <span className="">
+              <FavoriteButton lessonId={lesson._id} user={user} ></FavoriteButton>
+            </span>
+            <span className="badge badge-outline">
+              <Link to={`/UpdateLesson/${lesson._id}`}> Update</Link>
             </span>
           </div>
 

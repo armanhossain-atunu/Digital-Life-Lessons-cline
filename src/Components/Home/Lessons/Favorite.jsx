@@ -1,84 +1,78 @@
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaHeart, FaRegBookmark } from "react-icons/fa";
-import useAuth from "../../../Hooks/useAuth";
-import toast from "react-hot-toast";
-import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useUsers from "../../../Hooks/ShareAllApi/useUsers";
 
+const FavoriteButton = ({ lessonId, user }) => {
 
-const Favorite = ({ lessonId }) => {
-    const { user } = useAuth();
-    const axiosSecure = useAxiosSecure();
-    const queryClient = useQueryClient();
+    const { data: users = [] } = useUsers()
+    const currentUser = users.find(u => u.email === user?.email);
+    console.log(currentUser, "user from db")
+    const [favorited, setFavorited] = useState(false);
+    const [totalFavorites, setTotalFavorites] = useState(0);
+    const [loading, setLoading] = useState(false);
 
-    // Load favorite state
-    const { data: favoriteData = { favorited: false, totalFavorites: 0 } } = useQuery({
-        queryKey: ["favorite", lessonId],
-        queryFn: async () => {
-            const res = await axiosSecure.get(
-                `${import.meta.env.VITE_API_URL}/checkFavorite?lessonId=${lessonId}&userEmail=${user?.email}`
-            );
-            return res.data;
-        },
-        enabled: !!lessonId && !!user?.email,
-    });
+    // Initial load 
+    useEffect(() => {
+        if (user?.email) {
+            axios
+                .get(
+                    `${import.meta.env.VITE_API_URL}/${lessonId}/${user.email}`
+                )
+                .then((res) => {
+                    setFavorited(res.data.favorited);
+                    setTotalFavorites(res.data.totalFavorites);
+                });
+        }
+    }, [lessonId, user]);
 
-    // Mutation → Optimistic Update
-    const mutation = useMutation({
-        mutationFn: async () => {
-            return await axios.post(
+    // Toggle Favorite
+    const handleFavorite = async () => {
+        if (!user?.email) {
+            alert("Please login first");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const res = await axios.post(
                 `${import.meta.env.VITE_API_URL}/favorite/${lessonId}`,
-                { userEmail: user?.email ,
-                    userName: user?.displayName,
-                    userImage: user?.photoURL,
+                {
+                    userEmail: user.email,
+                    userName: currentUser.name,
+
                 }
             );
-        },
 
-        //Optimistic UI Update 
-        onMutate: async () => {
-            await queryClient.cancelQueries(["favorite", lessonId]);
-
-            const previousData = queryClient.getQueryData(["favorite", lessonId]);
-
-            queryClient.setQueryData(["favorite", lessonId], (old) => ({
-                favorited: !old.favorited,
-                totalFavorites: old.favorited
-                    ? old.totalFavorites - 1
-                    : old.totalFavorites + 1,
-            }));
-
-            return { previousData };
-        },
-
-        // Rollback if failed
-        onError: (err, variables, context) => {
-            queryClient.setQueryData(["favorite", lessonId], context.previousData);
-        },
-
-        // Refetch final data from DB
-        onSettled: () => {
-            queryClient.invalidateQueries(["favorite", lessonId]);
-        },
-    });
-
-    const handleFavorite = () => {
-        if (!user?.email) return toast.error("Please login to favorite");
-        mutation.mutate();
+            setFavorited(res.data.favorited);
+            setTotalFavorites(res.data.totalFavorites);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <button
-            onClick={handleFavorite}
-            className="flex items-center gap-2 cursor-pointer"
-        >
-            <FaRegBookmark
-                className={`text-2xl transition-all ${favoriteData.favorited ? "text-red-600" : "text-gray-400"
-                    }`}
-            />
-            <span>{favoriteData.totalFavorites}</span>
-        </button>
+        <div className="flex items-center gap-3">
+            <button
+                onClick={handleFavorite}
+                disabled={loading}
+                className={`px-4 py-2 rounded-full text-white transition
+          ${favorited ? "bg-red-500" : "bg-gray-400"}`}
+            >
+                {loading
+                    ? "Loading..."
+                    : favorited
+                        ? "❤️ Favorited"
+                        : "🤍 Favorite"}
+            </button>
+
+            <span className="text-sm text-gray-600">
+                {totalFavorites} Favorites
+            </span>
+        </div>
     );
 };
 
-export default Favorite;
+export default FavoriteButton;

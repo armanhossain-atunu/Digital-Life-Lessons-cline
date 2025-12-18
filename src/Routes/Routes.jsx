@@ -19,7 +19,7 @@ import PaymentSuccess from "../Pages/Payment/paymentSuccess";
 import ReportLesson from "../Pages/Reports/ReportLesson";
 import Reports from "../Pages/Reports/Reports";
 import ReviewSection from "../Components/Reviews/ReviewSection";
-import LessonsUpdate from "../Components/Home/Lessons/LessonsUpdate";
+import LessonsUpdate from "../Components/Home/Lessons/UpdateLesson";
 import PaymentCancel from "../Pages/Payment/PaymentCancel";
 import PublicLessons from "../Pages/Public_Lessons/PublicLessons";
 import Pricing from "../Components/Shared/Navbar/Pricing";
@@ -29,6 +29,7 @@ import AdminUserCreate from "../Components/Dashboard/Admin/AdminUserCreate/Admin
 import AuthorLessons from "../Pages/My_Lessons/AuthorLessons";
 import PaymentHistory from "../Pages/Payment/PaymentHistory";
 import UserPayHistory from "../Pages/Payment/UserPayHistory";
+import UpdateLesson from "../Components/Home/Lessons/UpdateLesson";
 
 
 const router = createBrowserRouter([
@@ -46,11 +47,10 @@ const router = createBrowserRouter([
             { path: '/add-lessons', element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>, },
             { path: '/public-lessons', element: <PrivateRoute><PublicLessons></PublicLessons> </PrivateRoute> },
             { path: '/lesson-details/:id', element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>, },
-            { path: '/lesson-details/:id', element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>, },
             { path: '/my-lessons', element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute> },
             { path: '/favorite-lessons', element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>, },
             { path: '/Reviews', element: <PrivateRoute> <ReviewSection></ReviewSection> </PrivateRoute> },
-            { path: '/lessonsUpdate/:id', element: <PrivateRoute> <LessonsUpdate></LessonsUpdate></PrivateRoute> },
+            { path: '/UpdateLesson/:id', element: <PrivateRoute> <UpdateLesson></UpdateLesson></PrivateRoute> },
             { path: "pricing", element: <PrivateRoute><Pricing /></PrivateRoute> },
             { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
             { path: 'payment-cancel', element: <PaymentCancel></PaymentCancel> },

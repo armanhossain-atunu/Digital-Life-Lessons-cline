@@ -55,7 +55,7 @@ const AddLesson = () => {
                 authorName: user.displayName,
                 authorEmail: user.email,
                 image: imageUrl,
-                createdAt: new Date().toLocaleString(),
+                createdAt: new Date(),
             };
             await mutateAsync(lessonData)
 
