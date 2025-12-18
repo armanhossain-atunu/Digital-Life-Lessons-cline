@@ -254,7 +254,7 @@ const Navbar = () => {
                                             }
                                             className="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
-                                            {userRole === "admin" ? "Dashboard" : "My Profile"}
+                                            {userRole === "admin" ? "Dashboard" : "My Dashboard"}
                                         </Link>
                                     
                                         <Link
@@ -264,6 +264,14 @@ const Navbar = () => {
                                             className ="px-4 py-3 hover:bg-base-100 transition font-semibold"
                                         >
                                             {userRole === "admin" ? "Reports" : "My Lessons"}
+                                        </Link>
+                                        <Link
+                                            to={
+                                                userRole === "admin" ? "/dashboard/admin-profile" : "/user-pay-history"
+                                            }
+                                            className ="px-4 py-3 hover:bg-base-100 transition font-semibold"
+                                        >
+                                            {userRole === "admin" ? "Admin Profile" : "Payment History"}
                                         </Link>
 
                                         <div

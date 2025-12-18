@@ -85,7 +85,7 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <input
                                 type="email"
-                                className="input w-full border bg-gray-100"
+                                className="input w-full border bg-base-100"
                                 value={user?.email || ""}
                                 disabled
                             />

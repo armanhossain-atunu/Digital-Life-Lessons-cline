@@ -1,27 +1,32 @@
 import { Controller, useForm, Watch } from "react-hook-form";
 import useAuth from "../../Hooks/useAuth";
 import { imageUpload } from "../../Utils";
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import LottieAnimation from "../../Components/Shared/LottieAnimation";
 import { useNavigate } from "react-router";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useUsers from "../../Hooks/ShareAllApi/useUsers";
 
 
 
 const AddLesson = () => {
     const { user } = useAuth();
+    const { data: users = [] } = useUsers()
+    const currentUser = users.find(u => u.email === user?.email);
+    console.log(currentUser?.plan, 'users db');
+    const axiosSecure = useAxiosSecure()
     const navigate = useNavigate();
     const [showAnimation, setShowAnimation] = useState(false);
     const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm();
 
 
     const watchAccess = watch("accessLevel", "Free");
-    // useMutation hook useCase (POST || PUT || PATCH || DELETE)
+    // useMutation hook useCase (POST || PUT || PATCH ||
     const { mutateAsync, isPending, isError, reset: mutationReset } = useMutation({
         mutationFn: async (lessonData) => {
-            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/add_lessons`, lessonData);
+            const { data } = await axiosSecure.post(`${import.meta.env.VITE_API_URL}/add_lessons`, lessonData);
             toast.success("Lesson added successfully!");
             setShowAnimation(true);
             setTimeout(() => setShowAnimation(false), 2500);
@@ -168,7 +173,7 @@ const AddLesson = () => {
                     </select>
                 </div>
 
-                {/* Access Level Dropdown */}
+                {/* Access Level Dropdown
                 <div>
                     <label className="block font-semibold mb-1">Access Level</label>
                     <select
@@ -178,12 +183,32 @@ const AddLesson = () => {
                         <option value="Free">Free</option>
                         <option value="Premium">Premium</option>
                     </select>
+                </div> */}
+
+
+                {/* Access Level Dropdown */}
+                <div>
+                    <label className="block font-semibold mb-1">Access Level</label>
+                    <select
+                        {...register("accessLevel")}
+                        className="bg-base-200 w-full border p-2 rounded"
+                    >
+                        <option value="Free">Free</option>
+                        <option
+                            value="Premium"
+                            disabled={currentUser?.plan !== "premium"}
+                            title={currentUser?.plan !== "premium" ? "Upgrade to Premium to create paid lessons" : ""}
+                        >
+                            Premium
+                        </option>
+                    </select>
                 </div>
                 {/* Conditional Price Input */}
                 {watchAccess === "Premium" && (
                     <Controller
                         name="price"
                         control={control}
+                        defaultValue={20}
                         render={({ field }) => (
                             <input
                                 {...field}

@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { useQuery,} from "@tanstack/react-query";
 import Container from "../../Shared/Container";
 import { MdDeleteForever, MdEdit, MdFavorite } from "react-icons/md";
 import toast from "react-hot-toast";
+import axios from 'axios';
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
@@ -11,12 +11,15 @@ import { useState, useEffect } from "react";
 import FavoriteLessons from "./Favorite";
 import { Link, useNavigate } from "react-router";
 import Search from "./Search";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import ReportLesson from "../../../Pages/Reports/ReportLesson";
 import ReviewSection from "../../Reviews/ReviewSection";
+import Pagination from "../../Shared/Pagination";
 
 const Lessons = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure()
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [expanded, setExpanded] = useState({});
@@ -30,7 +33,7 @@ const Lessons = () => {
     queryKey: ["userRole", user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/user?email=${user.email}`);
+      const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/user?email=${user.email}`);
       return res.data;
     },
     enabled: !!user?.email,
@@ -48,26 +51,26 @@ const Lessons = () => {
   const { data: lessons = [], isLoading, error } = useQuery({
     queryKey: ["lessons"],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons`);
+      const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/lessons`);
       return res.data;
     },
   });
 
 
   // Fetch user's favorite lessons
-  const { data: favoriteLessons = [] } = useQuery({
-    queryKey: ["favoriteLessons", user?.email],
-    queryFn: async () => {
-      if (!user?.email) return [];
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/favorites?email=${user.email}`);
-      return res.data;
-    },
-    enabled: !!user?.email,
-  });
+  // const { data: favoriteLessons = [] } = useQuery({
+  //   queryKey: ["favoriteLessons", user?.email],
+  //   queryFn: async () => {
+  //     if (!user?.email) return [];
+  //     const res = await axios.get(`${import.meta.env.VITE_API_URL}/favorites?email=${user.email}`);
+  //     return res.data;
+  //   },
+  //   enabled: !!user?.email,
+  // });
 
-  const isFavorited = (lessonId) => {
-    return favoriteLessons.some((fav) => fav.lessonId === lessonId || fav._id === lessonId);
-  };
+  // const isFavorited = (lessonId) => {
+  //   return favoriteLessons.some((fav) => fav.lessonId === lessonId || fav._id === lessonId);
+  // };
 
   // Filter and paginate lessons
   const filteredLessons = lessons.filter((lesson) =>
@@ -91,43 +94,43 @@ const Lessons = () => {
     }
   }, [showAnimation]);
 
-  // Delete Mutation
-  const deleteLessonMutation = useMutation({
-    mutationFn: async (id) => {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
-    },
-    onSuccess: (_, id) => {
-      queryClient.setQueryData(["lessons"], (old = []) =>
-        old.filter((lesson) => lesson._id !== id)
-      );
-      toast.success("Lesson deleted successfully!");
-    },
-  });
+  // // Delete Mutation
+  // const deleteLessonMutation = useMutation({
+  //   mutationFn: async (id) => {
+  //     await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
+  //   },
+  //   onSuccess: (_, id) => {
+  //     queryClient.setQueryData(["lessons"], (old = []) =>
+  //       old.filter((lesson) => lesson._id !== id)
+  //     );
+  //     toast.success("Lesson deleted successfully!");
+  //   },
+  // });
 
-  const handleDelete = (id) => {
-    toast((t) => (
-      <div className="p-4 bg-white rounded-lg shadow-lg">
-        <p className="font-medium">Delete this lesson permanently?</p>
-        <div className="flex justify-end gap-3 mt-4">
-          <button
-            onClick={() => {
-              deleteLessonMutation.mutate(id);
-              toast.dismiss(t.id);
-            }}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Yes, Delete
-          </button>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    ), { duration: Infinity });
-  };
+  // const handleDelete = (id) => {
+  //   toast((t) => (
+  //     <div className="p-4 bg-white rounded-lg shadow-lg">
+  //       <p className="font-medium">Delete this lesson permanently?</p>
+  //       <div className="flex justify-end gap-3 mt-4">
+  //         <button
+  //           onClick={() => {
+  //             deleteLessonMutation.mutate(id);
+  //             toast.dismiss(t.id);
+  //           }}
+  //           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+  //         >
+  //           Yes, Delete
+  //         </button>
+  //         <button
+  //           onClick={() => toast.dismiss(t.id)}
+  //           className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+  //         >
+  //           Cancel
+  //         </button>
+  //       </div>
+  //     </div>
+  //   ), { duration: Infinity });
+  // };
 
   const handlePayment = async (lesson) => {
     if (!user) {
@@ -165,7 +168,7 @@ const Lessons = () => {
     setShowAnimation(true);
   };
 
-  const handlePaginationChange = (pageNum) => {
+  const onPageChange = (pageNum) => {
     setCurrentPage(pageNum);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -210,20 +213,20 @@ const Lessons = () => {
               accessLevel = "free",
               authorEmail,
               createdAt,
-              isPublic = false,
+              // isPublic = false,
             } = lesson;
 
             const isOwner = authorEmail === user?.email;
             const access = accessLevel.toLowerCase();
-            const publicAccess = isPublic === true || String(isPublic).toLowerCase() === "true";
+            // const publicAccess = isPublic === true || String(isPublic).toLowerCase() === "true";
             const locked = access === "premium" && !isPremium && !isAdmin && !isOwner;
 
-            const favorited = isFavorited(_id);
+            // const favorited = isFavorited(_id);
 
             return (
               <div
                 key={_id}
-                className="relative bg-base-300 rounded-xl h-[700px] overflow-y-scroll shadow hover:shadow-xl transition-all border overflow-hidden"
+                className="relative bg-base-300 rounded-xl h-full shadow hover:shadow-xl transition-all border overflow-hidden"
               >
                 {/* Premium Lock Overlay */}
                 {
@@ -261,31 +264,31 @@ const Lessons = () => {
                       {expanded[_id] ? "less" : "more"}
                     </button>
                   </p>
-
+{/* 
                   <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
                     <Link to={`/my-lessons/${authorEmail}`} className="flex items-center underline hover:text-blue-500">Author: {authorEmail}</Link>
                     <span className="capitalize">{access}:{publicAccess ? "Public" : "Private"}</span>
-                  </div>
+                  </div> */}
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
                     <Link
                       to={`/lesson-details/${_id}`}
                       className={`px-5 py-2 rounded-lg font-medium transition ${locked
-                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                        : "bg-indigo-600 text-white hover:bg-indigo-700"
+                        ? "bg-base-400 text-base-600 shadow px-3 py-1.5 border cursor-not-allowed"
+                        :''
                         }`}
                       onClick={(e) => locked && e.preventDefault()}
                     >
-                      {locked ? "Locked" : "View Details"}
+                      {locked ? "Locked" : "View"}
                     </Link>
 
                     <div className="flex items-center gap-3">
                       <LoveReact lessonId={_id} />
 
-                      <FavoriteLessons lessonId={_id} />
+                      {/* <FavoriteLessons lessonId={_id} /> */}
 
-                      {favorited && (
+                      {/* {favorited && (
                         <button
                           onClick={() => {
                             document.querySelector(`[data-lesson-id="${_id}"]`)?.click();
@@ -312,13 +315,13 @@ const Lessons = () => {
                             <MdEdit />
                           </Link>
                         </>
-                      )}
-
-                      <ReportLesson lessonId={_id} />
+                      )} */}
+{/* 
+                      <ReportLesson lessonId={_id} /> */}
                     </div>
                   </div>
 
-                  {/* Reviews Modal */}
+                  {/* Reviews Modal
                   <div className="mt-4">
                     <button
                       className="text-sm text-indigo-600 underline"
@@ -336,7 +339,7 @@ const Lessons = () => {
                         </div>
                       </div>
                     </dialog>
-                  </div>
+                  </div> */}
 
                   <Comments postId={_id} onLessonCompleted={() => handleLessonCompleted(title)} />
                 </div>
@@ -348,44 +351,12 @@ const Lessons = () => {
 
       {/* Pagination Controls */}
       {filteredLessons.length > 0 && (
-        <div className="flex justify-center items-center gap-3 my-10">
-          {/* Previous Button */}
-          <button
-            onClick={() => handlePaginationChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            Previous
-          </button>
-
-          {/* Page Numbers */}
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePaginationChange(page)}
-                className={`px-3 py-2 rounded-lg font-medium transition ${currentPage === page
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                  }`}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          {/* Next Button */}
-          <button
-            onClick={() => handlePaginationChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination  currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}></Pagination>
       )}
     </Container>
   );
-};
+}
 
 export default Lessons;

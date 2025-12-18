@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import useAuth from "../useAuth";
+import useAxiosSecure from "../useAxiosSecure";
 
 const useFavoriteLessons = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   const {
     data: favoriteLessons = [],
@@ -15,7 +16,7 @@ const useFavoriteLessons = () => {
     queryKey: ["favoriteFullLessons", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axios.get(
+      const res = await axiosSecure.get(
         `${import.meta.env.VITE_API_URL}/favoriteFullLessons?email=${user.email}`
       );
       return res.data;

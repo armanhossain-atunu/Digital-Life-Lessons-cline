@@ -6,6 +6,8 @@ import axios from "axios";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import toast from "react-hot-toast";
 import { imageUpload } from "../../../Utils";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import Container from "../../Shared/Container";
 
 const UserProfile = () => {
   const { user, updateUserProfile, setUser } = useAuth();
@@ -13,7 +15,7 @@ const UserProfile = () => {
 
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(user.displayName || "");
-  const [photoFile, setPhotoFile] = useState(null); 
+  const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(user.photoURL || "");
 
   // Fetch user profile
@@ -32,6 +34,16 @@ const UserProfile = () => {
     queryFn: async () => (await axios.get(`${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`)).data,
     enabled: !!user?.email
   });
+  // Prepare chart data (example: lessons added per day)
+  const chartData = lessons.map(lesson => ({
+    date: new Date(lesson.createdAt).toLocaleDateString(),
+    count: 1
+  })).reduce((acc, cur) => {
+    const existing = acc.find(item => item.date === cur.date);
+    if (existing) existing.count += 1;
+    else acc.push(cur);
+    return acc;
+  }, []);
 
   // Favorite lessons
   const { data: favoriteLessons = [] } = useQuery({
@@ -88,8 +100,8 @@ const UserProfile = () => {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="bg-base-100 min-h-screen pb-12 pt-20 px-4">
-      <div className="max-w-4xl mx-auto bg-base-200 shadow-lg rounded-2xl p-8">
+    <Container >
+      <div className="bg-base-200 pb-12 pt-20 px-4 shadow-lg rounded-2xl p-8">
 
         {/* Header */}
         <div className="flex items-center gap-6 border-b pb-6">
@@ -113,7 +125,7 @@ const UserProfile = () => {
             ) : (
               <>
                 <h2 className="text-3xl font-bold text-base-800">{user.displayName}</h2>
-                <p className="text-base-500">{ user.email}</p>
+                <p className="text-base-500">{user.email}</p>
                 <div className="flex items-center gap-2 text-base-500 mt-2">
                   <FaCalendarAlt />
                   <span>Joined: {profile[0]?.createdAt}</span>
@@ -174,7 +186,24 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Weekly Lessons Chart */}
+      <div className="mt-10 mb-20">
+        <h2 className="text-2xl font-bold mb-4">Weekly Contributions</h2>
+        {chartData.length === 0 ? (
+          <p>No data to display.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData}>
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#875DF8" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+    </Container>
   );
 };
 

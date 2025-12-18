@@ -1,28 +1,66 @@
 import React, { useState, useMemo } from 'react';
 import useUsers from '../../../Hooks/ShareAllApi/useUsers';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const UserList = () => {
-    const { data: users = [], isLoading, refetch } = useUsers(); 
+    const { data: users = [], isLoading, refetch } = useUsers();
     const [sortOrder, setSortOrder] = useState('asc');
     const [showAll, setShowAll] = useState(false);
-    const [deletingId, setDeletingId] = useState(null);
+    const [deletingId] = useState(null);
 
 
-    const handleDeleteUser = async (userEmail) => {
-        if (!window.confirm(`Are you sure you want to delete user: ${userEmail}?`)) {
-            return;
-        }
-        setDeletingId(userEmail);
-        try {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/users/${userEmail}`);
-            refetch();
-        } catch (error) {
-            alert("Failed to delete user. Please try again.");
-            console.error(error);
-        } finally {
-            setDeletingId(null);
-        }
+
+    const showDeleteConfirmToast = (onConfirm) => {
+        toast((t) => (
+            <div className="bg-base-300 shadow-lg rounded-lg p-4 w-72">
+                <h3 className="font-semibold text-red-600 text-lg">
+                    Delete User?
+                </h3>
+
+                <p className="text-sm text-gray-600 mt-1">
+                    This action cannot be undone.
+                </p>
+
+                <div className="flex justify-end gap-2 mt-4">
+                    <button
+                        className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                        onClick={() => toast.dismiss(t.id)}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                        onClick={() => {
+                            toast.dismiss(t.id);
+                            onConfirm();
+                        }}
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        ), { duration: Infinity });
+    };
+
+    const handleDeleteUser = (userEmail) => {
+        showDeleteConfirmToast(async () => {
+            const toastId = toast.loading("Deleting user...");
+
+            try {
+                await axios.delete(
+                    `${import.meta.env.VITE_API_URL}/users/${userEmail}`
+                );
+
+                toast.success("User deleted successfully", { id: toastId });
+                refetch();
+
+            } catch (error) {
+                toast.error("Failed to delete user", { id: toastId });
+                console.error(error);
+            }
+        });
     };
 
     // Sort users by role
@@ -63,10 +101,10 @@ const UserList = () => {
         <div className="p-6 max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">All Users ({users.length})</h2>
 
-            <div className="overflow-x-auto bg-white shadow rounded-lg">
+            <div className="overflow-x-auto bg-base-100 shadow rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
+                    <thead className="bg-base-200">
+                        <tr className='bg-base-200'>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 User
                             </th>
@@ -93,7 +131,7 @@ const UserList = () => {
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-base-300 divide-y divide-gray-200">
                         {displayedUsers.map((user) => (
                             <tr key={user.email} className="hover:bg-gray-50 group">
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -105,7 +143,7 @@ const UserList = () => {
                                             onError={(e) => (e.target.src = '/default-avatar.png')}
                                         />
                                         <div className="text-sm font-medium text-gray-900">
-                                            {user.displayName || 'No Name'}
+                                            {user.name || user?.displayName}
                                         </div>
                                     </div>
                                 </td>

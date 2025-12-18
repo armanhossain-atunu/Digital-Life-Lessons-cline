@@ -67,7 +67,7 @@ const FavoriteLessons = () => {
           <div className="overflow-x-auto">
             <table className="w-full table-auto border-collapse border border-base-300">
               <thead>
-                <tr className="bg-indigo-50 text-left">
+                <tr className="bg-base-50 text-left">
                   <th className="px-6 py-4 border border-base-300">Image</th>
                   <th className="px-6 py-4 border border-base-300">Category</th>
                   <th className="px-6 py-4 border border-base-300">Title</th>

@@ -99,9 +99,9 @@ const Login = () => {
 
     return (
         <div className="flex justify-center items-center min-h-screen">
-            <div className="flex flex-col max-w-md p-6 mt-20 mb-20 rounded-md sm:p-10 bg-gray-100 text-gray-900 shadow-lg border">
+            <div className="flex flex-col max-w-md p-6 mt-20 mb-20 rounded-md sm:p-10 bg-base-100 text-base-900 shadow-lg border">
 
-                <div className="mb-8 text-center">
+                <div className="mb-8  text-center">
                     <h1 className="my-3 text-4xl font-bold">Log In</h1>
                     <p className="text-sm text-gray-400">
                         Sign in to access your account

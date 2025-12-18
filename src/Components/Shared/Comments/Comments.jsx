@@ -52,8 +52,6 @@ const Comments = ({ postId }) => {
 
   return (
     <div className="mt-5">
-      <h4 className="text-lg font-bold">Comment</h4>
-
       {!user && (
         <p className="text-red-600 mt-2">Please login to comment.</p>
       )}

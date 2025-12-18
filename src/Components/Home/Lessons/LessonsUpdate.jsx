@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { imageUpload } from "../../../Utils";
-
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 const API = import.meta.env.VITE_API_URL;
 
 const UpdateLesson = () => {
     const { id } = useParams();
     const [newImage, setNewImage] = useState(null);
     const [loading, setLoading] = useState(false);
+      const axiosSecure = useAxiosSecure()
 
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -43,7 +45,7 @@ const UpdateLesson = () => {
                 tone: lesson.tone,
                 isPublic: lesson.isPublic,
                 accessLevel: lesson.accessLevel,
-              
+
             });
         }
     }, [lesson, reset]);
@@ -82,13 +84,14 @@ const UpdateLesson = () => {
                 image: imageUrl,
             };
 
-            const res = await axios.patch(
+            const res = await axiosSecure.patch(
                 `${API}/lessons/${lesson._id}`,
                 updatedLesson
             );
 
             if (res.data.modifiedCount > 0) {
                 toast.success("Lesson updated successfully ✅");
+                navigate('/')
             } else {
                 toast("No changes detected");
             }
@@ -107,7 +110,7 @@ const UpdateLesson = () => {
     ======================= */
     return (
         <div className="max-w-3xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-6">Update Lesson</h2>
+            <h2 className="text-2xl mt-20 text-center font-bold mb-6">Update Lesson</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 

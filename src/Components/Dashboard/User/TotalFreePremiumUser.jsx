@@ -16,7 +16,7 @@ const TotalFreePremiumUser = () => {
   console.log(premiumTotal, freeTotal);
 
   return (
-    <div >
+    <div className='text-base-300' >
       {/* Summary */}
       <div className=" flex gap-6">
         <div className='bg-blue-100 text-blue-800 text-center shadow-lg rounded-2xl p-8'>
@@ -24,7 +24,7 @@ const TotalFreePremiumUser = () => {
           <h1 className='text-2xl text-center font-semibold'>{premiumTotal}</h1>
         </div>
 
-        <div className="bg-purple-100 text-center shadow-lg rounded-2xl p-8">
+        <div className="bg-purple-100 text-purple-800 text-center shadow-lg rounded-2xl p-8">
           <h1>
             Free Users
           </h1>

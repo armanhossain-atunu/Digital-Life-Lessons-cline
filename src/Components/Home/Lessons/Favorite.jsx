@@ -3,17 +3,19 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FaHeart, FaRegBookmark } from "react-icons/fa";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 
 const Favorite = ({ lessonId }) => {
     const { user } = useAuth();
+    const axiosSecure = useAxiosSecure();
     const queryClient = useQueryClient();
 
     // Load favorite state
     const { data: favoriteData = { favorited: false, totalFavorites: 0 } } = useQuery({
         queryKey: ["favorite", lessonId],
         queryFn: async () => {
-            const res = await axios.get(
+            const res = await axiosSecure.get(
                 `${import.meta.env.VITE_API_URL}/checkFavorite?lessonId=${lessonId}&userEmail=${user?.email}`
             );
             return res.data;
@@ -26,7 +28,10 @@ const Favorite = ({ lessonId }) => {
         mutationFn: async () => {
             return await axios.post(
                 `${import.meta.env.VITE_API_URL}/favorite/${lessonId}`,
-                { userEmail: user?.email }
+                { userEmail: user?.email ,
+                    userName: user?.displayName,
+                    userImage: user?.photoURL,
+                }
             );
         },
 

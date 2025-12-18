@@ -75,7 +75,7 @@ const TopContributors = () => {
                                     className="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4"
                                 />
                                 <h3 className="text-xl font-bold text-base-800">
-                                    {user.displayName}
+                                    {user.name}
                                 </h3>
                                 <p className="text-sm text-base-600 mt-1">{user.email}</p>
 

@@ -8,7 +8,7 @@ import Signup from "../Pages/Signup/Signup";
 import MyLessons from "../Pages/My_Lessons/MyLessons";
 import PrivateRoute from "./PrivateRoute";
 import ErrorPage from "../Pages/Error/ErrorPage";
-import UserProfile from "../Components/Dashboard/User/Profile";
+import UserProfile from "../Components/Dashboard/User/UserProfile";
 import AddLesson from "../Pages/Add_Lesson/AddLesson";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import AdminProfile from "../Components/Dashboard/Admin/AdminProfile";
@@ -28,6 +28,7 @@ import Unauthorized from "../Pages/Error/Unauthorized/Unauthorized";
 import AdminUserCreate from "../Components/Dashboard/Admin/AdminUserCreate/AdminUserCreate";
 import AuthorLessons from "../Pages/My_Lessons/AuthorLessons";
 import PaymentHistory from "../Pages/Payment/PaymentHistory";
+import UserPayHistory from "../Pages/Payment/UserPayHistory";
 
 
 const router = createBrowserRouter([
@@ -36,47 +37,25 @@ const router = createBrowserRouter([
         Component: MainLayout,
         hydrateFallbackElement: <LoadingSpinner></LoadingSpinner>,
         children: [
-            {
-                index: true,
-                Component: Home,
-            },
-            {
-                path: "/about", Component: About,
-            },
-            {
-                path: '/auth/login',
-                Component: Login,
-            },
-            {
-                path: '/auth/signup',
-                Component: Signup,
-            },
+            { index: true, Component: Home, },
+            { path: "/about", Component: About, },
+            { path: '/auth/login', Component: Login, },
+            { path: '/auth/signup', Component: Signup, },
             { path: '/unauthorized', element: <Unauthorized></Unauthorized> },
-            {
-                path: '/UserProfile'
-                , element: <PrivateRoute><UserProfile></UserProfile></PrivateRoute>
-            },
-            {
-                path: '/add-lessons',
-                element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>,
-            },
-            {
-                path: '/public-lessons',
-                element: <PrivateRoute><PublicLessons></PublicLessons> </PrivateRoute>
-            },
-            {
-                path: '/lesson-details/:id',
-                element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>,
-            },
-            {
-                path: '/my-lessons', element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute>,
-            },
+            { path: '/UserProfile', element: <PrivateRoute><UserProfile></UserProfile></PrivateRoute> },
+            { path: '/add-lessons', element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>, },
+            { path: '/public-lessons', element: <PrivateRoute><PublicLessons></PublicLessons> </PrivateRoute> },
+            { path: '/lesson-details/:id', element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>, },
+            { path: '/lesson-details/:id', element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>, },
+            { path: '/my-lessons', element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute> },
             { path: '/favorite-lessons', element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>, },
             { path: '/Reviews', element: <PrivateRoute> <ReviewSection></ReviewSection> </PrivateRoute> },
             { path: '/lessonsUpdate/:id', element: <PrivateRoute> <LessonsUpdate></LessonsUpdate></PrivateRoute> },
-            { path: "pricing", element: <Pricing /> },
+            { path: "pricing", element: <PrivateRoute><Pricing /></PrivateRoute> },
+            { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
+            { path: 'payment-cancel', element: <PaymentCancel></PaymentCancel> },
+            { path: 'user-pay-history', element: <PrivateRoute> <UserPayHistory></UserPayHistory></PrivateRoute> },
             { path: "/my-lessons/:authorEmail", element: <PrivateRoute><AuthorLessons></AuthorLessons></PrivateRoute> },
-
 
         ],
 
@@ -84,33 +63,10 @@ const router = createBrowserRouter([
     // ==============================================================================
     //                    Dashboard Routes
     //===============================================================================
-    // {
-    //     path: '/dashboard',
-    //     element: <PrivateRoute><AdminRouter>
-    //         <DashboardLayout></DashboardLayout>
-    //     </AdminRouter></PrivateRoute>,
-    //     children: [
-    //         { index: true, element: <DashboardHome></DashboardHome> },
-    //         { path: 'admin-profile', element: <AdminProfile></AdminProfile> },
-    //         { path: 'add-lessons', element: <AddLesson></AddLesson> },
-    //         { path: 'my-lessons', element: <MyLessons></MyLessons> },
-    //         { path: 'Reports', element: <Reports></Reports> },
 
-
-
-
-    //     ]
-
-    // },
     {
         path: '/dashboard',
-        element: (
-            <PrivateRoute>
-                <AdminRouter>
-                    <DashboardLayout />
-                </AdminRouter>
-            </PrivateRoute>
-        ),
+        element: (<PrivateRoute><AdminRouter><DashboardLayout /></AdminRouter></PrivateRoute>),
         children: [
             { index: true, element: <DashboardHome /> },
             { path: 'admin_User_Create', element: <AdminUserCreate></AdminUserCreate> },
@@ -118,11 +74,7 @@ const router = createBrowserRouter([
             { path: 'add-lessons', element: <AddLesson /> },
             { path: 'my-lessons', element: <MyLessons /> },
             { path: 'reports', element: <Reports /> },
-            { path: 'payment-success', element: <PaymentSuccess></PaymentSuccess> },
-            { path: 'payment-cancel', element: <PaymentCancel></PaymentCancel> },
-            { path: 'paymentHistory', element:<PaymentHistory></PaymentHistory> },
-
-
+            { path: 'paymentHistory', element: <PaymentHistory></PaymentHistory> },
         ]
     },
 

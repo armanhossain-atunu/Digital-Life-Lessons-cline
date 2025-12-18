@@ -1,13 +1,32 @@
-import React from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Container from "../../Shared/Container";
 
+const LessonCard = ({ lesson }) => {
+  return (
+    <Link to={`/lesson-details/${lesson._id}`} className="card bg-base-100 shadow hover:shadow-xl transition">
+      <figure>
+        <img
+          src={lesson.image}
+          alt={lesson.title}
+          className="h-40 w-full object-cover"
+        />
+      </figure>
+      
+      <div className="card-body">
+        <h2 className="card-title text-lg">{lesson.title}</h2>
+        <p className="text-sm text-base-600">{lesson.category}</p>
+      </div>
+    </Link>
+  );
+};
+
 const LessonDetails = () => {
   const { id } = useParams();
 
+  // Single lesson
   const { data: lesson, isLoading, isError } = useQuery({
     queryKey: ["lessonDetails", id],
     queryFn: async () => {
@@ -19,42 +38,76 @@ const LessonDetails = () => {
     enabled: !!id,
   });
 
+  // Similar lessons (category based)
+  const {
+    data: similarLessons = [],
+    isLoading: similarLoading,
+  } = useQuery({
+    queryKey: ["similarLessons", id],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/lessons/similar/${id}`
+      );
+      return res.data;
+    },
+    enabled: !!id,
+  });
+
   if (isLoading) return <LoadingSpinner />;
-  if (isError) return <p className="text-red-500">Failed to load lesson.</p>;
+  if (isError) return <p className="text-red-500">Lesson load failed</p>;
 
   return (
     <Container>
-      <div className="grid grid-cols-1 mt-21 md:grid-cols-2 gap-6 bg-base-100 min-h-screen p-6">
-        {/* Lesson Image */}
+      {/* Lesson Details */}
+      <h1 className="text-3xl text-center mt-20 font-bold">
+        Lesson Details
+      </h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         {lesson.image && (
           <img
             src={lesson.image}
             alt={lesson.title}
-            className="w-full h-64 md:h-96 object-cover hover:shadow-2xl  rounded-2xl shadow-lg"
+            className="w-full h-64 md:h-96 object-cover rounded-2xl shadow"
           />
         )}
 
-        {/* Lesson Info */}
-        <div className="bg-base-200 h-64 md:h-96  p-6 rounded-2xl shadow hover:shadow-2xl flex flex-col">
-          {/* Title */}
-          <h1 className="text-3xl sm:text-4xl font-bold text-base-800 mb-4">
-            {lesson.title}
-          </h1>
+        <div className="bg-base-200 p-6 rounded-2xl shadow">
+          <h2 className="text-3xl font-bold mb-4">{lesson.title}</h2>
 
-          {/* Meta Info */}
-          <div className="flex flex-wrap gap-2 mb-4 text-sm text-base-600">
-            <span className="badge badge-outline">Category: {lesson.category}</span>
-            <span className="badge badge-outline">Tone: {lesson.tone}</span>
-            <span className="badge badge-outline">Access: {lesson.accessLevel}</span>
-            <span className="badge badge-outline">Author: {lesson.authorEmail}</span>
-            <span className="badge badge-outline">Created: {(lesson.createdAt)}</span>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <span className="badge badge-outline">
+              Category: {lesson.category}
+            </span>
+            <span className="badge badge-outline">
+              Tone: {lesson.tone}
+            </span>
+            <span className="badge badge-outline">
+              Access: {lesson.accessLevel}
+            </span>
           </div>
 
-          {/* Description */}
-          <div className="overflow-y-auto max-h-[50vh] pr-2">
-            <p className="text-base-700 leading-relaxed">{lesson.description}</p>
-          </div>
+          <p>{lesson.description}</p>
         </div>
+      </div>
+
+      {/*  Similar Lessons Section */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold mb-6">
+          Similar Lessons (Category Based)
+        </h2>
+
+        {similarLoading ? (
+          <LoadingSpinner />
+        ) : similarLessons.length === 0 ? (
+          <p className="text-base-500">No similar lessons found</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {similarLessons.map((item) => (
+              <LessonCard key={item._id} lesson={item} />
+            ))}
+          </div>
+        )}
       </div>
     </Container>
   );

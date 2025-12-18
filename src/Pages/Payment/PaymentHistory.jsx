@@ -1,6 +1,7 @@
 import React from 'react';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
+import Container from '../../Components/Shared/Container';
 
 const PaymentHistory = () => {
     const axiosSecure = useAxiosSecure()
@@ -14,14 +15,18 @@ const PaymentHistory = () => {
         }
 
     })
+    const totalAmount = Payments.reduce((total, pay) => total + pay.amount, 0);
     console.log(Payments);
     return (
-        <div className="p-6">
+        <Container className="p-6">
             <h2 className="text-2xl font-bold mb-4">Payment History</h2>
-            <table className="table-auto w-full border-collapse border border-gray-300">
+            <div className="mt-6">
+                <h3 className="text-xl font-semibold mb-2">Total Amount: ${totalAmount}</h3>
+            </div>
+            <table className="table-auto w-full border-collapse border border-base-300">
                 <thead>
-                    <tr className="bg-gray-100">
-                        <th className="border px-4 py-2">#</th>
+                    <tr className="bg-base-100">
+                        <th className="border px-4 py-2">SN</th>
                         <th className="border px-4 py-2">Email</th>
                         <th className="border px-4 py-2">Amount</th>
                         <th className="border px-4 py-2">TransactionId</th>
@@ -29,7 +34,7 @@ const PaymentHistory = () => {
                         <th className="border px-4 py-2">Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-center'>
                     {Payments.map((payment, index) => (
                         <tr key={payment._id}>
                             <td className="border px-4 py-2">{index + 1}</td>
@@ -41,10 +46,8 @@ const PaymentHistory = () => {
                                 <span
                                     className={
                                         payment.status === 'Paid'
-                                            ? 'text-green-600 font-semibold'
-                                            : payment.status === 'Pending'
-                                                ? 'text-yellow-600 font-semibold'
-                                                : 'text-red-600 font-semibold'
+                                            ? 'text-red-600 font-semibold'
+                                            : 'text-green-600 font-semibold'
                                     }
                                 >
                                     {payment.status}
@@ -54,7 +57,7 @@ const PaymentHistory = () => {
                     ))}
                 </tbody>
             </table>
-        </div>
+        </Container>
     );
 };
 

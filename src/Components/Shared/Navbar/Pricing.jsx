@@ -1,10 +1,11 @@
-import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../../../Hooks/useAuth";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 
 const Pricing = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure()
 
   const handleUpgrade = async () => {
     if (!user) {
@@ -23,7 +24,7 @@ const Pricing = () => {
     };
 
     try {
-      const { data } = await axios.post(
+      const { data } = await axiosSecure.post(
         `${import.meta.env.VITE_API_URL}/create-checkout-session`,
         paymentInfo
       );
@@ -31,6 +32,7 @@ const Pricing = () => {
       // redirect to Stripe
       window.location.href = data.url;
     } catch (error) {
+      console.error(error);
       toast.error("Payment initiation failed");
     }
   };

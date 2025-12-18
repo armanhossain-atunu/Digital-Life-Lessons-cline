@@ -58,15 +58,21 @@ const SignUp = () => {
             });
 
             // Save user to DB
-            saveUserMutation.mutate({
+            // saveUserMutation.mutate({
+            //     name,
+            //     email,
+            //     photoURL: imageURL,
+            //     role: "user",
+            //     plan: "free",
+            //     createdAt: new Date().toLocaleString(),
+            // });
+            await saveUserMutation.mutateAsync({
                 name,
                 email,
                 photoURL: imageURL,
                 role: "user",
                 plan: "free",
-                createdAt: new Date().toLocaleString(),
             });
-
             toast.success("Signup Successful");
             navigate(from, { replace: true });
 
@@ -77,7 +83,6 @@ const SignUp = () => {
     };
 
     // -----------  GOOGLE SIGN-IN ----------
-
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithGoogle();
@@ -89,17 +94,16 @@ const SignUp = () => {
                 photoURL: user.photoURL,
                 role: "user",
                 plan: "free",
-                createdAt: new Date().toLocaleString(),
             });
 
-            toast.success("Signup Successful db");
+            toast.success("Signup Successful");
             navigate(from, { replace: true });
 
         } catch (err) {
-            console.log(err);
             toast.error(err.message);
         }
     };
+
 
     if (loading) return <LoadingSpinner />
 
