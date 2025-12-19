@@ -1,36 +1,53 @@
-import { Link, useParams, Navigate } from "react-router";
+import { Link, useParams } from "react-router";
 import useLessons from "../../Hooks/ShareAllApi/useLessons";
-import useUsers from "../../Hooks/ShareAllApi/useUsers"; // 
+import useUsers from "../../Hooks/ShareAllApi/useUsers";
 import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 import Container from "../../Components/Shared/Container";
 import Pagination from "../../Components/Shared/Pagination";
 import { useState } from "react";
 
 const AuthorLessons = () => {
-  const [currentPage, setCurrentPage] = useState(1);
   const { authorEmail } = useParams();
+  const [currentPage, setCurrentPage] = useState(1);
+
   const { data: lessons = [], isLoading } = useLessons();
   const { data: users = [], isLoading: userLoading } = useUsers();
 
   if (isLoading || userLoading) return <LoadingSpinner />;
 
- 
+  // Find author
   const authorUser = users.find((u) => u.email === authorEmail);
 
- 
-  if (!authorUser || (authorUser.role !== "admin" && authorUser.plan !== "premium")) {
+  if (!authorUser) {
     return (
       <Container>
         <p className="mt-20 text-center text-red-500">
-          Access denied. Only premium or admin authors can share lessons.
+          Author not found
         </p>
       </Container>
     );
   }
 
-  const authorLessons = lessons.filter((l) => l.authorEmail === authorEmail);
+  // Access logic
+  const isAdmin = authorUser.role === "admin";
+  const isPremium = authorUser.plan === "premium";
 
-  // Pagination logic
+  if (isAdmin && isPremium) {
+    return (
+      <Container>
+        <p className="mt-20 text-center text-red-500">
+          Access denied. Only Admin or Premium authors can share lessons.
+        </p>
+      </Container>
+    );
+  }
+
+  // Author lessons
+  const authorLessons = lessons.filter(
+    (lesson) => lesson.authorEmail === authorEmail
+  );
+
+  // Pagination
   const itemsPerPage = 6;
   const totalPages = Math.ceil(authorLessons.length / itemsPerPage);
   const displayedLessons = authorLessons.slice(
@@ -40,11 +57,24 @@ const AuthorLessons = () => {
 
   return (
     <Container>
-      <h2 className="text-2xl mt-20 font-bold mb-6">
-        Lessons Author: {authorEmail}
-      </h2>
+      {/* Author Info */}
+      <div className="flex flex-col items-center space-y-2 mb-10">
+        <img
+          src={authorUser.photoURL || "/avatar.png"}
+          alt={authorUser.name}
+          className="w-20 h-20 mt-20 rounded-full"
+        />
+        <h1 className="text-3xl font-bold">{authorUser.name}</h1>
+        <p className="text-gray-600">{authorUser.email}</p>
+        <p>Role: <b>{authorUser.role}</b></p>
+        <p>Plan: <b>{authorUser.plan}</b></p>
+      </div>
+
+      {/* Lessons */}
       {authorLessons.length === 0 ? (
-        <p>No lessons found.</p>
+        <p className="text-center text-gray-500">
+          No lessons found.
+        </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedLessons.map((lesson) => (
@@ -52,18 +82,27 @@ const AuthorLessons = () => {
               key={lesson._id}
               className="border rounded-lg shadow hover:shadow-lg transition p-5 bg-white"
             >
+              <img
+                src={lesson.image}
+                alt={lesson.title}
+                className="h-40 w-full object-cover rounded mb-3"
+              />
+
               <h3 className="text-lg font-semibold text-purple-700 mb-2">
                 {lesson.title}
               </h3>
-              <img src={lesson.image} alt="" />
-              <p className="text-gray-600 mb-3">{lesson.description}</p>
-              <div className="text-sm mb-5 text-gray-500">
-                <p>Author: {lesson.authorEmail}</p>
-                <p>Created: {lesson.createdAt}</p>
-              </div>
+
+              <p className="text-gray-600 mb-3">
+                {lesson.description?.slice(0, 100)}...
+              </p>
+
+              <p className="text-sm text-gray-500 mb-4">
+                Created: {new Date(lesson.createdAt).toLocaleDateString()}
+              </p>
+
               <Link
                 to={`/lesson-details/${lesson._id}`}
-                className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                className="inline-block px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
               >
                 View Details
               </Link>

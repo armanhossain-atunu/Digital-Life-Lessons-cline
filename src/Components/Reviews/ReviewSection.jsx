@@ -124,8 +124,8 @@ const ReviewSection = ({ lessonId }) => {
   const displayStars = (num) => "★".repeat(Math.max(0, Math.min(5, Number(num || 0))));
 
   return (
-    <Container className="my-10">
-      <h3 className="text-2xl font-bold mb-6 text-center">User Reviews</h3>
+    <Container>
+      <h3 className="text-2xl  font-bold mb-6 text-center">User Reviews</h3>
 
       {/* Review Submission Form - Only if not already reviewed */}
       {user && !hasReviewed ? (

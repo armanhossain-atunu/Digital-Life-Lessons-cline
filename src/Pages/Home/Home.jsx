@@ -7,6 +7,7 @@ import LoadingSpinner from '../../Components/Shared/LoadingSpinner';
 import TopContributors from '../../Components/Home/TopContributors';
 import MostSavedLessons from '../../Components/MostSavedLessons/MostSavedLessons';
 
+
 const Home = () => {
     const { loading } = useAuth()
     if (loading) {
@@ -19,8 +20,8 @@ const Home = () => {
             <Lessons></Lessons>
             <TopContributors></TopContributors>
             <MostSavedLessons></MostSavedLessons>
-            <MostSavedLessons></MostSavedLessons>
-
+           
+        
         </div>
     );
 };

@@ -226,8 +226,8 @@ const AddLesson = () => {
                         className=" w-full px-6 py-2 text-2xl bg-lime-500 cursor-pointer  text-white rounded hover:bg-lime-600 transition"
                     >
                         Create Lesson
-                    </button>
                     <LottieAnimation show={showAnimation} />
+                    </button>
                 </div>
             </form>
         </div>

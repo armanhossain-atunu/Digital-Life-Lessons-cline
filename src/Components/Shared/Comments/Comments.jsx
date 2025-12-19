@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,30 +6,25 @@ import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const Comments = ({ postId }) => {
   const { user } = useAuth();
-  const axiosSecure = useAxiosSecure()
+  const axiosSecure = useAxiosSecure();
   const [inputComment, setInputComment] = useState("");
   const queryClient = useQueryClient();
 
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ["comments", postId],
     queryFn: async ({ signal }) => {
-      try {
-        const { data } = await axiosSecure.get(
-          `${import.meta.env.VITE_API_URL}/comments?postId=${postId}`,
-          { signal }
-        );
-        return data ?? [];
-      } catch (err) {
-        console.error("Failed to fetch comments:", err);
-        return [];
-      }
+      const { data } = await axiosSecure.get(
+        `/comments?postId=${postId}`,
+        { signal }
+      );
+      return data ?? [];
     },
     enabled: !!postId,
   });
 
   const { mutateAsync: addComment, isLoading: isPosting } = useMutation({
     mutationFn: async () => {
-      return await axios.post(`${import.meta.env.VITE_API_URL}/comments`, {
+      return axiosSecure.post("/comments", {
         postId,
         user: user?.displayName || "Anonymous",
         comment: inputComment.trim(),
@@ -38,9 +32,12 @@ const Comments = ({ postId }) => {
         createdAt: new Date().toISOString(),
       });
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       setInputComment("");
-      await queryClient.invalidateQueries(["comments", postId]);
+      queryClient.invalidateQueries(["comments", postId]);
+    },
+    onError: (error) => {
+      console.error("Failed to add comment:", error);
     },
   });
 
@@ -64,12 +61,12 @@ const Comments = ({ postId }) => {
             placeholder="Add a comment..."
             value={inputComment}
             onChange={(e) => setInputComment(e.target.value)}
-          ></textarea>
+          />
 
           <div className="flex justify-between items-center mt-2">
             <button
               type="submit"
-              disabled={isPosting}
+              disabled={isPosting || !inputComment.trim()}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
             >
               {isPosting ? "Commenting..." : "Comment"}
@@ -79,15 +76,17 @@ const Comments = ({ postId }) => {
         </form>
       )}
 
-      <div className="mt-5  space-y-3 ">
+      <div className="mt-5 space-y-3">
         {isLoading ? (
           <p>Loading comments...</p>
         ) : (
           comments.map((c) => (
-            <div key={c._id} className="border  rounded-md p-3 shadow-sm">
+            <div
+              key={c._id || `${c.user}-${c.createdAt}`}
+              className="border rounded-md p-3 shadow-sm"
+            >
               <div className="flex justify-between items-center mb-1">
                 <h5 className="font-semibold">{c.user}</h5>
-               
                 <img
                   className="w-10 h-10 rounded-full"
                   src={c.photo || "/placeholder.jpg"}
@@ -95,7 +94,9 @@ const Comments = ({ postId }) => {
                 />
               </div>
               <p>{c.comment}</p>
-               <h5 className="font-semibold">{c.createdAt}</h5>
+              <p className="text-xs text-gray-500">
+                {new Date(c.createdAt).toLocaleString()}
+              </p>
             </div>
           ))
         )}

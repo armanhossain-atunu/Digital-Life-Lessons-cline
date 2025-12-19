@@ -5,7 +5,11 @@ import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Container from "../../Shared/Container";
 import FavoriteButton from "./Favorite";
 import useAuth from "../../../Hooks/useAuth";
-import UpdateLesson from "./UpdateLesson";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import AuthorLessons from "../../../Pages/My_Lessons/AuthorLessons";
+import ReviewSection from "../../Reviews/ReviewSection";
+import ReportLesson from "../../../Pages/Reports/ReportLesson";
+
 
 const LessonCard = ({ lesson }) => {
   return (
@@ -29,7 +33,20 @@ const LessonCard = ({ lesson }) => {
 const LessonDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
-
+  const axiosSecure = useAxiosSecure();
+  const { data: userData } = useQuery({
+    queryKey: ["userRole", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const res = await axiosSecure.get(
+        `${import.meta.env.VITE_API_URL}/user?email=${user.email}`
+      );
+      return res.data;
+    },
+    enabled: !!user?.email,
+  });
+  const role = userData?.role?.toLowerCase();
+  const isAdmin = role === "admin";
   // Single lesson
   const { data: lesson, isLoading, isError } = useQuery({
     queryKey: ["lessonDetails", id],
@@ -39,6 +56,7 @@ const LessonDetails = () => {
     },
     enabled: !!id,
   });
+
 
   // Similar lessons (category based)
   const {
@@ -52,9 +70,9 @@ const LessonDetails = () => {
     },
     enabled: !!id,
   });
-
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <p className="text-red-500">Lesson load failed</p>;
+  const isOwner = lesson && user && lesson.authorEmail === user.email;
 
   return (
     <Container>
@@ -71,10 +89,8 @@ const LessonDetails = () => {
             className="w-full h-64 md:h-96 object-cover rounded-2xl shadow"
           />
         )}
-
         <div className="bg-base-200 p-6 rounded-2xl shadow">
           <h2 className="text-3xl font-bold mb-4">{lesson.title}</h2>
-
           <div className="flex flex-wrap gap-2 mb-4">
             <span className="badge badge-outline">
               Category: {lesson.category}
@@ -85,12 +101,36 @@ const LessonDetails = () => {
             <span className="badge badge-outline">
               Access: {lesson.accessLevel}
             </span>
-            <span className="">
+            {/* Favorite */}
+            <span>
               <FavoriteButton lessonId={lesson._id} user={user} ></FavoriteButton>
             </span>
-            <span className="badge badge-outline">
-              <Link to={`/UpdateLesson/${lesson._id}`}> Update</Link>
-            </span>
+            {/* Author */}
+            <Link to={`/my-lessons/${lesson.authorEmail}`} className="badge badge-outline">
+              Author Info
+            </Link>
+            {/* Update */}
+            {(isOwner || isAdmin) && (
+              <span className="badge badge-outline">
+                <Link to={`/UpdateLesson/${lesson._id}`}> Update</Link>
+              </span>
+            )}
+
+            {/* review */}
+            <button className="badge badge-outline" onClick={() => document.getElementById('my_modal_3').showModal()}>Reviews</button>
+            <dialog id="my_modal_3" className="modal">
+              <div className="modal-box">
+                <form method="dialog">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <ReviewSection></ReviewSection>
+              </div>
+            </dialog>
+
+            {/* ReportLesson */}
+            <ReportLesson></ReportLesson>
+
           </div>
 
           <p>{lesson.description}</p>

@@ -32,7 +32,7 @@ const TopContributors = () => {
 
     return (
         <Container>
-            <h2 className="text-3xl font-bold text-center mb-8">
+            <h2 className="text-3xl font-bold text-center my-8">
                 🌟 Top Contributors of the Week
             </h2>
 

@@ -1,7 +1,8 @@
-import { useQuery, } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Container from "../../Shared/Container";
 import toast from "react-hot-toast";
-import axios from 'axios';
+import axios from "axios";
+import { MdDeleteForever } from "react-icons/md";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
 import Comments from "../../Shared/Comments/Comments";
 import LoveReact from "../../Shared/LikeReact/LoveReact";
@@ -13,19 +14,19 @@ import { Link, useNavigate } from "react-router";
 import Search from "./Search";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import Pagination from "../../Shared/Pagination";
-import LessonsByCategory from "../../Shared/LessonsByCategory";
 
 const Lessons = () => {
-  // const queryClient = useQueryClient();
   const { user } = useAuth();
-  const axiosSecure = useAxiosSecure()
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [completedLesson, setCompletedLesson] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [play, setPlay] = useState(null)
+  const [play, setPlay] = useState(null);
+  const [sortBy, setSortBy] = useState("newest");
   const itemsPerPage = 6;
 
   // Fetch user role
@@ -33,7 +34,9 @@ const Lessons = () => {
     queryKey: ["userRole", user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
-      const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/user?email=${user.email}`);
+      const res = await axiosSecure.get(
+        `${import.meta.env.VITE_API_URL}/user?email=${user.email}`
+      );
       return res.data;
     },
     enabled: !!user?.email,
@@ -47,25 +50,27 @@ const Lessons = () => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Fetch lessons
+  // Fetch lessons with sorting
   const { data: lessons = [], isLoading, error } = useQuery({
-    queryKey: ["lessons"],
+    queryKey: ["lessons", sortBy],
     queryFn: async () => {
-      const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/lessons`);
+      const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/lessons`, {
+        params: { sort: sortBy },
+      });
       return res.data;
     },
   });
 
-  // Filter and paginate lessons
+  // Safe search filter
   const filteredLessons = lessons.filter((lesson) =>
-    lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
+    (lesson.title || "").toLowerCase().includes((searchTerm || "").toLowerCase())
   );
 
+  // Pagination
   const totalPages = Math.ceil(filteredLessons.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedLessons = filteredLessons.slice(startIndex, endIndex);
-
 
   // Hide animation after 2 seconds
   useEffect(() => {
@@ -77,6 +82,42 @@ const Lessons = () => {
       return () => clearTimeout(timer);
     }
   }, [showAnimation]);
+  const deleteLessonMutation = useMutation({
+    mutationFn: async (id) => {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
+    },
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(["lessons", sortBy], (old = []) =>
+        old.filter((lesson) => lesson._id !== id)
+      );
+      toast.success("Lesson deleted successfully!");
+    },
+  });
+
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div className="p-4 bg-white rounded-lg shadow-lg">
+        <p className="font-medium">Delete this lesson permanently?</p>
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={() => {
+              deleteLessonMutation.mutate(id);
+              toast.dismiss(t.id);
+            }}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Yes, Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity });
+  };
 
   const handlePayment = async (lesson) => {
     if (!user) {
@@ -102,7 +143,6 @@ const Lessons = () => {
         `${import.meta.env.VITE_API_URL}/create-checkout-session`,
         paymentInfo
       );
-
       window.location.assign(data.url);
     } catch {
       toast.error("Payment failed. Try again.");
@@ -120,143 +160,136 @@ const Lessons = () => {
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <p className="text-center text-red-500">
-    Failed to load lessons. please try again.
-    <LoadingSpinner></LoadingSpinner>
-  </p>;
+  if (error)
+    return (
+      <p className="text-center text-red-500">
+        Failed to load lessons. please try again.
+      </p>
+    );
 
   return (
     <Container>
-      {/* Success Animation Overlay */}
-      {showAnimation && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-sm">
-          <div className="bg-white rounded-lg p-8 text-center max-w-sm">
-            <FiCheckCircle className="text-green-500 text-6xl mx-auto mb-4" />
-            <p className="mt-4 text-lg font-semibold text-gray-800">
-              Great job! Lesson Completed
-            </p>
-            <p className="text-gray-600">{completedLesson}</p>
-          </div>
-        </div>
-      )}
-
       <h1 className="text-3xl font-bold text-center my-8">
-        Featured Life Lessons({lessons.length})
+        Featured Life Lessons ({lessons.length})
       </h1>
 
-      <Search className='flex justify-end' searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <LessonsByCategory></LessonsByCategory>
+      {/* Search + Sort */}
+      <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
+        <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2 gap-6">
-        {filteredLessons.length === 0 ? (
-          <div className="col-span-full text-center py-20">
-            <h2 className="text-2xl font-semibold text-gray-500">Lesson not found</h2>
-            <p className="text-gray-400 mt-2">Try searching with different keywords</p>
-          </div>
-        ) : (
-          paginatedLessons.map((lesson) => {
-            const {
-              _id,
-              image,
-              title,
-              description,
-              accessLevel = "free",
-              authorEmail,
-              createdAt,
-            } = lesson;
-
-            const isOwner = authorEmail === user?.email;
-            const access = accessLevel.toLowerCase();
-            const locked = access === "premium" && !isPremium && !isAdmin && !isOwner;
-
-
-            return (
-              <div
-                key={_id}
-                className="relative bg-base-300 rounded-xl max-h-[600px] scrollbar-hide overflow-y-auto shadow hover:shadow-xl transition-all border overflow-hidden"
-              >
-                {/* Premium Lock Overlay */}
-                {
-                  locked && (
-                    <div className="absolute  inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-white text-center p-6">
-                      <span className="text-5xl mb-3">Premium</span>
-                      <p className="text-sm mb-4">Upgrade to access this lesson</p>
-                      <button
-                        onClick={() => handlePayment(lesson)}
-                        className="px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700"
-                      >
-                        Upgrade Now Pay
-                      </button>
-                    </div>
-                  )
-                }
-
-                <img
-                  src={image || "/placeholder.jpg"}
-                  alt={title}
-                  className={`w-full h-50 rounded-xl p-2 object-cover ${locked ? "brightness-50" : ""}`}
-                />
-                <div className="text-end px-2">
-                  <p> {createdAt}</p>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-bold text-base-800">{title}</h3>
-
-                  <p className="text-gray-600 text-sm mt-2">
-                    {expanded[_id] ? description : `${description?.slice(0, 100)}...`}
-                    <button
-                      onClick={() => toggleExpand(_id)}
-                      className="text-indigo-600 font-medium ml-1 hover:underline"
-                    >
-                      {expanded[_id] ? "less" : "more"}
-                    </button>
-                  </p>
-                  {/* 
-                
-                  {/* Action Buttons */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mt-5">
-                    <Link
-                      to={`/lesson-details/${_id}`}
-                      className={`px-5 py-2 rounded-lg font-medium transition ${locked
-                        ? " "
-                        : ' bg-blue-500 text-base-600 text-base-300 hover:bg-blue-600 px-1.5 py-0.5'
-                        }`}
-                      onClick={(e) => locked && e.preventDefault()}
-                    >
-                      {locked ? "Locked" : "View"}
-                    </Link>
-
-                    <div className="flex items-center gap-3">
-                      <LoveReact lessonId={_id}>
-                        <div onClick={() => setPlay(_id)}>
-                          <Lottie
-                            animationData={LoveReactAnimation}
-                            loop={false}
-                            autoplay={play === _id}
-                            onComplete={() => setPlay(null)}
-                            className="w-8 h-8 z-50 cursor-pointer"
-                          />
-                        </div>
-                      </LoveReact>
-
-                    </div>
-                  </div>
-                  <Comments postId={_id} onLessonCompleted={() => handleLessonCompleted(title)} />
-                </div>
-              </div>
-            );
-          })
-        )}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="select select-bordered w-full md:w-1/4"
+        >
+          <option value="newest">Newest</option>
+          <option value="saved">Most Saved</option>
+        </select>
       </div>
 
-      {/* Pagination Controls */}
-      {filteredLessons.length > 0 && (
-        <Pagination currentPage={currentPage}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {paginatedLessons.map((lesson) => {
+          const {
+            _id,
+            image,
+            title,
+            description,
+            accessLevel = "free",
+            authorEmail,
+            createdAt,
+          } = lesson;
+
+          const isOwner = authorEmail === user?.email;
+          const access = (accessLevel || "free").toLowerCase();
+          const locked = access === "premium" && !isPremium && !isAdmin && !isOwner;
+
+          return (
+            <div
+              key={_id}
+
+              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll ${user ? "h-[600px]" : "h-[480px]"
+                }`}
+            >
+              {locked && (
+                <div className="absolute inset-0 bg-black/80 z-10 flex flex-col items-center justify-center text-white">
+                  <p className="text-xl mb-2">Premium</p>
+                  <button
+                    onClick={() => handlePayment(lesson)}
+                    className="px-6 py-2 bg-purple-600 rounded-lg"
+                  >
+                    Upgrade Now
+                  </button>
+                </div>
+              )}
+
+              <img
+                src={image || "/placeholder.jpg"}
+                alt={title}
+                className={`w-full h-48 object-cover ${locked && "brightness-50"}`}
+              />
+
+              <div className="p-5">
+                <h3 className="text-xl font-bold">{title}</h3>
+                <p className="text-sm text-gray-500">
+                  {new Date(createdAt).toLocaleDateString()}
+                </p>
+
+                <p className="text-gray-600 mt-2">
+                  {expanded[_id] ? description : `${description?.slice(0, 100)}...`}
+                  <button
+                    onClick={() => toggleExpand(_id)}
+                    className="text-indigo-600 ml-1"
+                  >
+                    {expanded[_id] ? "less" : "more"}
+                  </button>
+                </p>
+
+                <div className="flex justify-between items-center mt-4">
+                  <Link
+                    to={`/lesson-details/${_id}`}
+                    onClick={(e) => locked && e.preventDefault()}
+                    className="btn btn-sm btn-primary"
+                  >
+                    {locked ? "Locked" : "View"}
+                  </Link>
+
+                  <LoveReact lessonId={_id}>
+                    <Lottie
+                      animationData={LoveReactAnimation}
+                      loop={false}
+                      autoplay={play === _id}
+                      onComplete={() => setPlay(null)}
+                      className="w-8 h-8 cursor-pointer"
+                    />
+                  </LoveReact>
+
+                  {(isOwner || isAdmin) && (
+                    <button
+                      onClick={() => handleDelete(_id)}
+                      className="text-red-600 hover:text-red-800 text-2xl"
+                      title="Delete Lesson"
+                    >
+                      <MdDeleteForever />
+                    </button>
+                  )}
+                </div>
+                <Comments
+                  postId={_id}
+                  onLessonCompleted={() => handleLessonCompleted(title)}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {lessons.length > itemsPerPage && (
+        <Pagination
+          currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={onPageChange}></Pagination>
-      )}
+          onPageChange={onPageChange}
+        />)}
     </Container>
   );
-}
+};
 
 export default Lessons;

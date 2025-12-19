@@ -10,7 +10,7 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
 
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState("");
-    const [otherReason, setOtherReason] = useState(""); // extra text for "Other"
+    const [otherReason, setOtherReason] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleOpenReport = () => {
@@ -69,7 +69,7 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
     return (
         <>
             <button
-                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                className="badge badge-outline"
                 onClick={handleOpenReport}
             >
                 Report

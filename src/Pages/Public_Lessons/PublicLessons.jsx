@@ -7,9 +7,12 @@ import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 import LoveReact from "../../Components/Shared/LikeReact/LoveReact";
 import Favorite from "../../Components/Home/Lessons/Favorite";
 import ReviewSection from "../../Components/Reviews/ReviewSection";
+import FavoriteButton from "../../Components/Home/Lessons/Favorite";
+import useAuth from "../../Hooks/useAuth";
 
 
 const PublicLessons = () => {
+   const { user } = useAuth();
   const { data = { total: 0, lessons: [] }, isLoading } = useQuery({
     queryKey: ["publicLessons"],
     queryFn: async () => {
@@ -76,7 +79,8 @@ const PublicLessons = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <LoveReact lessonId={lesson._id} />
-                  <Favorite lessonId={lesson._id} />
+                  {/* <Favorite lessonId={lesson._id} /> */}
+                  <FavoriteButton lessonId={lesson._id} user={user}></FavoriteButton>
                 </div>
                 {/* Reviews Modal */}
                 <div className="mt-4">
@@ -97,8 +101,6 @@ const PublicLessons = () => {
                     </div>
                   </dialog>
                 </div>
-
-
 
                 {/* Button */}
                 <Link to={`/lesson-details/${lesson._id}`} className="btn btn-primary w-full mt-3">

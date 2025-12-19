@@ -1,78 +1,102 @@
 import { useQuery } from "@tanstack/react-query";
-import { FaHeart, FaRegHeart, FaRegThumbsUp } from "react-icons/fa";
+import { FaHeart, FaRegThumbsUp } from "react-icons/fa";
 import useAuth from "../../Hooks/useAuth";
-import axios from "axios";
 import Container from "../../Components/Shared/Container";
 import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 import Pagination from "../../Components/Shared/Pagination";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const MyLessons = () => {
   const { user } = useAuth();
-  const axiosSecure = useAxiosSecure()
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   // Fetch lessons
-  const { data: lessons = [], isLoading, error } = useQuery({
+  const {
+    data: lessons = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["myLessons", user?.email],
+    enabled: !!user?.email,
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `${import.meta.env.VITE_API_URL}/lessons?email=${user?.email}`
+        `/lessons?email=${user.email}`
       );
       return res.data;
     },
   });
 
-  // Pagination logic
+  // Pagination
   const totalPages = Math.ceil(lessons.length / itemsPerPage);
   const displayedLessons = lessons.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Handlers
-  const handleDelete = async (id) => {
-    if (confirm("Are you sure you want to delete this lesson permanently?")) {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
-      window.location.reload()
-    }
+  // Delete handler
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div className="p-4 bg-white rounded-lg shadow-lg">
+        <p className="font-medium">Delete this lesson permanently?</p>
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={async () => {
+              await axiosSecure.delete(`/lessons/${id}`, {
+                data: {
+                  email: user.email,
+                  role: user.role,
+                },
+              });
+              toast.dismiss(t.id);
+              toast.success("Lesson deleted");
+              refetch();
+            }}
+            className="px-4 py-2 bg-red-600 text-white rounded"
+          >
+            Yes, Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 bg-gray-300 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity });
   };
 
-  // const handleUpdate = (lesson) => {
-
-  //   console.log("Update lesson:", lesson);
-  // };
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <Container className="mb-10">
-      <h2 className="text-3xl mt-20 font-bold text-center mb-4">My Lessons</h2>
+      <h2 className="text-3xl mt-20 font-bold text-center mb-4">
+        My Lessons
+      </h2>
 
-      {isLoading && <LoadingSpinner />}
-      {error && <p className="text-center text-red-500">{error.message}</p>}
-
-      {!isLoading && lessons.length === 0 && (
+      {lessons.length === 0 && (
         <div className="text-center text-gray-500 py-20">
           <h3 className="text-2xl font-semibold">No lessons found</h3>
-          <p className="mt-2">You haven’t created any lessons yet.</p>
         </div>
       )}
 
-      {/* Table View */}
       {lessons.length > 0 && (
         <div className="overflow-x-auto mt-6">
-          <table className="table-auto w-full border-collapse border border-gray-300">
+          <table className="table-auto w-full border">
             <thead className="bg-gray-100">
               <tr>
                 <th className="border p-2">Image</th>
                 <th className="border p-2">Title</th>
                 <th className="border p-2">Visibility</th>
-                <th className="border p-2">Access Level</th>
-                <th className="border p-2">Created At</th>
-                <th className="border p-2">Reactions</th>
-                <th className="border p-2">Favorites</th>
+                <th className="border p-2">Access</th>
+                <th className="border p-2">Created</th>
+
                 <th className="border p-2">Actions</th>
               </tr>
             </thead>
@@ -81,64 +105,34 @@ const MyLessons = () => {
                 <tr key={lesson._id} className="text-center">
                   <td className="border p-2">
                     <img
-                      src={lesson.image || "/placeholder.jpg"}
-                      alt={lesson.title}
-                      className="w-20 h-20 object-cover rounded"
+                      src={lesson.image}
+                      className="w-16 h-16 object-cover rounded"
                     />
                   </td>
-                  <td className="border p-2 font-semibold">{lesson.title}</td>
-                  <td className="border p-2">
-                    <select
-                      defaultValue={lesson.isPublic ? "Public" : "Private"}
-                      onChange={(e) =>
-                        axios.patch(
-                          `${import.meta.env.VITE_API_URL}/lessons/${lesson._id}`,
-                          { isPublic: e.target.value === "Public" }
-                        )
-                      }
-                      className="border rounded px-2 py-1"
-                    >
-                      <option value="Public">Public</option>
-                      <option value="Private">Private</option>
-                    </select>
+                  <td className="border p-2 font-semibold">
+                    {lesson.title}
                   </td>
                   <td className="border p-2">
-                    <select
-                      defaultValue={lesson.accessLevel}
-                      disabled={user?.role !== "Premium"}
-                      title={
-                        user?.role !== "Premium"
-                          ? "Upgrade to Premium to change access level"
-                          : ""
-                      }
-                      onChange={(e) =>
-                        axios.patch(
-                          `${import.meta.env.VITE_API_URL}/lessons/${lesson._id}`,
-                          { accessLevel: e.target.value }
-                        )
-                      }
-                      className="border rounded px-2 py-1"
-                    >
-                      <option value="Free">Free</option>
-                      <option value="Premium">Premium</option>
-                    </select>
+                    {lesson.isPublic ? "Public" : "Private"}
                   </td>
-                  <td className="border p-2">{lesson.createdAt}</td>
-                  <td className="border p-2 flex justify-center items-center gap-2">
-                    <FaRegThumbsUp /> {lesson.reactionsCount || 0}
+                  <td className="border p-2">
+                    {lesson.accessLevel}
                   </td>
-                  <td className="border p-2 flex justify-center items-center gap-2">
-                    <FaHeart className="text-red-500" /> {lesson.favoritesCount || 0}
+                  <td className="border p-2">
+                    {lesson.createdAt}
                   </td>
+
                   <td className="border p-2 space-x-2">
                     <button
-                      onClick={() => console.log("Details:", lesson)}
+                      onClick={() =>
+                        navigate(`/lesson-details/${lesson._id}`)
+                      }
                       className="px-2 py-1 bg-blue-500 text-white rounded"
                     >
                       Details
                     </button>
                     <Link
-                      to={`/lessonsUpdate/${lesson._id}`}
+                      to={`/UpdateLesson/${lesson._id}`}
                       className="px-2 py-1 bg-yellow-500 text-white rounded"
                     >
                       Update
@@ -157,7 +151,6 @@ const MyLessons = () => {
         </div>
       )}
 
-      {/* Pagination */}
       {lessons.length > itemsPerPage && (
         <Pagination
           currentPage={currentPage}

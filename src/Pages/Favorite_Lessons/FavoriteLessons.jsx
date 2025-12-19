@@ -30,20 +30,19 @@ const FavoriteLessons = () => {
       </Container>
     );
 
-  // Remove favorite lesson
-  const handleRemoveFavorite = async (lessonId) => {
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/favorite/${lessonId}`, {
-        userEmail: user.email,
-      });
+const handleRemoveFavorite = async (lessonId) => {
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/favorite/${lessonId}/remove`);
 
-      await refetch();
-      toast.success("Removed from favorites");
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to remove favorite");
-    }
-  };
+    // Refetch favorite lessons
+    await refetch();
+
+    toast.success("Removed from favorites");
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    toast.error("Failed to remove favorite");
+  }
+};
 
   // Pagination logic
   const totalPages = Math.ceil(favoriteLessons.length / itemsPerPage);
