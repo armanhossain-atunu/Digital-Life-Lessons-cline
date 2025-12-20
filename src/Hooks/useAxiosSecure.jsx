@@ -33,7 +33,7 @@ const useAxiosSecure = () => {
                 console.log('Logged out successfully.')
               })
               .catch(console.error)
-            navigate('/login')
+            navigate('/auth/login')
           }
           return Promise.reject(err)
         }

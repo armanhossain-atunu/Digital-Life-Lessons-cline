@@ -6,6 +6,8 @@ import Lessons from '../../Components/Home/Lessons/Lessons';
 import LoadingSpinner from '../../Components/Shared/LoadingSpinner';
 import TopContributors from '../../Components/Home/TopContributors';
 import MostSavedLessons from '../../Components/MostSavedLessons/MostSavedLessons';
+import PricingComparisonTable from '../../Components/PricingComparisonTable';
+import ReportLesson from '../Reports/ReportLesson';
 
 
 const Home = () => {
@@ -20,6 +22,8 @@ const Home = () => {
             <Lessons></Lessons>
             <TopContributors></TopContributors>
             <MostSavedLessons></MostSavedLessons>
+            <PricingComparisonTable></PricingComparisonTable>
+       
            
         
         </div>

@@ -1,14 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark;
 }
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 .dash-menu li a.active {
-  background-color: #875DF8;
+  background-color: #875df8;
   color: white;
   margin-top: 4px;
   margin-bottom: 4px;
 }
 .dash-menu li a.active svg {
   stroke: white;
+}
+body {
+  font-family: "Montserrat", sans-serif;
 }

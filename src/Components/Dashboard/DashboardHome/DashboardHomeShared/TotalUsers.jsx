@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import React from 'react';
+import useAxiosSecure from '../../../../Hooks/useAxiosSecure';
 
 const TotalUsers = () => {
+    const axiosSecure = useAxiosSecure();
     const { data: users = [] } = useQuery({
         queryKey: ["users"],
         queryFn: async () =>
-            (await axios.get(`${import.meta.env.VITE_API_URL}/users`)).data
+            (await axiosSecure.get(`${import.meta.env.VITE_API_URL}/users`)).data
     })
     return (
         <div className='bg-base-100 shadow-lg rounded-2xl p-8' >

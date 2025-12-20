@@ -76,81 +76,80 @@ const MyLessons = () => {
 
   return (
     <Container className="mb-10">
-      <h2 className="text-3xl mt-20 font-bold text-center mb-4">
+      <h2 className="text-3xl  font-bold text-center mb-4">
         My Lessons
       </h2>
 
       {lessons.length === 0 && (
-        <div className="text-center text-gray-500 py-20">
+        <div className="text-center text-gray-500 py-5">
           <h3 className="text-2xl font-semibold">No lessons found</h3>
         </div>
       )}
 
-      {lessons.length > 0 && (
-        <div className="overflow-x-auto mt-6">
-          <table className="table-auto w-full border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border p-2">Image</th>
-                <th className="border p-2">Title</th>
-                <th className="border p-2">Visibility</th>
-                <th className="border p-2">Access</th>
-                <th className="border p-2">Created</th>
+    {lessons.length > 0 && (
+  <div className="w-full overflow-x-auto mt-6">
+    <table className="min-w-[900px] table-auto mb-20 border">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="border p-2">Image</th>
+          <th className="border p-2">Title</th>
+          <th className="border p-2">Visibility</th>
+          <th className="border p-2">Access</th>
+          <th className="border p-2">Created</th>
+          <th className="border p-2">Actions</th>
+        </tr>
+      </thead>
 
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedLessons.map((lesson) => (
-                <tr key={lesson._id} className="text-center">
-                  <td className="border p-2">
-                    <img
-                      src={lesson.image}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                  </td>
-                  <td className="border p-2 font-semibold">
-                    {lesson.title}
-                  </td>
-                  <td className="border p-2">
-                    {lesson.isPublic ? "Public" : "Private"}
-                  </td>
-                  <td className="border p-2">
-                    {lesson.accessLevel}
-                  </td>
-                  <td className="border p-2">
-                    {lesson.createdAt}
-                  </td>
+      <tbody>
+        {displayedLessons.map((lesson) => (
+          <tr key={lesson._id} className="text-center">
+            <td className="border p-2">
+              <img
+                src={lesson.image}
+                className="w-16 h-16 object-cover rounded mx-auto"
+              />
+            </td>
+            <td className="border p-2 font-semibold whitespace-nowrap">
+              {lesson.title}
+            </td>
+            <td className="border p-2">
+              {lesson.isPublic ? "Public" : "Private"}
+            </td>
+            <td className="border p-2">
+              {lesson.accessLevel}
+            </td>
+            <td className="border p-2 whitespace-nowrap">
+              {new Date(lesson.createdAt).toLocaleDateString()}
+            </td>
 
-                  <td className="border p-2 space-x-2">
-                    <button
-                      onClick={() =>
-                        navigate(`/lesson-details/${lesson._id}`)
-                      }
-                      className="px-2 py-1 bg-blue-500 text-white rounded"
-                    >
-                      Details
-                    </button>
-                    <Link
-                      to={`/UpdateLesson/${lesson._id}`}
-                      className="px-2 py-1 bg-yellow-500 text-white rounded"
-                    >
-                      Update
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(lesson._id)}
-                      className="px-2 py-1 bg-red-500 text-white rounded"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            <td className="border p-2 space-x-2 whitespace-nowrap">
+              <button
+                onClick={() => navigate(`/lesson-details/${lesson._id}`)}
+                className="px-2 py-1 bg-blue-500 text-white rounded"
+              >
+                Details
+              </button>
 
+              <Link
+                to={`/UpdateLesson/${lesson._id}`}
+                className="px-2 py-1 bg-yellow-500 text-white rounded"
+              >
+                Update
+              </Link>
+
+              <button
+                onClick={() => handleDelete(lesson._id)}
+                className="px-2 py-1 bg-red-500 text-white rounded"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
       {lessons.length > itemsPerPage && (
         <Pagination
           currentPage={currentPage}

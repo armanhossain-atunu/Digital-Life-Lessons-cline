@@ -81,7 +81,7 @@ const LessonDetails = () => {
         Lesson Details
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+      <div className="grid grid-cols-1  md:grid-cols-2 gap-6 p-6">
         {lesson.image && (
           <img
             src={lesson.image}
@@ -89,7 +89,7 @@ const LessonDetails = () => {
             className="w-full h-64 md:h-96 object-cover rounded-2xl shadow"
           />
         )}
-        <div className="bg-base-200 p-6 rounded-2xl shadow">
+        <div className="bg-base-200 h-96 overflow-y-scroll p-6 rounded-2xl shadow">
           <h2 className="text-3xl font-bold mb-4">{lesson.title}</h2>
           <div className="flex flex-wrap gap-2 mb-4">
             <span className="badge badge-outline">
@@ -124,12 +124,12 @@ const LessonDetails = () => {
                   {/* if there is a button in form, it will close the modal */}
                   <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
-                <ReviewSection></ReviewSection>
+                <ReviewSection lessonId={lesson._id}></ReviewSection>
               </div>
             </dialog>
 
             {/* ReportLesson */}
-            <ReportLesson></ReportLesson>
+            <ReportLesson lessonId={lesson._id} reportedUserEmail={lesson.authorEmail}></ReportLesson>
 
           </div>
 

@@ -18,7 +18,7 @@ const Banner = () => {
           clickable: true,
         }}
         modules={[EffectFade, Navigation, Pagination,Autoplay]}
-        className="mySwiper md:h-[520px] mt-[70px] md:mt-[78px] "
+        className="mySwiper mt-24 md:mt-7"
       >
         <SwiperSlide > 
           <img className='w-full md:h-[520px]' src="https://i.ibb.co.com/sJ5TjPRT/digital-learning-web-banner-design-students-study-with-mobile-phone-during-online-class-online-educa.jpg" />

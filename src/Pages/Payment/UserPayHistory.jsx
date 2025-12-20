@@ -5,9 +5,9 @@ import useAuth from "../../Hooks/useAuth";
 const MyPayments = () => {
     const { user } = useAuth();
     const { payments, isLoading, error } = useMyPayments();
-    console.log(payments,'payments user');
+    console.log(payments, 'payments user');
     const filteredPayments = payments.filter(payment => payment.customerEmail === user?.email);
-    console.log(filteredPayments,'filteredPayments');
+    console.log(filteredPayments, 'filteredPayments');
 
     if (isLoading) return <p className="text-center mt-10">Loading...</p>;
     if (error) return <p className="text-red-500 text-center mt-10">Failed to load payments</p>;
@@ -29,8 +29,8 @@ const MyPayments = () => {
                         >
                             <div className="card-body">
                                 <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm text-base-500">
-
+                                    <span className="text-xl text-base-500">
+                                        <h1>Payment Info</h1>
                                     </span>
                                     <span className="badge badge-success">
                                         {payment.status || "paid"}

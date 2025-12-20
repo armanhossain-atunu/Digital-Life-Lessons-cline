@@ -1,65 +1,52 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../../Hooks/useAuth";
 import Container from "../Shared/Container";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const ReviewSection = ({ lessonId }) => {
   const { user } = useAuth();
-  // console.log(user,'firebase user');
+  const axiosSecure = useAxiosSecure();
+
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
-  // Fetch reviews for this lesson
+  // Fetch reviews from backend
   const fetchReviews = async () => {
     if (!lessonId) return;
 
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/lessons/${lessonId}/reviews`
-      );
+      const res = await axiosSecure.get(`/lessons/${lessonId}/reviews`);
 
-      let fetchedReviews = [];
-
-      // Handle ALL possible response shapes
-      if (Array.isArray(res.data)) {
-        fetchedReviews = res.data;
-      }
-      else if (res.data && Array.isArray(res.data.reviews)) {
-        fetchedReviews = res.data.reviews;
-      }
-      else if (res.data && Array.isArray(res.data.data)) {
-        fetchedReviews = res.data.data;
-      }
-      else if (res.data && typeof res.data === "object") {
-        // If it's an object but not array, maybe empty
-        fetchedReviews = [];
-      }
-
+      const fetchedReviews = res.data?.reviews || [];
       setReviews(fetchedReviews);
+      setAverageRating(res.data?.averageRating || 0);
+      setReviewCount(res.data?.reviewCount || fetchedReviews.length);
 
-      // Check if current user already reviewed
       if (user?.email) {
-        const alreadyReviewed = fetchedReviews.some(
+        const reviewed = fetchedReviews.some(
           (r) => r.reviewerEmail === user.email
         );
-        setHasReviewed(alreadyReviewed);
+        setHasReviewed(reviewed);
       }
     } catch (err) {
-      console.error("Review fetch error:", err);
+      console.error("Fetch reviews error:", err);
       toast.error("Failed to load reviews");
-      setReviews([]); // Always fallback to array
+      setReviews([]);
     }
   };
 
   useEffect(() => {
     fetchReviews();
-  }, [lessonId]);
+  }, [lessonId, user?.email]);
 
+  // Submit review
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,100 +61,100 @@ const ReviewSection = ({ lessonId }) => {
     }
 
     if (rating === 0) {
-      toast.error("Please select a star rating");
+      toast.error("Please select a rating");
       return;
     }
 
     if (!comment.trim()) {
-      toast.error("Please write a comment");
+      toast.error("Please write a review");
       return;
     }
 
     setLoading(true);
 
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/lessons/${lessonId}/review`,
-        {
-          lessonId,
-          rating,
-          comment: comment.trim(),
-          reviewerEmail: user.email,
-          reviewerName: user?.displayName,
-          reviewerPhoto: user?.photoURL || "",
-        }
-      );
+      await axiosSecure.post(`/lessons/${lessonId}/review`, {
+        rating,
+        comment: comment.trim(),
+        reviewerEmail: user.email,
+        reviewerName: user.displayName || "Anonymous",
+        reviewerPhoto: user.photoURL || "",
+      });
 
-      toast.success("Thank you! Your review has been submitted.");
+      toast.success("Review submitted successfully");
 
-      // Reset form
       setRating(0);
       setHoverRating(0);
       setComment("");
       setHasReviewed(true);
 
-      // Refresh reviews
       fetchReviews();
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-          err.response?.status === 409
-          ? "You have already reviewed this lesson"
-          : "Failed to submit review. Try again.";
-
-      toast.error(message);
+      console.log(err.response?.data); // TEMP log for debugging
+      if (err.response?.status === 409) {
+        toast.error("You have already reviewed this lesson");
+        setHasReviewed(true);
+      } else if (err.response?.status === 400) {
+        toast.error("All fields are required");
+      } else {
+        toast.error("Failed to submit review");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const displayStars = (num) => "★".repeat(Math.max(0, Math.min(5, Number(num || 0))));
+  // Render stars for display
+  const renderStars = (value) =>
+    "★".repeat(Math.max(0, Math.min(5, Number(value)))) +
+    "☆".repeat(5 - Math.max(0, Math.min(5, Number(value))));
 
   return (
     <Container>
-      <h3 className="text-2xl  font-bold mb-6 text-center">User Reviews</h3>
+      <h3 className="text-2xl font-bold text-center mb-2">
+        User Reviews
+      </h3>
+      <p className="text-center text-gray-600 mb-6">
+        ⭐ {averageRating} average from {reviewCount} review
+        {reviewCount !== 1 && "s"}
+      </p>
 
-      {/* Review Submission Form - Only if not already reviewed */}
-      {user && !hasReviewed ? (
-        <div className="bg-base-100 p-6 rounded-xl shadow-md border mb-8">
+      {/* Review Form */}
+      {user && !hasReviewed && (
+        <div className="bg-base-100 p-6 rounded-xl border shadow mb-8">
           <h4 className="text-lg font-semibold mb-4">Write a Review</h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Star Rating */}
             <div>
-              <label className="block text-sm font-medium mb-2">Your Rating</label>
+              <label className="block mb-2 text-sm font-medium">Your Rating</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
+                    disabled={loading}
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    disabled={loading}
-                    className={`text-4xl transition-colors ${star <= (hoverRating || rating)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                      } hover:text-yellow-400`}
+                    className={`text-4xl transition ${
+                      star <= (hoverRating || rating) ? "text-yellow-400" : "text-gray-300"
+                    }`}
                   >
                     ★
                   </button>
                 ))}
               </div>
-              {rating > 0 && (
-                <p className="text-sm text-gray-600 mt-1">{rating} star{rating > 1 ? "s" : ""}</p>
-              )}
             </div>
 
             {/* Comment */}
             <div>
-              <label className="block text-sm font-medium mb-2">Your Review</label>
+              <label className="block mb-2 text-sm font-medium">Your Review</label>
               <textarea
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 rows="4"
-                placeholder="Share your experience with this lesson..."
+                className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                placeholder="Write your experience..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                required
                 disabled={loading}
               />
             </div>
@@ -175,52 +162,49 @@ const ReviewSection = ({ lessonId }) => {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary px-6 py-2 disabled:opacity-50"
+              className="btn btn-primary"
             >
               {loading ? "Submitting..." : "Submit Review"}
             </button>
           </form>
         </div>
-      ) : user && hasReviewed ? (
-        <div className="bg-base-50 border border-green-200 text-green-800 p-4 rounded-lg mb-8 text-center">
-          ✅ Thank you for your review!
+      )}
+
+      {/* Already Reviewed Message */}
+      {user && hasReviewed && (
+        <div className="text-center bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6">
+          ✅ You have already reviewed this lesson
         </div>
-      ) : null}
+      )}
 
       {/* Reviews List */}
       <div className="space-y-4">
-        <h4 className="text-lg font-semibold">
-          {reviews.length} Review{reviews.length !== 1 ? "s" : ""}
-        </h4>
-
         {reviews.length === 0 ? (
-          <p className="text-base-500 text-center py-8">
-            No reviews yet. Be the first to review this lesson!
+          <p className="text-center text-gray-500 py-6">
+            No reviews yet
           </p>
         ) : (
-          Array.isArray(reviews) && reviews.map((review) => (
+          reviews.map((review) => (
             <div
               key={review._id}
-              className="bg-base-100 p-5 rounded-xl shadow-sm border hover:shadow-md transition"
+              className="bg-base-100 p-5 rounded-xl border shadow-sm"
             >
-              <div className="flex items-start gap-4">
+              <div className="flex gap-4">
                 <img
                   src={review.reviewerPhoto || "https://via.placeholder.com/40"}
-                  alt={review.reviewerName}
                   className="w-10 h-10 rounded-full object-cover"
-                  onError={(e) => (e.target.src = "https://via.placeholder.com/40")}
                 />
                 <div className="flex-1">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between">
                     <div>
                       <p className="font-semibold">{review.reviewerName || "Anonymous"}</p>
-                      <p className="text-sm text-base-500">{review.reviewerEmail}</p>
+                      <p className="text-sm text-gray-500">{review.reviewerEmail}</p>
                     </div>
-                    <span className="text-2xl text-yellow-400">
-                      {displayStars(review.rating)}
+                    <span className="text-yellow-400 text-xl">
+                      {renderStars(review.rating)}
                     </span>
                   </div>
-                  <p className="mt-3 text-gray-700 leading-relaxed">{review.comment}</p>
+                  <p className="mt-3 text-gray-700">{review.comment}</p>
                 </div>
               </div>
             </div>

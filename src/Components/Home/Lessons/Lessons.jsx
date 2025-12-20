@@ -23,10 +23,10 @@ const Lessons = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [completedLesson, setCompletedLesson] = useState(null);
+  const [ setCompletedLesson] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
   const [play, setPlay] = useState(null);
-  const [sortBy, setSortBy] = useState("newest");
+  // const [sortBy, setSortBy] = useState("newest");
   const itemsPerPage = 6;
 
   // Fetch user role
@@ -52,10 +52,10 @@ const Lessons = () => {
 
   // Fetch lessons with sorting
   const { data: lessons = [], isLoading, error } = useQuery({
-    queryKey: ["lessons", sortBy],
+    queryKey: ["lessons"],
     queryFn: async () => {
       const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/lessons`, {
-        params: { sort: sortBy },
+       
       });
       return res.data;
     },
@@ -81,13 +81,13 @@ const Lessons = () => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [showAnimation]);
+  }, [showAnimation, setCompletedLesson]);
   const deleteLessonMutation = useMutation({
     mutationFn: async (id) => {
       await axios.delete(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
     },
     onSuccess: (_, id) => {
-      queryClient.setQueryData(["lessons", sortBy], (old = []) =>
+      queryClient.setQueryData(["lessons"], (old = []) =>
         old.filter((lesson) => lesson._id !== id)
       );
       toast.success("Lesson deleted successfully!");
@@ -177,14 +177,7 @@ const Lessons = () => {
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="select select-bordered w-full md:w-1/4"
-        >
-          <option value="newest">Newest</option>
-          <option value="saved">Most Saved</option>
-        </select>
+       
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -207,11 +200,12 @@ const Lessons = () => {
             <div
               key={_id}
 
-              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll ${user ? "h-[600px]" : "h-[480px]"
-                }`}
+              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll h-[450px]
+              ${locked ? "cursor-not-allowed" : "cursor-pointer"}`
+              }
             >
               {locked && (
-                <div className="absolute inset-0 bg-black/80 z-10 flex flex-col items-center justify-center text-white">
+                <div className="absolute inset-0 bg-black/80  z-10 flex flex-col items-center justify-center text-white">
                   <p className="text-xl mb-2">Premium</p>
                   <button
                     onClick={() => handlePayment(lesson)}

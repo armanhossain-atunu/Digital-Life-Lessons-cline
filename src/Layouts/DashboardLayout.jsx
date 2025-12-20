@@ -84,16 +84,15 @@ const DashboardLayout = () => {
                             </NavLink>
                         </li>
                         {/* create users item */}
-                        <li>
-
+                        {/* <li>
                             <NavLink to="/dashboard/admin_User_Create">
-                                <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Create Users">
+                                <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Create Users"> */}
                                     {/* create users icon */}
-                                    <FaUserPlus></FaUserPlus>
+                                    {/* <FaUserPlus></FaUserPlus>
                                     <span className="is-drawer-close:hidden">Create Users</span>
                                 </button>
                             </NavLink>
-                        </li>
+                        </li> */}
 
                         {/* Add Lessons item */}
                         <li>

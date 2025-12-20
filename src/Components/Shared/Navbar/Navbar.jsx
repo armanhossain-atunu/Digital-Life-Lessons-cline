@@ -186,7 +186,7 @@ const Navbar = () => {
                         )}
 
                         {user && userPlan === "premium" && (
-                            <span className="badge badge-warning mr-2">
+                            <span className="badge badge-warning hidden md:flex mr-2">
                                 Premium ⭐
                             </span>
                         )}
