@@ -20,7 +20,6 @@ const Reports = () => {
       setLoading(false);
     }
   };
-  console.log(lessons.length);
   useEffect(() => {
     fetchReportedLessons();
   }, []);

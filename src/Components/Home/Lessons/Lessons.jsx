@@ -170,8 +170,9 @@ const Lessons = () => {
   return (
     <Container>
       <h1 className="text-3xl font-bold text-center my-8">
-        Featured Life Lessons ({lessons.length})
+        Featured Life Lessons.
       </h1>
+      <p className="text-xl font-medium text-center" >Life-changing insights, handpicked for your growth.</p>
 
       {/* Search + Sort */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
@@ -200,7 +201,9 @@ const Lessons = () => {
             <div
               key={_id}
 
-              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll h-[450px]
+              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll ${
+                expanded[_id] ? "h-full" : "h-full"
+              }
               ${locked ? "cursor-not-allowed" : "cursor-pointer"}`
               }
             >

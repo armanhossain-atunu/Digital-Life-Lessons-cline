@@ -28,7 +28,6 @@ const Navbar = () => {
             enabled: !!email,
         });
     };
-    // const { data: userData } = useUserRole(user?.email);
 
     // const { data: userData } = useUserRole(user?.email);
     const { data: userDB } = useUserRole(user?.email);
@@ -165,7 +164,7 @@ const Navbar = () => {
                             </ul>
                         </div>
 
-                        <Link to="/" className="text-2xl font-bold">
+                        <Link to="/" className="text-sm md:text-2xl font-bold">
                             Digital <span className="text-[#875DF8]">Life Lessons</span>
                         </Link>
                     </div>
@@ -180,7 +179,7 @@ const Navbar = () => {
                     <div className="navbar-end">
                         {/* User Plan Button / Badge */}
                         {user && userPlan === "free" && (
-                            <Link to="/pricing" className="btn text-base-200 bg-purple-500 mr-2">
+                            <Link to="/pricing" className="btn text-base-200 hidden md:flex bg-purple-500 mr-2">
                                 Upgrade to Pro
                             </Link>
                         )}

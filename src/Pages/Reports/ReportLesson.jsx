@@ -3,11 +3,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 
 const ReportLesson = ({ lessonId, reportedUserEmail }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [otherReason, setOtherReason] = useState("");
@@ -21,7 +22,16 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
     }
     setOpen(true);
   };
-
+  const {data:reportedLessons, isLoading}=useQuery({
+    queryKey: ["reported-lessons"],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/admin/reported-lessons`
+      );
+      return res.data;
+    },
+  })
+console.log(reportedLessons);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,7 +48,7 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
     try {
       setLoading(true);
 
-      // ✅ Send report with status: "Pending"
+      // Send report with status: "Pending"
       await axios.post(
         `${import.meta.env.VITE_API_URL}/lessons/report/${lessonId}`,
         {
@@ -47,7 +57,7 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
           reporterEmail: user?.email,
           reportedUserEmail,
           reason: reason === "Other" ? otherReason : reason,
-          status: "Pending", // ✅ NEW
+          status: "Pending",
         }
       );
 
@@ -65,6 +75,9 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
       setLoading(false);
     }
   };
+ if(isLoading){
+  return <LoadingSpinner></LoadingSpinner>
+ }
 
   return (
     <>

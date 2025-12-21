@@ -63,11 +63,11 @@ const Comments = ({ postId }) => {
             onChange={(e) => setInputComment(e.target.value)}
           />
 
-          <div className="flex justify-between items-center mt-2">
+          <div className=" md:flex justify-between items-center mt-2">
             <button
               type="submit"
               disabled={isPosting || !inputComment.trim()}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md mb-3 hover:bg-blue-600 disabled:bg-gray-400"
             >
               {isPosting ? "Commenting..." : "Comment"}
             </button>

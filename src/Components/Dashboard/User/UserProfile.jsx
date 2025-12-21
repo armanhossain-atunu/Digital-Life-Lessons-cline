@@ -19,6 +19,7 @@ const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(user.displayName || "");
   const [photoFile, setPhotoFile] = useState(null);
+  const [bio, setBio] = useState(user.bio || "")
   const [photoPreview, setPhotoPreview] = useState(user.photoURL || "");
 
   // Fetch user profile
@@ -31,8 +32,8 @@ const UserProfile = () => {
     enabled: !!user?.email,
   });
   //user role
- const { data: userData =[]}=useUserRole(user?.email)
- console.log(userData.plan)
+  const { data: userData = [] } = useUserRole(user?.email)
+  console.log(userData.plan)
   // My lessons
   const { data: lessons = [] } = useQuery({
     queryKey: ["myLessons", user?.email],
@@ -85,10 +86,11 @@ const UserProfile = () => {
         email: user.email,
         displayName: name,
         photoURL,
+        bio
       });
 
       //  Update local context and queries
-      setUser({ ...user, displayName: name, photoURL });
+      setUser({ ...user, displayName: name, photoURL, bio });
       queryClient.invalidateQueries(["users", user?.email]);
 
       toast.dismiss();
@@ -126,13 +128,22 @@ const UserProfile = () => {
               <div className="flex-1">
                 {editMode ? (
                   <>
+                    {/* Name */}
                     <input
                       type="text"
                       className="input input-bordered w-full mb-2"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
-                    <input type="file" accept="image/*" onChange={handleFileChange} />
+                    {/* Bio */}
+                    <textarea
+                      className="textarea textarea-bordered w-full mb-2"
+                      placeholder="Write something bio yourself..."
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                    ></textarea>
+                    {/* Photo */}
+                    <input type="file" accept="image/*"  className="file-input file-input-bordered w-full" onChange={handleFileChange} />
                   </>
                 ) : (
                   <>
@@ -175,8 +186,10 @@ const UserProfile = () => {
 
             {/* Bio */}
             <div className="mt-6">
-              <h3 className="text-xl font-semibold text-base-800 mb-2">About</h3>
-              <p className="text-base-600">{user.bio}</p>
+              <h3 className="text-xl font-semibold text-base-800 mb-2">Bio</h3>
+              <p className="text-base-600">
+                {user.bio || "No bio added yet"}
+              </p>
             </div>
 
             {/* Stats Cards */}
@@ -192,13 +205,13 @@ const UserProfile = () => {
                 <FaRegFileAlt className="text-4xl text-purple-600" />
                 <div>
                   <h4 className="text-lg font-semibold text-gray-800">User Role</h4>
-                  <p className="text-2xl text-center font-bold text-purple-700">{userData?.plan }</p>
+                  <p className="text-2xl text-center font-bold text-purple-700">{userData?.plan}</p>
                 </div>
               </div>
-              <div className="bg-yellow-50 p-6 rounded-xl  hover:shadow-lg transition flex items-center gap-4 shadow">
+              <div className="bg-yellow-50 mb-5 p-6 rounded-xl  hover:shadow-lg transition flex items-center gap-4 shadow">
                 <FaRegBookmark className="text-4xl text-yellow-600" />
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">Saved favorite Lessons</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">Saved Favorite Lessons</h4>
                   <p className="text-2xl text-center font-bold text-yellow-700">{favoriteLessons.length}</p>
                 </div>
               </div>

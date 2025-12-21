@@ -5,9 +5,11 @@ import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 import Container from "../../Components/Shared/Container";
 import Pagination from "../../Components/Shared/Pagination";
 import { useState } from "react";
+import useAuth from "../../Hooks/useAuth";
 
 const AuthorLessons = () => {
   const { authorEmail } = useParams();
+  const{user}=useAuth()
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: lessons = [], isLoading } = useLessons();
@@ -31,8 +33,10 @@ const AuthorLessons = () => {
   // Access logic
   const isAdmin = authorUser.role === "admin";
   const isPremium = authorUser.plan === "premium";
+  const isOwner = user?.email === authorEmail;
 
-  if (isAdmin && isPremium) {
+
+  if (!isAdmin && !isPremium && !isOwner) {
     return (
       <Container>
         <p className="mt-20 text-center text-red-500">

@@ -90,7 +90,7 @@ const ReviewSection = ({ lessonId }) => {
 
       fetchReviews();
     } catch (err) {
-      console.log(err.response?.data); // TEMP log for debugging
+      console.log(err.response?.data);
       if (err.response?.status === 409) {
         toast.error("You have already reviewed this lesson");
         setHasReviewed(true);
@@ -173,7 +173,7 @@ const ReviewSection = ({ lessonId }) => {
       {/* Already Reviewed Message */}
       {user && hasReviewed && (
         <div className="text-center bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6">
-          ✅ You have already reviewed this lesson
+          You have already reviewed this lesson
         </div>
       )}
 

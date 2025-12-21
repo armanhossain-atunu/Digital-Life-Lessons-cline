@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 const SocialMedia = () => {
   return (
-    <div>
+    <div className="w-fit">
       <svg width="0" height="0" style={{ position: "absolute" }}>
         <defs>
           <clipPath id="squircleClip" clipPathUnits="objectBoundingBox">
