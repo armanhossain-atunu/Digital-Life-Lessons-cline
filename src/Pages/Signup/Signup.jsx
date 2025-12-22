@@ -13,11 +13,11 @@ import axios from 'axios'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const SignUp = () => {
-    const { createUser, updateUserProfile, signInWithGoogle, loading, setUser } = useAuth()
+    const { createUser, updateUserProfile, signInWithGoogle, loading, setUser, setLoading } = useAuth()
     const [show, setShow] = useState(false);
     const navigate = useNavigate()
     const location = useLocation()
-    const from = location.state || '/'
+    const from = location.state || '/auth/login'
     const queryClient = useQueryClient();
 
     // React Hook Form
@@ -69,9 +69,15 @@ const SignUp = () => {
             navigate(from, { replace: true });
 
         } catch (err) {
-            console.log(err);
-            toast.error(err.message);
+            setLoading(false)
+            if (err.response?.status === 409) {
+                toast.error("Something went wrong");
+
+            } else {
+                toast.error("This email is already used");
+            }
         }
+
     };
 
     // -----------  GOOGLE SIGN-IN ----------
@@ -89,7 +95,7 @@ const SignUp = () => {
             });
 
             toast.success("Signup Successful");
-            navigate(from, { replace: true });
+            navigate('/');
 
         } catch (err) {
             toast.error(err.message);

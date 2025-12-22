@@ -79,7 +79,7 @@ const FavoriteButton = ({ lessonId, user }) => {
         <button
           onClick={handleFavorite}
           disabled={loading}
-          className={`px-4 py-2 rounded-full text-white transition ${
+          className={`px-4  rounded-full text-white transition ${
             favorited ? "bg-red-500" : "bg-gray-400"
           }`}
         >

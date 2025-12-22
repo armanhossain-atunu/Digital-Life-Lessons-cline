@@ -5,11 +5,11 @@ import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 import Container from "../../Components/Shared/Container";
 import Pagination from "../../Components/Shared/Pagination";
 import { useState } from "react";
-import useAuth from "../../Hooks/useAuth";
+// import useAuth from "../../Hooks/useAuth";
 
 const AuthorLessons = () => {
   const { authorEmail } = useParams();
-  const{user}=useAuth()
+  // const{user}=useAuth()
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: lessons = [], isLoading } = useLessons();
@@ -31,20 +31,20 @@ const AuthorLessons = () => {
   }
 
   // Access logic
-  const isAdmin = authorUser.role === "admin";
-  const isPremium = authorUser.plan === "premium";
-  const isOwner = user?.email === authorEmail;
+  // const isAdmin = authorUser.role === "admin";
+  // const isPremium = authorUser.plan === "premium";
+  // const isOwner = user?.email === authorEmail;
 
 
-  if (!isAdmin && !isPremium && !isOwner) {
-    return (
-      <Container>
-        <p className="mt-20 text-center text-red-500">
-          Access denied. Only Admin or Premium authors can share lessons.
-        </p>
-      </Container>
-    );
-  }
+  // if (!isAdmin && !isPremium && !isOwner) {
+  //   return (
+  //     <Container>
+  //       <p className="mt-20 text-center text-red-500">
+  //         Access denied. Only Admin or Premium authors can share lessons.
+  //       </p>
+  //     </Container>
+  //   );
+  // }
 
   // Author lessons
   const authorLessons = lessons.filter(
@@ -62,7 +62,7 @@ const AuthorLessons = () => {
   return (
     <Container>
       {/* Author Info */}
-      <div className="flex flex-col items-center space-y-2 mb-10">
+      <div className="flex flex-col items-center space-y-1 ">
         <img
           src={authorUser.photoURL || "/avatar.png"}
           alt={authorUser.name}
@@ -70,9 +70,9 @@ const AuthorLessons = () => {
         />
         <h1 className="text-3xl font-bold">{authorUser.name}</h1>
         <p className="text-gray-600">{authorUser.email}</p>
-        <p>Role: <b>{authorUser.role}</b></p>
         <p>Plan: <b>{authorUser.plan}</b></p>
       </div>
+      <hr className="mb-10" />
 
       {/* Lessons */}
       {authorLessons.length === 0 ? (

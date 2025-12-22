@@ -7,13 +7,13 @@ const TotalFreePremiumUser = () => {
   if (isLoading) return <p>Loading users...</p>;
   if (error) return <p>Failed to load users</p>;
 
-  // Premium count (plan === 'premium')
+
   const premiumTotal = users.filter(user => user.plan?.toLowerCase() === 'premium').length;
 
-  // Free count (plan === 'free' বা plan না থাকলে)
+  
   const freeTotal = users.filter(user => !user.plan || user.plan?.toLowerCase() === 'free').length;
 
-  console.log(premiumTotal, freeTotal);
+
 
   return (
     <div className='text-base-300' >

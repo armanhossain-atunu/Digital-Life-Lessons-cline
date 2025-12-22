@@ -15,14 +15,13 @@ const AddLesson = () => {
     const { user } = useAuth();
     const { data: users = [] } = useUsers()
     const currentUser = users.find(u => u.email === user?.email);
-    console.log(currentUser?.plan, 'users db');
     const axiosSecure = useAxiosSecure()
     const navigate = useNavigate();
     const [showAnimation, setShowAnimation] = useState(false);
-    const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
 
-    const watchAccess = watch("accessLevel", "Free");
+    // const watchAccess = watch("accessLevel", "Free");
     // useMutation hook useCase (POST || PUT || PATCH ||
     const { mutateAsync, isPending, isError, reset: mutationReset } = useMutation({
         mutationFn: async (lessonData) => {
@@ -39,7 +38,7 @@ const AddLesson = () => {
 
     // Form submit handler
     const onSubmit = async (data) => {
-        const { title, description, category, tone, isPublic, accessLevel, image, price } = data;
+        const { title, description, category, tone, isPublic, accessLevel, image,} = data;
 
         const imageFile = image[0]
         try {
@@ -51,9 +50,10 @@ const AddLesson = () => {
                 tone,
                 isPublic,
                 accessLevel,
-                price: accessLevel === "Premium" ? Number(price) : 0,
+                price: data.price || 20,
                 authorName: user.displayName,
                 authorEmail: user.email,
+                authorImage: user.photoURL,
                 image: imageUrl,
                 createdAt: new Date(),
             };
@@ -204,7 +204,7 @@ const AddLesson = () => {
                     </select>
                 </div>
                 {/* Conditional Price Input */}
-                {watchAccess === "Premium" && (
+                {/* {watchAccess === "Premium" && (
                     <Controller
                         name="price"
                         control={control}
@@ -218,7 +218,7 @@ const AddLesson = () => {
                             />
                         )}
                     />
-                )}
+                )} */}
                 {/* Submit Button */}
                 <div >
                     <button
@@ -226,7 +226,7 @@ const AddLesson = () => {
                         className=" w-full px-6 py-2 text-2xl bg-lime-500 cursor-pointer  text-white rounded hover:bg-lime-600 transition"
                     >
                         Create Lesson
-                    <LottieAnimation show={showAnimation} />
+                        <LottieAnimation show={showAnimation} />
                     </button>
                 </div>
             </form>

@@ -51,7 +51,7 @@ const MostSavedLessons = () => {
   return (
     <Container className="mt-20">
       <h2 className="text-3xl font-bold text-center mb-8">
-        🔥 Most Saved Lessons
+        Most Saved Lessons
       </h2>
 
       {mostSavedLessons.length === 0 ? (

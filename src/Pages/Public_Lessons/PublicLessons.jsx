@@ -1,184 +1,67 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { FaStar } from "react-icons/fa";
+import Container from "../../Components/Shared/Container";
 import { Link } from "react-router";
-import { useState } from "react";
-import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
-import LoveReact from "../../Components/Shared/LikeReact/LoveReact";
-import FavoriteButton from "../../Components/Home/Lessons/Favorite";
-import ReviewSection from "../../Components/Reviews/ReviewSection";
-import useAuth from "../../Hooks/useAuth";
 
 const PublicLessons = () => {
-  const { user } = useAuth();
-
-  // 🔹 State
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [tone, setTone] = useState("");
-  const [sort, setSort] = useState("newest");
-
   const { data = { total: 0, lessons: [] }, isLoading } = useQuery({
-    queryKey: ["publicLessons", search, category, tone, sort],
+    queryKey: ["public-lessons"],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/lessons/public`,
-        {
-          params: { search, category, tone, sort },
-        }
+        `${import.meta.env.VITE_API_URL}/lessons/public`
       );
       return res.data;
     },
   });
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      {/* 🔹 Header */}
-      <h2 className="text-2xl mt-11 font-bold mb-6">
-        Public Lessons ({data.total})
-      </h2>
+    <Container>
+      <h1 className="text-3xl font-bold mb-4 mt-17 text-center"> Public Lessons </h1>
 
-      {/* 🔹 Search + Filter + Sort */}
-      <div className="grid md:grid-cols-4 gap-4 mb-8">
-        {/* Search */}
-        <input
-          type="text"
-          placeholder="Search by title or keyword..."
-          className="input input-bordered w-full"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* Category Filter */}
-        <select
-          className="select select-bordered w-full"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          <option value="Personal Growth">Personal Growth</option>
-          <option value="Career">Career</option>
-          <option value="Mindset">Mindset</option>
-          <option value="Relationships">Relationships</option>
-        </select>
-
-        {/* Emotional Tone Filter */}
-        <select
-          className="select select-bordered w-full"
-          value={tone}
-          onChange={(e) => setTone(e.target.value)}
-        >
-          <option value="">All Emotional Tones</option>
-          <option value="Motivational">Motivational</option>
-          <option value="Realization">Realization</option>
-          <option value="Sad">Sad</option>
-          <option value="Gratitude">Gratitude</option>
-        </select>
-
-        {/* Sort */}
-        <select
-          className="select select-bordered w-full"
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-        >
-          <option value="newest">Newest</option>
-          <option value="mostSaved">Most Saved</option>
-        </select>
-      </div>
-
-      {/* 🔹 Lessons Grid */}
-      {data.lessons.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No public lessons found
-        </p>
-      ) : (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {data.lessons.map((lesson) => (
-            <div
-              key={lesson._id}
-              className="border rounded-xl shadow hover:shadow-lg transition bg-base-200"
-            >
-              {/* Thumbnail */}
-              <img
-                src={lesson?.image}
-                alt={lesson?.title}
-                className="h-44 w-full p-2 object-cover rounded-t-xl"
-              />
-
-              <p className="text-sm bg-purple-500 py-1 px-3 inline-block mx-2 rounded-2xl text-white">
-                {lesson?.category}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {data.lessons.map((lesson) => (
+          <div key={lesson._id} className="bg-base-200 h-full p-4 rounded shadow">
+            <img src={lesson.image} alt={lesson.title} className="w-full h-48" />
+            <div className="flex justify-between items-center">
+              <p className="text-sm bg-purple-500 mt-2 py-1 px-3 inline-block  rounded-2xl text-white">
+                {lesson.category}
               </p>
-
-              <div className="p-4 space-y-2">
-                <h3 className="font-semibold text-lg line-clamp-1">
-                  {lesson?.title}
-                </h3>
-
-                <p className="text-sm text-base-500 line-clamp-2">
-                  {lesson?.description}
-                </p>
-
-                {/* Rating */}
-                <div className="flex items-center gap-1">
-                  {lesson.averageRating ? (
-                    <>
-                      {lesson.averageRating}
-                      <span className="text-sm flex items-center gap-1.5 text-base-500">
-                        {lesson.totalRatings}
-                        <FaStar className="text-yellow-400" />
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-sm text-base-400">
-                      No rating yet
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2">
-                  <LoveReact lessonId={lesson._id} />
-                  <FavoriteButton lessonId={lesson._id} user={user} />
-                </div>
-
-                {/* Reviews */}
-                <button
-                  className="text-sm text-indigo-600 underline"
-                  onClick={() =>
-                    document
-                      .getElementById(`review_${lesson._id}`)
-                      .showModal()
-                  }
-                >
-                  View Reviews
-                </button>
-
-                <dialog id={`review_${lesson._id}`} className="modal">
-                  <div className="modal-box">
-                    <ReviewSection lessonId={lesson._id} />
-                    <div className="modal-action">
-                      <form method="dialog">
-                        <button className="btn">Close</button>
-                      </form>
-                    </div>
-                  </div>
-                </dialog>
-
-                {/* Details */}
-                <Link
-                  to={`/lesson-details/${lesson._id}`}
-                  className="btn btn-primary w-full mt-3"
-                >
-                  View Details
-                </Link>
+              <div className="flex items-center mt-1 gap-3">
+                <h1 className="text-sm font-medium">{lesson.authorName}</h1>
+                <img
+                  src={lesson.authorImage || "/avatar.png"}
+                  alt={lesson.authorName}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+            <p className="text-sm text-gray-500">
+              {new Date(lesson.createdAt).toLocaleDateString()}
+            </p>
+            <p>{lesson.accessLevel}</p>
+            <p>{lesson.tone}</p>
+            <h2 className="text-xl font-semibold">{lesson.title}</h2>
+            <p className="text-gray-600 mt-2">
+              {lesson.description && `${lesson.description?.slice(0, 100)}...`}
+              <Link to={`/lesson-details/${lesson._id}`} className="text-blue-500" >more</Link>
+            </p>
+            {/* Details */}
+            <Link
+              to={`/lesson-details/${lesson._id}`}
+              className="btn btn-primary w-full mt-3"
+            >
+              View Details
+            </Link>
+          </div>
+
+        ))}
+
+      </div>
+    </Container >
   );
 };
 

@@ -7,12 +7,7 @@ const Footer = () => {
     return (
         <div>
             <footer className="footer flex mt-10 justify-between items-center flex-wrap bg-base-200 text-base-content p-10">
-                <aside>
-                    <img
-                        src="http://localhost:5173/src/assets/logo-white.png"
-                        alt=""
-                        className="filter brightness-0"
-                    />
+                <a>
                     <p>
                         <Link to="/" className="text-2xl font-bold">
                             Digital <span className="text-[#875DF8]">Life Lessons</span>
@@ -20,7 +15,7 @@ const Footer = () => {
                         <br />
                         Providing reliable tech since 1992
                     </p>
-                </aside>
+                </a>
                 <nav>
                     <h6 className="footer-title">Services</h6>
                     <a className="link link-hover">Branding</a>

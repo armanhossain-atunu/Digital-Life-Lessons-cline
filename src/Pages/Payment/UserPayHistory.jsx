@@ -5,7 +5,6 @@ import useAuth from "../../Hooks/useAuth";
 const MyPayments = () => {
     const { user } = useAuth();
     const { payments, isLoading, error } = useMyPayments();
-    console.log(payments, 'payments user');
     const filteredPayments = payments.filter(payment => payment.customerEmail === user?.email);
     console.log(filteredPayments, 'filteredPayments');
 

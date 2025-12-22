@@ -90,7 +90,7 @@ const ReviewSection = ({ lessonId }) => {
 
       fetchReviews();
     } catch (err) {
-      console.log(err.response?.data);
+      // console.log(err.response?.data);
       if (err.response?.status === 409) {
         toast.error("You have already reviewed this lesson");
         setHasReviewed(true);

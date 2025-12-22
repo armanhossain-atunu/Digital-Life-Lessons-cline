@@ -100,6 +100,10 @@ const UpdateLesson = () => {
         accessLevel: data.accessLevel,
         price: Number(data.price),
         image: imageUrl,
+        authorName: lesson.authorName,
+        authorEmail: lesson.authorEmail,
+        authorImage: lesson.authorImage,
+        lastDate: lesson.createdAt,
       };
 
       const res = await axiosSecure.patch(

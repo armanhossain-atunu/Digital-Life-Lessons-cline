@@ -54,7 +54,7 @@ const handleRemoveFavorite = async (lessonId) => {
   return (
     <Container>
       <h1 className="text-3xl mt-20 text-center font-semibold mb-8">
-        Favorite Lessons ({favoriteLessons.length})
+        Favorite Lessons
       </h1>
 
       {favoriteLessons.length === 0 ? (

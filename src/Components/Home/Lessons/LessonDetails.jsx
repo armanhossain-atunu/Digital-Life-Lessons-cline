@@ -101,6 +101,14 @@ const LessonDetails = () => {
             <span className="badge badge-outline">
               Access: {lesson.accessLevel}
             </span>
+            <span className="badge badge-outline">
+              <p>
+                {lesson.updatedAt
+                  ? `Updated: ${(lesson.updatedAt)}`
+                  : `Created: ${(lesson.createdAt)}`}
+              </p>
+            </span>
+
             {/* Favorite */}
             <span>
               <FavoriteButton lessonId={lesson._id} user={user} ></FavoriteButton>
@@ -112,7 +120,7 @@ const LessonDetails = () => {
             {/* Update */}
             {(isOwner || isAdmin) && (
               <span className="badge badge-outline">
-                <Link to={`/UpdateLesson/${lesson._id}`}> Update</Link>
+                <Link to={`/UpdateLesson/${lesson._id}`}>Update</Link>
               </span>
             )}
 

@@ -76,7 +76,7 @@ const MyLessons = () => {
 
   return (
     <Container className="mb-10">
-      <h2 className="text-3xl  font-bold text-center mb-4">
+      <h2 className="text-3xl mt-17  font-bold text-center mb-4">
         My Lessons
       </h2>
 
@@ -88,7 +88,7 @@ const MyLessons = () => {
 
     {lessons.length > 0 && (
   <div className="w-full overflow-x-auto mt-6">
-    <table className="min-w-[900px] table-auto mb-20 border">
+    <table className="w-full table-auto mb-20 border">
       <thead className="bg-gray-100">
         <tr>
           <th className="border p-2">Image</th>

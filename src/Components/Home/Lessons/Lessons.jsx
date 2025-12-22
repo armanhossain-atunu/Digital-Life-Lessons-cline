@@ -23,7 +23,7 @@ const Lessons = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expanded, setExpanded] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [ setCompletedLesson] = useState(null);
+  const [setCompletedLesson] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
   const [play, setPlay] = useState(null);
   // const [sortBy, setSortBy] = useState("newest");
@@ -55,7 +55,7 @@ const Lessons = () => {
     queryKey: ["lessons"],
     queryFn: async () => {
       const res = await axiosSecure.get(`${import.meta.env.VITE_API_URL}/lessons`, {
-       
+
       });
       return res.data;
     },
@@ -178,7 +178,7 @@ const Lessons = () => {
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-       
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -201,9 +201,8 @@ const Lessons = () => {
             <div
               key={_id}
 
-              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll ${
-                expanded[_id] ? "h-full" : "h-full"
-              }
+              className={`relative bg-base-300 rounded-xl shadow border overflow-y-scroll ${expanded[_id] ? "h-full" : "h-full"
+                }
               ${locked ? "cursor-not-allowed" : "cursor-pointer"}`
               }
             >
@@ -237,7 +236,7 @@ const Lessons = () => {
                     onClick={() => toggleExpand(_id)}
                     className="text-indigo-600 ml-1"
                   >
-                    {expanded[_id] ? "less" : "more"}
+                    {expanded[_id] ? "less" : <Link to={`/lesson-details/${_id}`}>more</Link>}
                   </button>
                 </p>
 

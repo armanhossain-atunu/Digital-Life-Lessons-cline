@@ -33,7 +33,7 @@ const UserProfile = () => {
   });
   //user role
   const { data: userData = [] } = useUserRole(user?.email)
-  console.log(userData.plan)
+ 
   // My lessons
   const { data: lessons = [] } = useQuery({
     queryKey: ["myLessons", user?.email],

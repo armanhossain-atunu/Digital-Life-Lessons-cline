@@ -57,15 +57,7 @@ const SignUp = () => {
                 photoURL: imageURL,
             });
 
-            // Save user to DB
-            // saveUserMutation.mutate({
-            //     name,
-            //     email,
-            //     photoURL: imageURL,
-            //     role: "user",
-            //     plan: "free",
-            //     createdAt: new Date().toLocaleString(),
-            // });
+          
             await saveUserMutation.mutateAsync({
                 name,
                 email,

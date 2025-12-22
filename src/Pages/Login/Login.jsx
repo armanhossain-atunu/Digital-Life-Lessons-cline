@@ -1,4 +1,4 @@
-import { Link, Navigate, useLocation, useNavigate } from "react-router";
+import { Link, Navigate,  useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
@@ -11,12 +11,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 const Login = () => {
-    const { signIn, signInWithGoogle, loading, user } = useAuth();
+    const { signIn, signInWithGoogle, loading, setLoading } = useAuth();
 
     const navigate = useNavigate();
-    const location = useLocation();
     const [show, setShow] = useState(false);
-    const from = location.state?.from?.pathname || "/";
+   
 
     const {
         register,
@@ -42,10 +41,10 @@ const Login = () => {
         try {
             await signIn(data.email, data.password);
             toast.success("Login Successful");
-            navigate(from, { replace: true });
+            navigate('/');
         } catch (error) {
+            setLoading(false)
             const errorCode = error.code;
-
             switch (errorCode) {
                 case "auth/invalid-email":
                     toast.error("Invalid email format");
@@ -86,7 +85,7 @@ const Login = () => {
             });
 
             toast.success("Signup Successful");
-            navigate(from, { replace: true });
+            navigate('/');
         } catch (err) {
             console.error(err);
             toast.error("Google login failed. Please try again");
@@ -95,7 +94,7 @@ const Login = () => {
 
     // Loading / Already Logged in
     if (loading) return <LoadingSpinner />;
-    if (user) return <Navigate to={from} replace={true} />;
+ 
 
     return (
         <div className="flex justify-center items-center min-h-screen">
@@ -191,7 +190,7 @@ const Login = () => {
                 <p className="px-6 text-sm text-center text-gray-400">
                     Don&apos;t have an account yet?
                     <Link
-                        state={from}
+                       
                         to="/auth/signup"
                         className="hover:underline hover:text-lime-500 text-gray-600"
                     >

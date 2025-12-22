@@ -1,18 +1,40 @@
-import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import useAuth from "../../Hooks/useAuth";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import LoadingSpinner from "../../Components/Shared/LoadingSpinner";
 
-const ReportLesson = ({ lessonId, reportedUserEmail }) => {
+const ReportLesson = ({ lessonId }) => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [otherReason, setOtherReason] = useState("");
   const [loading, setLoading] = useState(false);
+
+  //  Get lessons with reports
+  const { data: reportedLessons = [], isLoading } = useQuery({
+    queryKey: ["reported-lessons", user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const res = await axiosSecure.get(
+        `${import.meta.env.VITE_API_URL}/admin/reported-lessons`
+      );
+      return res.data;
+    },
+  });
+
+  // Find current user's report status
+  const userReport = reportedLessons
+    ?.find((lesson) => String(lesson._id) === String(lessonId))
+    ?.reports?.find((r) => r.reporterEmail === user?.email);
+
+  const reportStatus = userReport?.status;
 
   const handleOpenReport = () => {
     if (!user) {
@@ -22,46 +44,38 @@ const ReportLesson = ({ lessonId, reportedUserEmail }) => {
     }
     setOpen(true);
   };
-  const {data:reportedLessons, isLoading}=useQuery({
-    queryKey: ["reported-lessons"],
-    queryFn: async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/reported-lessons`
-      );
-      return res.data;
-    },
-  })
-console.log(reportedLessons);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!reason.trim()) {
+    if (!reason) {
       toast.error("Please select a reason");
       return;
     }
 
     if (reason === "Other" && !otherReason.trim()) {
-      toast.error("Please provide details for 'Other'");
+      toast.error("Please describe the issue");
       return;
     }
 
     try {
       setLoading(true);
 
-      // Send report with status: "Pending"
-      await axios.post(
+      await axiosSecure.post(
         `${import.meta.env.VITE_API_URL}/lessons/report/${lessonId}`,
         {
-          reporterUserId: user?._id,
-          reporterName: user?.displayName || "Anonymous",
-          reporterEmail: user?.email,
-          reportedUserEmail,
+          reporterName: user.displayName || "Anonymous",
+          reporterEmail: user.email,
           reason: reason === "Other" ? otherReason : reason,
           status: "Pending",
         }
       );
 
       toast.success("Lesson reported successfully");
+
+      //  REAL-TIME UI UPDATE (NO PAGE RELOAD)
+      queryClient.invalidateQueries(["reported-lessons"]);
+
       setOpen(false);
       setReason("");
       setOtherReason("");
@@ -75,16 +89,41 @@ console.log(reportedLessons);
       setLoading(false);
     }
   };
- if(isLoading){
-  return <LoadingSpinner></LoadingSpinner>
- }
+
+  if (isLoading) return <LoadingSpinner />;
+
+  //  Status badge color
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Pending":
+        return "badge-warning";
+      case "Resolved":
+        return "badge-success";
+      case "Rejected":
+        return "badge-error";
+      default:
+        return "badge-outline";
+    }
+  };
 
   return (
     <>
-      <button className="badge badge-outline" onClick={handleOpenReport}>
-        Report
+      {/*  Report Button */}
+      <button
+        className="badge badge-outline"
+        onClick={handleOpenReport}
+        disabled={reportStatus === "Pending"}
+      >
+        {reportStatus === "Pending" ? "Reported" : "Report"}
       </button>
+      {/* 🏷 Status */}
+      {reportStatus && (
+        <span className={`badge ml-2 ${getStatusClass(reportStatus)}`}>
+          {reportStatus}
+        </span>
+      )}
 
+      {/*  Modal */}
       {open && (
         <dialog open className="modal">
           <div className="modal-box max-w-md">
@@ -93,8 +132,8 @@ console.log(reportedLessons);
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="email"
-                className="input w-full border bg-base-100"
-                value={user?.email || ""}
+                className="input w-full border"
+                value={user?.email}
                 disabled
               />
 
@@ -102,25 +141,33 @@ console.log(reportedLessons);
                 className="select w-full border"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                required
               >
                 <option value="">Select reason</option>
-                <option value="Inappropriate Content">Inappropriate Content</option>
-                <option value="Hate Speech or Harassment">Hate Speech or Harassment</option>
-                <option value="Misleading or False Information">Misleading or False Information</option>
-                <option value="Spam or Promotional Content">Spam or Promotional Content</option>
-                <option value="Sensitive or Disturbing Content">Sensitive or Disturbing Content</option>
+                <option value="Inappropriate Content">
+                  Inappropriate Content
+                </option>
+                <option value="Hate Speech or Harassment">
+                  Hate Speech or Harassment
+                </option>
+                <option value="Misleading or False Information">
+                  Misleading or False Information
+                </option>
+                <option value="Spam or Promotional Content">
+                  Spam or Promotional Content
+                </option>
+                <option value="Sensitive or Disturbing Content">
+                  Sensitive or Disturbing Content
+                </option>
                 <option value="Other">Other</option>
               </select>
 
               {reason === "Other" && (
                 <textarea
                   className="textarea w-full border"
-                  placeholder="Please describe the issue"
+                  placeholder="Describe the issue"
                   value={otherReason}
                   onChange={(e) => setOtherReason(e.target.value)}
                   rows={4}
-                  required
                 />
               )}
 
