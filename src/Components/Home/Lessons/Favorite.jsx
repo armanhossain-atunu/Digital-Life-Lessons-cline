@@ -72,7 +72,7 @@ const FavoriteButton = ({ lessonId, user }) => {
   return (
     <div className="flex items-center gap-3">
       {favorited === null ? (
-        <button className="px-4 py-2 bg-gray-300 rounded cursor-not-allowed">
+        <button className="px-4 py-2 bg-base-300 rounded cursor-not-allowed">
           Loading...
         </button>
       ) : (

@@ -106,14 +106,14 @@ const DashboardHome = () => {
                 <div className="bg-indigo-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-indigo-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Admin Lessons</h4>
+                        <h4 className="text-lg font-semibold text-base-800">Admin Lessons</h4>
                         <p className="text-2xl text-center font-bold text-indigo-700">{lessons.length}</p>
                     </div>
                 </div>
                 <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <MdMenuBook className="text-4xl text-purple-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Total Lessons</h4>
+                        <h4 className="text-lg font-semibold text-base-800">Total Lessons</h4>
                         <p className="text-2xl text-center font-bold text-purple-700">{allLessons.length}</p>
                     </div>
                 </div>
@@ -121,35 +121,35 @@ const DashboardHome = () => {
                 <div className="bg-green-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-green-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Recent Lessons</h4>
+                        <h4 className="text-lg font-semibold text-base-800">Recent Lessons</h4>
                         <p className="text-2xl text-center font-bold text-green-700">{lessons.slice(-5).length}</p>
                     </div>
                 </div>
                 <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-purple-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Free Lessons</h4>
+                        <h4 className="text-lg font-semibold text-base-800">Free Lessons</h4>
                         <p className="text-2xl text-center font-bold text-purple-700">{free.freeCount}</p>
                     </div>
                 </div>
                 <div className="bg-indigo-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaStar className="text-4xl text-green-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">Premium Lessons</h4>
+                        <h4 className="text-lg font-semibold text-base-800">Premium Lessons</h4>
                         <p className="text-2xl text-center font-bold text-green-700">{premiumData?.premiumCount}</p>
                     </div>
                 </div>
                 <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-purple-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">User Role</h4>
+                        <h4 className="text-lg font-semibold text-base-800">User Role</h4>
                         <p className="text-2xl text-center font-bold text-purple-700">{userData?.role}</p>
                     </div>
                 </div>
                 <div className="bg-indigo-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                     <FaRegFileAlt className="text-4xl text-indigo-600" />
                     <div>
-                        <h4 className="text-lg font-semibold text-gray-800">My Favorite</h4>
+                        <h4 className="text-lg font-semibold text-base-800">My Favorite</h4>
                         <p className="text-2xl text-center font-bold text-indigo-700">{favoriteLessons.length}</p>
                     </div>
                 </div>

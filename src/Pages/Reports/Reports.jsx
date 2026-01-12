@@ -27,7 +27,7 @@ const Reports = () => {
   // Remove single report
   const removeSingleReport = (lessonId, reporterEmail) => {
     toast((t) => (
-      <div className="p-4 bg-white rounded-lg shadow-lg">
+      <div className="p-4 bg-base-200 rounded-lg shadow-lg">
         <p className="font-medium">Remove this report?</p>
         <div className="flex justify-end gap-3 mt-4">
           <button
@@ -50,7 +50,7 @@ const Reports = () => {
             Yes, Remove
           </button>
           <button
-            className="px-4 py-2 bg-gray-300 rounded"
+            className="px-4 py-2 bg-base-300 rounded"
             onClick={() => toast.dismiss(t.id)}
           >
             Cancel
@@ -87,7 +87,7 @@ const Reports = () => {
       case "Rejected":
         return "bg-red-300 text-red-800";
       default:
-        return "bg-gray-200 text-gray-800";
+        return "bg-gray-200 text-base-800";
     }
   };
 

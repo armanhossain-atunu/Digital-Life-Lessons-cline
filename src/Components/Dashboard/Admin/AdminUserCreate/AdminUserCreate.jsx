@@ -195,9 +195,9 @@ const SignUp = () => {
 
                 {/* Google Login */}
                 <div className='flex items-center pt-4 space-x-1'>
-                    <div className='flex-1 h-px bg-gray-300'></div>
+                    <div className='flex-1 h-px bg-base-300'></div>
                     <p className='px-3 text-sm'>Signup with social accounts</p>
-                    <div className='flex-1 h-px bg-gray-300'></div>
+                    <div className='flex-1 h-px bg-base-300'></div>
                 </div>
 
                 <div onClick={handleGoogleSignIn}

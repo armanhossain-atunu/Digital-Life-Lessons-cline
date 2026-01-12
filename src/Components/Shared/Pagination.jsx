@@ -21,7 +21,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                         onClick={() => onPageChange(page)}
                         className={`px-3 py-2 rounded-lg font-medium transition ${currentPage === page
                                 ? "bg-indigo-600 text-white"
-                                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                                : "bg-base-200 text-base-800 hover:bg-base-300"
                             }`}
                     >
                         {page}
@@ -33,7 +33,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+                className="px-4 py-2 bg-indigo-600 text-base-100 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
             >
                 Next
             </button>

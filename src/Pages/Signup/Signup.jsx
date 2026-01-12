@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { FcGoogle } from 'react-icons/fc'
 import { toast } from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
@@ -15,9 +15,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 const SignUp = () => {
     const { createUser, updateUserProfile, signInWithGoogle, loading, setUser, setLoading } = useAuth()
     const [show, setShow] = useState(false);
-    const navigate = useNavigate()
-    const location = useLocation()
-    const from = location.state || '/auth/login'
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
 
     // React Hook Form
@@ -65,8 +63,8 @@ const SignUp = () => {
                 role: "user",
                 plan: "free",
             });
-            toast.success("Signup Successful");
-            navigate(from, { replace: true });
+            toast.success("Signup Successful. Please log in");
+            navigate('/auth/login');
 
         } catch (err) {
             setLoading(false)
@@ -106,11 +104,11 @@ const SignUp = () => {
     if (loading) return <LoadingSpinner />
 
     return (
-        <div className='flex justify-center items-center min-h-screen'>
-            <div className='flex flex-col max-w-md p-6 mt-20 mb-10 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
+        <div className='flex justify-center gap-5 my-3 items-center min-h-screen'>
+            <div className='flex flex-col max-w-md border pb-3 rounded-md px-10 bg-base-100 text-base-900'>
                 <div className='mb-8 text-center'>
                     <h1 className='my-3 text-4xl font-bold'>Sign Up</h1>
-                    <p className='text-sm text-gray-400'>Welcome to Digital Life Lessons</p>
+                    <p className='text-sm text-base-400'>Welcome to Digital Life Lessons</p>
                 </div>
 
                 {/* SIGNUP FORM */}
@@ -153,7 +151,7 @@ const SignUp = () => {
                                 type='email'
                                 id='email'
                                 placeholder='Enter Your Email Here'
-                                className='w-full px-3 py-2 border rounded-md border-gray-300'
+                                className='w-full px-3 py-2 border rounded-md border-base-300'
                                 {...register('email', {
                                     required: 'Email is required',
                                     pattern: {
@@ -174,7 +172,7 @@ const SignUp = () => {
                                 type={show ? "text" : "password"}
                                 id='password'
                                 placeholder='*******'
-                                className='w-full px-3 py-2 border rounded-md border-gray-300'
+                                className='w-full px-3 py-2 border rounded-md border-base-300'
                                 {...register('password', {
                                     required: 'Password is required',
                                     pattern: {
@@ -194,16 +192,16 @@ const SignUp = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className='bg-lime-500 w-full cursor-pointer rounded-md py-3 text-white'>
+                    <button type="submit" className='bg-lime-500 w-full cursor-pointer rounded-md py-3 text-base-100 font-semibold hover:bg-lime-600 transition'>
                         {loading ? <TbFidgetSpinner className='animate-spin m-auto' /> : 'Sign Up'}
                     </button>
                 </form>
 
                 {/* Google Login */}
                 <div className='flex items-center pt-4 space-x-1'>
-                    <div className='flex-1 h-px bg-gray-300'></div>
+                    <div className='flex-1 h-px bg-base-300'></div>
                     <p className='px-3 text-sm'>Signup with social accounts</p>
-                    <div className='flex-1 h-px bg-gray-300'></div>
+                    <div className='flex-1 h-px bg-base-300'></div>
                 </div>
 
                 <div onClick={handleGoogleSignIn}
@@ -216,6 +214,15 @@ const SignUp = () => {
                     Already have an account?
                     <Link to='/auth/login' className='hover:underline hover:text-lime-500'>Login</Link>.
                 </p>
+            </div>
+
+            {/* Image / Animation */}
+            <div className="mt-8 md:mt-0 ">
+                <img
+                    src="https://assets-v2.lottiefiles.com/a/750ed6f6-117b-11ee-97d8-73d47909a467/UP9s9oR49S.gif"
+                    alt="Login Animation"
+                    className="hidden rounded-md md:block w-80 md:w-[450px] h-80 md:h-[640px] "
+                />
             </div>
         </div>
     )

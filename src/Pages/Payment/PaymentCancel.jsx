@@ -5,11 +5,11 @@ import { MdCancel } from "react-icons/md";
 const PaymentCancel = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="bg-white rounded-2xl shadow-lg p-10 max-w-lg text-center">
+            <div className="bg-base-200 rounded-2xl shadow-lg p-10 max-w-lg text-center">
                 <div className="flex justify-center mb-4">
                     <MdCancel className="text-red-600 text-6xl" />
                 </div>
-                <h1 className="text-3xl font-bold mb-4 text-gray-800">
+                <h1 className="text-3xl font-bold mb-4 text-base-800">
                     Payment Cancelled
                 </h1>
                 <p className="text-gray-600 mb-6">
@@ -25,7 +25,7 @@ const PaymentCancel = () => {
                     </Link>
                     <Link
                         to="/my-lessons"
-                        className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
+                        className="px-6 py-3 bg-gray-200 text-base-800 rounded-lg hover:bg-base-300 transition font-medium"
                     >
                         My Lessons
                     </Link>

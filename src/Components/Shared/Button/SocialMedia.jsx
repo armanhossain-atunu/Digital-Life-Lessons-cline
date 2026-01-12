@@ -36,18 +36,6 @@ const SocialMedia = () => {
               <FaLinkedin className="text-white text-sm"></FaLinkedin>
             </Link>
           </div>
-
-          {/* YouTube Icon */}
-          <div className="relative">
-            <Link to='https://www.youtube.com' target="_blank"
-              style={{ clipPath: "url(#squircleClip)" }}
-              className="w-8 h-8  bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center shadow-lg border border-red-500/50 cursor-pointer transform transition-all duration-300 ease-out hover:scale-110 hover:-translate-y-2 hover:shadow-2xl"
-
-            >
-              <FaYoutube className="text-white text-sm" ></FaYoutube>
-            </Link>
-          </div>
-
           {/* Instagram Icon */}
           <div className="relative">
             <Link to="https://www.instagram.com" target="_blank"

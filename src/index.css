@@ -15,4 +15,13 @@
 }
 body {
   font-family: "Montserrat", sans-serif;
+ 
+}
+
+.review-swiper {
+  direction: ltr !important; /* Swiper needs LTR internally */
+}
+
+.review-swiper .swiper-wrapper {
+  direction: rtl !important; /* Slides move right ➝ left */
 }

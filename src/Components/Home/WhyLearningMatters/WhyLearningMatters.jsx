@@ -29,7 +29,7 @@ const WhyLearningMatters = () => {
   ];
 
   return (
-    <section className="py-16 bg-base-100">
+    <section className="mb-2 mt-5 bg-base-100">
       <div className="max-w-6xl mx-auto text-center px-4">
         
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-base-800">
@@ -42,7 +42,7 @@ const WhyLearningMatters = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {benefits.map((item) => (
             <div
-              key={item.id}
+              key={item.id} data-aos="fade-right"
               className="group bg-base-200 p-6 rounded-xl shadow-md hover:shadow-xl transition duration-300 cursor-pointer"
             >
               <div className="mb-4 flex justify-center">

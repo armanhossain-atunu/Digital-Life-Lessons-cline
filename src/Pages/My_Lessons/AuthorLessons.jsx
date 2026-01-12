@@ -84,7 +84,7 @@ const AuthorLessons = () => {
           {displayedLessons.map((lesson) => (
             <div
               key={lesson._id}
-              className="border rounded-lg shadow hover:shadow-lg transition p-5 bg-white"
+              className="border rounded-lg shadow hover:shadow-lg transition p-5 bg-base-200"
             >
               <img
                 src={lesson.image}

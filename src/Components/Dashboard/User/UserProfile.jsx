@@ -161,13 +161,13 @@ const UserProfile = () => {
                 {editMode ? (
                   <>
                     <button
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl transition"
+                      className="bg-green-600 hover:bg-green-700 text-base-100 px-4 py-2 rounded-xl transition"
                       onClick={handleSave}
                     >
                       Save
                     </button>
                     <button
-                      className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-xl transition"
+                      className="bg-base-300 hover:bg-gray-400 px-4 py-2 rounded-xl transition"
                       onClick={() => setEditMode(false)}
                     >
                       Cancel
@@ -197,21 +197,21 @@ const UserProfile = () => {
               <div className="bg-indigo-50 p-6 rounded-xl  hover:shadow-lg transition flex items-center gap-4 shadow">
                 <FaRegFileAlt className="text-4xl text-indigo-600" />
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">Add Total Lessons</h4>
+                  <h4 className="text-lg font-semibold text-indigo-700">Add Total Lessons</h4>
                   <p className="text-2xl text-center font-bold text-indigo-700">{lessons.length}</p>
                 </div>
               </div>
               <div className="bg-purple-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
                 <FaRegFileAlt className="text-4xl text-purple-600" />
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">User Role</h4>
+                  <h4 className="text-lg font-semibold text-purple-700">User Role</h4>
                   <p className="text-2xl text-center font-bold text-purple-700">{userData?.plan}</p>
                 </div>
               </div>
               <div className="bg-yellow-50 mb-5 p-6 rounded-xl  hover:shadow-lg transition flex items-center gap-4 shadow">
                 <FaRegBookmark className="text-4xl text-yellow-600" />
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800">Saved Favorite Lessons</h4>
+                  <h4 className="text-lg font-semibold text-yellow-600">Saved Favorite Lessons</h4>
                   <p className="text-2xl text-center font-bold text-yellow-700">{favoriteLessons.length}</p>
                 </div>
               </div>

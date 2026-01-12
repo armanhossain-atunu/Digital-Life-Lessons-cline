@@ -19,7 +19,7 @@ if (!user) {
 }
 
 // admin allowed
-if (currentUser?.role?.toLowerCase() === "admin") {
+if (currentUser?.role?.toLowerCase() === "admin" || currentUser?.role?.toLowerCase() === "demoAdmin") {
   return children;
 }
 

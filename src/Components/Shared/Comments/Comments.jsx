@@ -3,6 +3,7 @@ import useAuth from "../../../Hooks/useAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import SocialMedia from "../Button/SocialMedia";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import LoadingSpinner from "../LoadingSpinner";
 
 const Comments = ({ postId }) => {
   const { user } = useAuth();
@@ -63,7 +64,7 @@ const Comments = ({ postId }) => {
             onChange={(e) => setInputComment(e.target.value)}
           />
 
-          <div className=" md:flex justify-between items-center mt-2">
+          <div className=" md:flex justify-between gap-3 items-center mt-2">
             <button
               type="submit"
               disabled={isPosting || !inputComment.trim()}
@@ -78,7 +79,7 @@ const Comments = ({ postId }) => {
 
       <div className="mt-5 space-y-3">
         {isLoading ? (
-          <p>Loading comments...</p>
+          <p><LoadingSpinner></LoadingSpinner></p>
         ) : (
           comments.map((c) => (
             <div

@@ -5,7 +5,7 @@ import Navbar from '../Components/Shared/Navbar/Navbar';
 const MainLayout = () => {
     return (
         <div className="min-h-screen flex flex-col">
-            <header>
+            <header className="sticky top-0 z-50">
                 <Navbar></Navbar>
             </header>
             <div className="flex-1">

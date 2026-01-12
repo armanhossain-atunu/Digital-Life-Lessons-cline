@@ -59,7 +59,7 @@ const MostSavedLessons = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mostSavedLessons.map((lesson) => (
-            <div key={lesson._id} className="card shadow p-4 rounded-lg border">
+            <div key={lesson._id} data-aos="zoom-in" className="card shadow p-4 rounded-lg border">
               <h3 className="font-bold text-lg">{lesson.title}</h3>
 
               <div className="mt-2 text-sm text-gray-600">

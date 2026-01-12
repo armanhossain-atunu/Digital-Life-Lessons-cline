@@ -163,7 +163,7 @@ const UserProfile = () => {
           <div className="bg-indigo-50 p-6 rounded-xl flex items-center gap-4 shadow">
             <FaRegFileAlt className="text-4xl text-indigo-600" />
             <div>
-              <h4 className="text-lg font-semibold text-gray-800">Total Lessons</h4>
+              <h4 className="text-lg font-semibold text-base-800">Total Lessons</h4>
               <p className="text-2xl font-bold text-indigo-700">{lessons.length}</p>
             </div>
           </div>
@@ -171,7 +171,7 @@ const UserProfile = () => {
           <div className="bg-yellow-50 p-6 rounded-xl flex items-center gap-4 shadow">
             <FaRegBookmark className="text-4xl text-yellow-600" />
             <div>
-              <h4 className="text-lg font-semibold text-gray-800">Saved Lessons</h4>
+              <h4 className="text-lg font-semibold text-base-800">Saved Lessons</h4>
               <p className="text-2xl font-bold text-yellow-700">{favoriteLessons.length}</p>
             </div>
           </div>

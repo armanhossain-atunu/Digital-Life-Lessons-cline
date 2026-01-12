@@ -53,7 +53,7 @@ const handleRemoveFavorite = async (lessonId) => {
 
   return (
     <Container>
-      <h1 className="text-3xl mt-20 text-center font-semibold mb-8">
+      <h1 className="text-3xl text-center font-semibold my-8">
         Favorite Lessons
       </h1>
 
@@ -136,7 +136,7 @@ const handleRemoveFavorite = async (lessonId) => {
                       {/* Action */}
                       <td className="px-6 py-4 border border-base-300 text-center">
                         {isPremiumLocked ? (
-                          <span className="text-sm text-gray-600">Upgrade to view</span>
+                          <span className="text-sm text-base-600">Upgrade to view</span>
                         ) : (
                           <Link
                             to={`/lesson-details/${lesson._id}`}

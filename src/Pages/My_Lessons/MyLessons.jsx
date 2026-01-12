@@ -42,7 +42,7 @@ const MyLessons = () => {
   // Delete handler
   const handleDelete = (id) => {
     toast((t) => (
-      <div className="p-4 bg-white rounded-lg shadow-lg">
+      <div className="p-4 bg-base-200 rounded-lg shadow-lg">
         <p className="font-medium">Delete this lesson permanently?</p>
         <div className="flex justify-end gap-3 mt-4">
           <button
@@ -63,7 +63,7 @@ const MyLessons = () => {
           </button>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="px-4 py-2 bg-gray-300 rounded"
+            className="px-4 py-2 bg-base-300 rounded"
           >
             Cancel
           </button>
@@ -76,19 +76,19 @@ const MyLessons = () => {
 
   return (
     <Container className="mb-10">
-      <h2 className="text-3xl mt-17  font-bold text-center mb-4">
+      <h2 className="text-3xl mt-6 font-bold text-center mb-4">
         My Lessons
       </h2>
 
       {lessons.length === 0 && (
-        <div className="text-center text-gray-500 py-5">
+        <div className="text-center text-base-500 py-5">
           <h3 className="text-2xl font-semibold">No lessons found</h3>
         </div>
       )}
 
     {lessons.length > 0 && (
   <div className="w-full overflow-x-auto mt-6">
-    <table className="w-full table-auto mb-20 border">
+    <table className="w-full table-auto mb-6 border">
       <thead className="bg-gray-100">
         <tr>
           <th className="border p-2">Image</th>

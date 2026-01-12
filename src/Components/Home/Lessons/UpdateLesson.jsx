@@ -134,24 +134,24 @@ const UpdateLesson = () => {
   ======================= */
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <h2 className="text-2xl mt-20 text-center font-bold mb-6">
+      <h2 className="text-2xl text-center font-bold mb-6">
         Update Lesson
       </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-base-300 px-5 py-6 rounded-xl space-y-4">
 
         {/* Author Name */}
         <input
           value={lesson.authorName}
           disabled
-          className="input input-bordered w-full bg-gray-100"
+          className="input input-bordered w-full bg-base-100"
         />
 
         {/* Author Email */}
         <input
           value={lesson.authorEmail}
           disabled
-          className="input input-bordered w-full bg-gray-100"
+          className="input input-bordered w-full bg-base-100"
         />
 
         {/* Title */}

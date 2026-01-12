@@ -7,8 +7,8 @@ const PricingComparisonTable = () => {
         <Container>
             <div className="overflow-x-auto mt-10">
                 <h2 className="text-3xl font-bold text-base-800 text-center mb-6">
-  Free vs Premium Features
-</h2>
+                    Free vs Premium Features
+                </h2>
                 <table className="min-w-full border border-gray-200 shadow rounded-lg overflow-hidden">
                     <thead className="bg-base-400 shadow">
                         <tr>
@@ -26,23 +26,26 @@ const PricingComparisonTable = () => {
                     </thead>
 
                     <tbody className="divide-y  divide-gray-200">
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Lesson Access</td>
                             <td className="px-4 py-3 text-center">Limited</td>
                             <td className="px-4 py-3 text-center">Unlimited</td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Create Premium Lessons</td>
                             <td className="px-4 py-3 text-center text-red-500">
                                 <FaTimesCircle size={18} className="mx-auto" />
                             </td>
                             <td className="px-4 py-3 text-center text-green-600">
-                                <FaCheckCircle className="mx-auto"size={18} />
+                                <FaCheckCircle className="mx-auto" size={18} />
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Image Upload</td>
                             <td className="px-4 py-3 text-center text-red-500">
                                 <FaTimesCircle className="mx-auto" size={18} />
@@ -52,27 +55,30 @@ const PricingComparisonTable = () => {
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Private Lessons</td>
                             <td className="px-4 py-3 text-center text-red-500">
-                                <FaTimesCircle size={18}  className="mx-auto"/>
+                                <FaTimesCircle size={18} className="mx-auto" />
                             </td>
                             <td className="px-4 py-3 text-center text-green-600">
                                 <FaCheckCircle size={18} className="mx-auto" />
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Ad-Free Experience</td>
                             <td className="px-4 py-3 text-center text-red-500">
                                 <FaTimesCircle size={18} className="mx-auto" />
                             </td>
                             <td className="px-4 py-3 text-center text-green-600">
-                                <FaCheckCircle size={18}  className="mx-auto"/>
+                                <FaCheckCircle size={18} className="mx-auto" />
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Priority Listing</td>
                             <td className="px-4 py-3 text-center">Standard</td>
                             <td className="px-4 py-3 text-center font-medium text-indigo-600">
@@ -80,25 +86,28 @@ const PricingComparisonTable = () => {
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Save Favorites</td>
                             <td className="px-4 py-3 text-center">Limited</td>
                             <td className="px-4 py-3 text-center">Unlimited</td>
                         </tr>
 
-                        <tr>
+                        <tr data-aos="fade-up"
+                            data-aos-duration="1000">
                             <td className="px-4 py-3">Analytics & Insights</td>
                             <td className="px-4 py-3 text-center text-red-500">
                                 <FaTimesCircle size={18} className="mx-auto" />
                             </td>
                             <td className="px-4 py-3 text-center text-green-600">
-                                <FaCheckCircle size={18}  className="mx-auto"/>
+                                <FaCheckCircle size={18} className="mx-auto" />
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </Container>
+
     );
 };
 

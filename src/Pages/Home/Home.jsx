@@ -7,8 +7,11 @@ import LoadingSpinner from '../../Components/Shared/LoadingSpinner';
 import TopContributors from '../../Components/Home/TopContributors';
 import MostSavedLessons from '../../Components/MostSavedLessons/MostSavedLessons';
 import PricingComparisonTable from '../../Components/PricingComparisonTable';
-import ReportLesson from '../Reports/ReportLesson';
-
+import AllLessonReviews from '../../Components/Home/AllLessonReviews';
+import FAQ from '../../Components/Home/FAQ';
+import Newsletter from '../../Components/Home/Newsletter';
+import BackToTop from '../../Components/Home/BackToTop';
+import Team from '../../Components/Home/Team';
 
 const Home = () => {
     const { loading } = useAuth()
@@ -20,12 +23,15 @@ const Home = () => {
             <Banner></Banner>
             <WhyLearningMatters></WhyLearningMatters>
             <Lessons></Lessons>
+            <BackToTop></BackToTop>
             <TopContributors></TopContributors>
             <MostSavedLessons></MostSavedLessons>
             <PricingComparisonTable></PricingComparisonTable>
-       
-           
-        
+            <AllLessonReviews></AllLessonReviews>
+            <FAQ></FAQ>
+            <Newsletter></Newsletter>
+            <Team></Team>
+
         </div>
     );
 };

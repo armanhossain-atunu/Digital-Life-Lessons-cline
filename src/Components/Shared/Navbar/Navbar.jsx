@@ -95,6 +95,9 @@ const Navbar = () => {
             <li>
                 <MyLink to="/about" className="text-base font-medium">About</MyLink>
             </li>
+            <li>
+                <MyLink to="/contact" className="text-base font-medium">Contact</MyLink>
+            </li>
 
             <div className="text-base font-medium flex flex-col lg:flex-row">
                 <li>

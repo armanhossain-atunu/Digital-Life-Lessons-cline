@@ -23,7 +23,7 @@ const TotalFavorite = () => {
         <div className="bg-yellow-50 p-6 rounded-xl flex justify-center items-center gap-4 shadow hover:shadow-lg transition">
             <FaRegBookmark className="text-4xl text-yellow-600" />
             <div>
-                <h4 className="text-lg font-semibold text-gray-800">Saved Lessons</h4>
+                <h4 className="text-lg font-semibold text-base-800">Saved Lessons</h4>
                 <p className="text-2xl text-center font-bold text-yellow-700">{total}</p>
             </div>
         </div>

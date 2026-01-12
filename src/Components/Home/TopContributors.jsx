@@ -83,6 +83,10 @@ const TopContributors = () => {
                 <img
                   src={user.authorImage|| "/default-avatar.png"}
                   alt={user.name}
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  data-aos="zoom-in"
+                  data-aos-duration="1000"
                   className="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4"
                 />
                 <h3 className="text-xl font-bold text-base-800">{user.name}</h3>

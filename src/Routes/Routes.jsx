@@ -30,6 +30,11 @@ import AuthorLessons from "../Pages/My_Lessons/AuthorLessons";
 import PaymentHistory from "../Pages/Payment/PaymentHistory";
 import UserPayHistory from "../Pages/Payment/UserPayHistory";
 import UpdateLesson from "../Components/Home/Lessons/UpdateLesson";
+import Contact from "../Pages/Contact/Contact";
+import BrandingPage from "../Pages/FooterPage/Branding";
+import DesignServices from "../Pages/FooterPage/Design";
+import MarketingPage from "../Pages/FooterPage/Marketing";
+import Jobs from "../Pages/FooterPage/Jobs";
 
 
 const router = createBrowserRouter([
@@ -37,17 +42,20 @@ const router = createBrowserRouter([
         path: "/",
         Component: MainLayout,
         hydrateFallbackElement: <LoadingSpinner></LoadingSpinner>,
-        
+
         children: [
             { index: true, Component: Home, },
             { path: "/about", Component: About, },
-            { path: '/auth/login', Component: Login, },
-            { path: '/auth/signup', Component: Signup, },
+            { path: "/contact", Component: Contact, },
+            { path: "/branding", Component: BrandingPage, },
+            { path: "/marketing", Component: MarketingPage, },
+            { path: "/job", Component:Jobs, },
+            { path: "/design", Component: DesignServices, },
             { path: '/unauthorized', element: <Unauthorized></Unauthorized> },
             { path: '/UserProfile', element: <PrivateRoute><UserProfile></UserProfile></PrivateRoute> },
             { path: '/add-lessons', element: <PrivateRoute><AddLesson></AddLesson></PrivateRoute>, },
-            { path: '/public-lessons', element: <PrivateRoute><PublicLessons></PublicLessons> </PrivateRoute> },
-            { path: '/lesson-details/:id', element: <PrivateRoute><LessonDetails></LessonDetails></PrivateRoute>, },
+            { path: '/public-lessons', element: <PublicLessons></PublicLessons>},
+            { path: '/lesson-details/:id', element: <LessonDetails></LessonDetails>, },
             { path: '/my-lessons', element: <PrivateRoute><MyLessons></MyLessons></PrivateRoute> },
             { path: '/favorite-lessons', element: <PrivateRoute><FavoriteLessons></FavoriteLessons></PrivateRoute>, },
             { path: '/Reviews', element: <PrivateRoute> <ReviewSection></ReviewSection> </PrivateRoute> },
@@ -61,6 +69,8 @@ const router = createBrowserRouter([
         ],
 
     },
+    { path: '/auth/login', Component: Login, },
+    { path: '/auth/signup', Component: Signup, },
     // ==============================================================================
     //                    Dashboard Routes
     //===============================================================================

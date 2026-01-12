@@ -204,7 +204,7 @@ const ReviewSection = ({ lessonId }) => {
                       {renderStars(review.rating)}
                     </span>
                   </div>
-                  <p className="mt-3 text-gray-700">{review.comment}</p>
+                  <p className="mt-3 text-base-700">{review.comment}</p>
                 </div>
               </div>
             </div>

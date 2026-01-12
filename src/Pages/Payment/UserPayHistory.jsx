@@ -20,7 +20,7 @@ const MyPayments = () => {
                     <p className="text-base-500">No payments found</p>
                 </div>
             ) : (
-                <div className="flex justify-center">
+                <div className="flex justify-center gap-5">
                     {filteredPayments.map((payment) => (
                         <div
                             key={payment._id}
